@@ -42,7 +42,10 @@
     var version, versions, verDates;
 
     // get list of all versions
-    $.getJSON('http://localhost:3000/api/data/versions', function (data) {
+    var domain = document.location.origin;
+    domain = domain.slice(0, -5);
+    
+    $.getJSON(domain + ':3000/api/data/versions', function (data) {
         versions = data;
         
         verDates = _.map(versions, v => v.substring(0, 7));
@@ -61,7 +64,7 @@
             values: verDates
         });
 
-        $.getJSON('http://localhost:3000/api/data/elements/' + version, function (d) {
+        $.getJSON(domain + ':3000/api/data/elements/' + version, function (d) {
             cy = cytoscape({
                 container: $('#cy'),
                 layout: options,
@@ -201,7 +204,7 @@
         cy.elements().addClass('faded');
         var index = _.indexOf(versions, verName);
         
-        $.getJSON('http://localhost:3000/api/data/changes/' + verName, function (data) {
+        $.getJSON(domain + ':3000/api/data/changes/' + verName, function (data) {
             console.log(data)
             cy.elements('node').lock();
             

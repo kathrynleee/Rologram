@@ -1,8 +1,11 @@
 var express = require('express')
 var cors = require('cors')
+var http = require('http')
+var fs = require('fs')
 var app = express()
 // var path = require('path')
 var port = 3000
+var htmlPort = 8080
 
 var dataController = require('./data')
 
@@ -20,4 +23,15 @@ app.get('/api', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Express server listening at http://localhost:${port}`)
+})
+
+
+fs.readFile('html/index.html', (err, html) => {
+    if (err) throw err
+
+    http.createServer(function(request, response) {  
+        response.writeHeader(200, {"Content-Type": "text/html"})
+        response.write(html) 
+        response.end()
+    }).listen(htmlPort)
 })
