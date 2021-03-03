@@ -26,7 +26,7 @@ app.listen(port, () => {
 })
 
 
-fs.readFile('html/index.html', (err, html) => {
+fs.readFile(__dirname + '/html/index.html', (err, html) => {
     if (err) throw err
 
     http.createServer(function(request, response) {  
