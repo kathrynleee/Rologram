@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node express/server.js"
   },
   "dependencies": {
     "core-js": "^3.6.5",
