@@ -5,8 +5,8 @@ var router = express.Router()
 
 var system = 'bitcoin-wallet'
 // var system = 'k9'
-var dataFile = 'data/' + system + '-data-parent.json'
-var versionFile = 'data/' + system + '.txt'
+var dataFile = '../data/' + system + '-data-parent.json'
+var versionFile = '../data/' + system + '.txt'
 
 // test
 router.get('/text', (req, res) => {
