@@ -12,5 +12,19 @@
     "cytoscape-klay": "^3.1.4",
     "express": "^4.17.1",
     "lodash": "^4.17.21"
-  }
+  },
+  "main": ".eslintrc.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kathrynleee/vis-demo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kathrynleee/vis-demo/issues"
+  },
+  "homepage": "https://github.com/kathrynleee/vis-demo#readme",
+  "description": ""
 }
