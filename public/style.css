@@ -1,0 +1,90 @@
+body {
+    font-family: 'Inconsolata', monospace;
+    margin: 0;
+    padding: 0;
+    color: #3b444d;
+}
+#cy {
+    margin: 10px;
+    height: calc(100vh - 170px);
+    width: calc(100vw - 30px);
+    /* width: 70vw; */
+    border: 5px solid #3b444d;
+    background-color: hsla(208, 13%, 97%, 1);
+}
+#options {
+    height: 25px;
+    padding: 12px 10px 0 10px;
+    display: flex;
+    flex-direction: row;
+}
+.slider .irs--flat .irs-bar {
+    background-color: #3b444d;
+}
+.slider .irs-single {
+    background-color: #3b444d;
+}
+.slider .irs--flat .irs-handle>i:first-child {
+    background-color: transparent;
+}
+.slider .irs--flat .irs-single:before {
+     border-top-color: #3b444d;
+}
+.slider .irs--flat .irs-grid-pol.small {
+    background-color: transparent;
+}
+#info {
+    height: 80px;
+    width: 76vw;
+    margin: 0 10px;
+    padding: 0 20px;
+}
+#roles {
+    display: flex;
+    flex-direction: row;
+}
+#roles div {
+    margin-top: 20px;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+}
+.tooltip {
+    position: relative;
+}
+.role .tooltip:before {
+    font-size: 12px;
+    width: 100px;
+    height: 40px;
+    color: #3b444d;
+    content: attr(data-text);
+    opacity: 0;
+    transition: .3s opacity;
+    position: absolute;
+    top: -15px;
+} 
+.role .tooltip:hover:before {
+    opacity: 1;
+}
+.slider {
+    display: none;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+#legend {
+    display: flex;
+    flex-direction: row;
+    font-size: 12px;
+    margin: 5px 10px;
+}
+.legendCircle {
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    margin-right: 5px;
+}
+.legendRole {
+    display: flex;
+    flex-direction: row;
+    margin-right: 20px;
+}

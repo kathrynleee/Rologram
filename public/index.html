@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Vis Demo</title>
+        <!-- jquery -->
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <!-- lodash -->
+        <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js"></script>
+        <!-- cytoscape -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.18.1/cytoscape.min.js"></script>
+        <!-- cytoscape layout dagre -->
+        <script src="https://unpkg.com/dagre@0.7.4/dist/dagre.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.3.2/cytoscape-dagre.min.js"></script>
+        <!-- cytoscape layout klay -->
+        <script src="https://unpkg.com/klayjs@0.4.1/klay.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/cytoscape-klay@3.1.4/cytoscape-klay.js"></script>
+        <!-- slider -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css"/>
+        <!-- axios -->
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <!-- font -->
+        <link rel="preconnect" href="https://fonts.gstatic.com"> 
+        <link href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap" rel="stylesheet">
+        <!-- js -->
+        <script src="../script.js"></script>
+        <!-- style -->
+        <link rel="stylesheet" href="../style.css"/>
+    </head>
+    <body>
+        <div id="options">
+            <div>Version:</div>
+            <div><select id="versionList" onchange="updateVersion()"></select></div>
+            <div>
+                <button onclick="changeLayout()">Dagre layout</button>
+                <button onclick="hierarchy()">Hierarchy</button>
+                <button onclick="showLabel()">Show class name for Information Holder</button>
+                <!-- <button onclick="showSlider()">Show Slider</button> -->
+            </div>
+        </div>
+        <div id="legend"></div>
+        <div id="cy"></div>
+        <div id="info">
+            <div id="selectedClass"></div>
+            <div id="roles"></div>
+            <!-- <div class="slider"><input type="text" id="slider" class="js-range-slider" name="slider" value="" /></div> -->
+        </div>
+    </body>
+</html>
