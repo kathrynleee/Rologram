@@ -1,4 +1,7 @@
-var cy
+let cy
+let selectedClass, selectedPackage, selectedVersion
+let classChanges = []
+let versionElements = []
 let level = 'system'
 let roleMap = new Map([
     ['Controller', '#755194'], ['Coordinator', '#539967'],
@@ -7,15 +10,15 @@ let roleMap = new Map([
 ])
 
 document.addEventListener('DOMContentLoaded', () => {
-    // axios.baseURL = 'localhost:3000'
-    axios.baseURL = 'https://visdemo.herokuapp.com'
+    axios.baseURL = 'localhost:3000'
+    // axios.baseURL = 'https://visdemo.herokuapp.com'
     createVersionList()
     createGraph()
     createLegend()
 })
 
 const createLegend = () => {
-    var element, sub, text
+    let element, sub, text
     for (let role of roleMap.keys()) {
         element = document.createElement('div')
         element.className = 'legendRole'
@@ -55,7 +58,7 @@ const clearClassInfo = () => {
 const createClassRoleTimeline = async (id) => {
     const roleList = await getClassRoleList(id)
     const versions = await getVersions()
-    var element, span, role
+    let element, span, role
     document.getElementById('roles').innerHTML = ''
     document.getElementById('selectedClass').innerHTML = id
     _.forEach(versions.data, v => {
@@ -66,14 +69,14 @@ const createClassRoleTimeline = async (id) => {
             element.style['background-color'] = '#a9b6c2'
         } else {
             role = node.data.role
+            element.style['background-color'] = roleMap.get(role)
             span.addEventListener('click', () => {
-                showClassChange(v)
+                showClassChanges(v)
             })
         }
         element.className = 'role'
         span.className = 'tooltip'
         span.setAttribute('data-text', v.slice(0, 10))
-        element.style['background-color'] = roleMap.get(role)
         element.appendChild(span)
         document.getElementById('roles').appendChild(element)
     })
@@ -81,23 +84,69 @@ const createClassRoleTimeline = async (id) => {
 
 const updateVersion = async () => {
     clearClassInfo()
-    const version = document.getElementById("versionList").value
-    const elements = await getElements(version)
+    selectedVersion = document.getElementById('versionList').value
+    const elements = await getElements(selectedVersion)
+    versionElements = elements.data
     cy.remove(cy.elements())
     cy.add(elements.data)
     cy.layout(options).run()
 }
 
-const showSlider = async () => {
-    document.getElementsByClassName("slider")[0].style['display'] = 'block'
+// const showSlider = async () => {
+//     document.getElementsByClassName("slider")[0].style['display'] = 'block'
+// }
+
+const showClassChanges = v => {
+    const change = _.find(classChanges, ['version', v])
+    console.log(change)
+    cy.remove(cy.elements())
+    cy.add(versionElements)
+    cy.add(change.addedNodes)
+    cy.add(change.addedEdges)
+    cy.add(change.addedParents)
+    cy.add(change.removedParents)
+
+    const classNode = _.find(change.addedNodes, ['data.id', selectedClass])
+    const selected = cy.elements(`node[id="${selectedClass}"]`)
+    if(classNode !== undefined) {
+        const color = roleMap.get(classNode.data.role)
+        selected.style({ 'background-color': color, 'color': color })
+    }
+    let firstLvlNodes = selected.outgoers().union(selected.incomers())
+    let secondLvlNodes = firstLvlNodes.outgoers().union(firstLvlNodes.incomers())
+    let thirdLvlNodes = secondLvlNodes.outgoers().union(secondLvlNodes.incomers())
+    const nodes = cy.elements(selected).union(firstLvlNodes).union(secondLvlNodes).union(thirdLvlNodes)
+    nodes.addClass('faded')
+    const parents = nodes.ancestors()
+    nodes.addClass('showLabel')
+    _.forEach(change.addedNodes, d => d.data['status'] = 'added')
+    _.forEach(change.addedEdges, d => d.data['status'] = 'added')
+    _.forEach(change.addedParents, d => d.data['status'] = 'added')
+    cy.elements('[status="added"]').addClass('added')
+    selected.addClass(['selected', 'showLabel'])
+
+    _.forEach(change.removedNodes, d => 
+        cy.elements('node[id="' + d.data.id + '"]').addClass('removed')
+    )
+    _.forEach(change.removedEdges, d => 
+        cy.elements('edge[source="' + d.data.source + '"][target="' + d.data.target + '"]').addClass('removed')
+    )
+    cy.elements().not(selected).not(nodes).not(parents).addClass('hide')
+    cy.layout(options).run()
+}
+
+const getAllClassChanges = async () => {
+    const changes = await getClassChangesList()
+    classChanges = changes.data
 }
 
 const createGraph = async () => {
     const versions = await getVersions()
     const versionIndex = versions.data.length - 1
-    const currentVersion = versions.data[versionIndex]
+    selectedVersion = versions.data[versionIndex]
     document.getElementById("versionList").selectedIndex = versionIndex
-    const elements = await getElements(currentVersion)
+    const elements = await getElements(selectedVersion)
+    versionElements = elements.data
     const styles = await getStyles()
 
     cy = cytoscape({
@@ -110,36 +159,65 @@ const createGraph = async () => {
         style: styles.data.style,
         elements: elements.data,
         ready: function() {
-            this.on('tap', 'node', (e) => {
+            this.on('click', (e)  => {
                 const target = e.target
-                cy.elements().removeClass(['hide', 'selected', 'showLabel', 'hover'])
-                if(target.isParent()) {
-                    level = 'package'
-                    const nodes = target.union(target.descendants())
-                    const parents = target.ancestors()
-                    const edges = nodes.connectedEdges()
-                    nodes.addClass('showLabel')
-                    cy.elements().not(nodes).not(parents).not(edges).addClass('hide')
-                    cy.layout(options).run()
-                } else {
-                    level = 'class'
-                    createClassRoleTimeline(target._private.data.id)
-                    target.addClass('selected')
-                    const edges = target.connectedEdges()
-                    const nodes = edges.connectedNodes().union(target)
-                    const parents = nodes.ancestors()
-                    nodes.addClass('showLabel')
-                    cy.elements().not(nodes).not(parents).not(edges).addClass('hide')
+                // To-do: change back node color for role-changed class
+                // console.log(selectedClass)
+                // if(selectedClass != undefined) {
+                //     const selected = cy.elements(`node[id="${selectedClass}"]`)
+                //     const node = _.find(versionElements.nodes, ['data.id', selectedClass])
+                //     const color = roleMap.get(node.data.role)
+                //     selected.style({ 'background-color': color, 'color': color })
+                // }
+                if (target === cy) {
+                    clearClassInfo()
+                    cy.remove(cy.elements('.removed, .added'))
+                    level = 'system'
+                    selectedClass = ''
+                    selectedPackage = ''
+                    cy.elements().removeClass(['hide', 'showLabel', 'selected', 'hover', 'faded'])
                     cy.layout(options).run()
                 }
             })
-            this.on('click', (e)  => {
+            this.on('tap', 'node', (e) => {
                 const target = e.target
-                clearClassInfo()
-                if (target === cy) {
-                    level = 'system'
-                    cy.elements().removeClass(['hide', 'showLabel', 'selected', 'hover'])
-                    cy.layout(options).run()
+                const isNotExisted = target.hasClass('removed') || target.hasClass('added')
+                console.log(isNotExisted)
+                if(!isNotExisted) {
+                    cy.elements().removeClass(['hide', 'selected', 'showLabel', 'hover', 'faded'])
+                    if(target.isParent()) {
+                        clearClassInfo()
+                        level = 'package'
+                        selectedPackage = target._private.data.id
+                        const nodes = target.union(target.descendants())
+                        const parents = target.ancestors()
+                        const edges = nodes.connectedEdges()
+                        cy.remove(cy.elements('.removed, .added'))
+                        nodes.addClass('showLabel')
+                        cy.elements().not(nodes).not(parents).not(edges).addClass('hide')
+                        cy.layout(options).run()
+                    } else {
+                        clearClassInfo()
+                        level = 'class'
+                        selectedClass = target._private.data.id
+                        classChanges = []
+                        createClassRoleTimeline(target._private.data.id)
+                        getAllClassChanges()
+                        // const edges = target.connectedEdges()
+                        // const nodes = edges.connectedNodes().union(target)
+                        let firstLvlNodes = target.outgoers().union(target.incomers())
+                        let secondLvlNodes = firstLvlNodes.outgoers().union(firstLvlNodes.incomers())
+                        let thirdLvlNodes = secondLvlNodes.outgoers().union(secondLvlNodes.incomers())
+                        const nodes = cy.elements(target).union(firstLvlNodes).union(secondLvlNodes).union(thirdLvlNodes)
+                        const parents = nodes.ancestors()
+                        cy.remove(cy.elements('.removed, .added'))
+                        target.addClass('selected')
+                        nodes.addClass('showLabel')
+                        cy.elements().not(nodes).not(parents).addClass('hide')
+                        cy.layout(options).run()
+                    }
+                } else {
+                    alert('Selected class/package does not exist in current version')
                 }
             })
             this.on('mouseover', 'node', (e) => {
@@ -179,20 +257,15 @@ const createGraph = async () => {
     })
 }
 
-const showClassChange = async (v) => {
-    alert(v)
-}
-
 const createVersionList = async () => {
     const versions = await getVersions()
     const select = document.getElementById('versionList')
     versions.data.forEach(v => {
-        var option = document.createElement('option')
+        let option = document.createElement('option')
         option.innerHTML = v.slice(0, 10)
         option.value = v
         select.append(option)
     })
-    console.log(`Got ${Object.entries(versions.data).length} versions`)
 }
 
 const getVersions = async () => {
@@ -227,6 +300,14 @@ const getClassRoleList = async (id) => {
     }
 }
 
+const getClassChangesList = async () => {
+    try {
+        return await axios.get(`/api/data/changes/class/${selectedVersion}/${selectedClass}`)
+    } catch (e) {
+        console.error(e)
+    }
+}
+
 const getAllElements = async () => {
     try {
         return await axios.get('/api/data/elements')
@@ -239,7 +320,7 @@ const options = {
     name: 'klay',
     nodeDimensionsIncludeLabels: true, 
     fit: true,
-    animate: "end",
+    animate: 'end',
     animationDuration: 500,
     animationEasing: 'spring(500, 50)',
     klay: {
@@ -252,27 +333,32 @@ const options = {
         edgeSpacingFactor: 0.3,
         layoutHierarchy: false
     },
-    stop: () => console.log('layout completed')
+    // stop: () => console.log('layout completed')
 }
+
 const hierarchy = () => {
     const hierarchyOptions = _.cloneDeep(options)
     hierarchyOptions.klay.layoutHierarchy = true
     cy.layout(hierarchyOptions).run()
 }
 
-const changeLayout = () => {
-    const dagreOptions = {
-        name: 'dagre',
-        nodeDimensionsIncludeLabels: true,
-        spacingFactor: 0.9,
-        animate: true,
-        animate: "end",
-        animationDuration: 500,
-        animationEasing: 'spring(500, 50)',
-        stop: () => console.log('layout completed')
-    }
-    cy.layout(dagreOptions).run()
-}
+// const changeLayout = () => {
+//     const dagreOptions = {
+//         name: 'dagre',
+//         nodeDimensionsIncludeLabels: true,
+//         // nodeSep: 5,
+//         // edgeSep: 10,
+//         rankSep: 10,
+//         rankDir: 'TB',
+//         ranker: 'longest-path',
+//         animate: true,
+//         animate: 'end',
+//         animationDuration: 500,
+//         animationEasing: 'spring(500, 50)',
+//         stop: () => console.log('layout completed')
+//     }
+//     cy.layout(dagreOptions).run()
+// }
 
 const showLabel = () => {
     cy.elements('node[role="Information Holder"]').addClass('showLabel')

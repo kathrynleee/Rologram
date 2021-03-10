@@ -25,12 +25,6 @@ router.get('/styles', (req, res) => {
 // read data json file
 var elements = JSON.parse(fs.readFileSync(dataFile))
 
-// // filter data by version
-// router.get('/elements', (req, res) => {
-//   var data = getDataByVersion('bitcoin-wallet-7.44')
-//   res.json(data)
-// })
-
 // return data of specific version
 router.get('/elements/:version', async function (req, res) {
   var version = req.params.version
@@ -38,9 +32,9 @@ router.get('/elements/:version', async function (req, res) {
 })
 
 // return elements of all versions
-// router.get('/elements', async function (req, res) {
-//   res.json(elements)
-// })
+router.get('/elements', async function (req, res) {
+  res.json(elements)
+})
 
 // return role list of specific class
 router.get('/roles/:id', async function (req, res) {
@@ -48,12 +42,6 @@ router.get('/roles/:id', async function (req, res) {
   var nodeList = _.filter(elements.nodes, ['data.id', id])
   res.json(nodeList)
 })
-
-// return parents of specific version
-// router.get('/parents/:version', async function (req, res) {
-//   var version = req.params.version
-//   res.json(getParentsByVersion(version))
-// })
 
 function getDataByVersion (version) {
   var data = { nodes: [], edges: [] }
@@ -70,11 +58,11 @@ function getDataByVersion (version) {
   return data
 }
 
-// function getParentsByVersion (version) {
-//   var data = getDataByVersion(version)
-//   var parents = data.nodes.filter(n => n.data.role === undefined)
-//   return parents
-// }
+// find parent id by given id
+const getParentPackage = (id) => {
+  let index = id.lastIndexOf('.')
+  return (index !== -1) ? id.slice(0, index) : ''
+}
 
 // get list of versions in order
 var versions = readTextFile(versionFile)
@@ -198,5 +186,130 @@ function findAllChanges () {
 
 //   return changeObj
 // }
+
+router.get('/changes/class/:version/:class', async function (req, res) {
+  var selectedVersion = req.params.version
+  var selectedClass = req.params.class
+  res.json(getClassChanges(selectedVersion, selectedClass))
+})
+
+// find lists of difference between the given version and each version of given class
+function getClassChanges(selectedVersion, selectedClass) {
+  let c = []
+  const relatedElements = getRelatedElements(selectedClass)
+  let from = _.find(relatedElements, ['version', selectedVersion])
+  if(from === undefined) {
+    console.log('error from getting class changes for ' + selectedVersion + ' ' + selectedClass)
+  }
+  _.remove(from.nodes, n => {
+    return n.data.id === selectedClass
+  })
+
+  _.forEach(relatedElements, to => {
+    let addedNodes = _.differenceBy(to.nodes, from.nodes, 'data.id')
+    let removedNodes = _.differenceBy(from.nodes, to.nodes, 'data.id')
+
+    let addedParents = _.differenceBy(to.parents, from.parents, 'data.id')
+    let removedParents = _.differenceBy(from.parents, to.parents, 'data.id')
+
+    let fromEdges = [], toEdges = []
+    _.forEach(from.edges, d => {
+        fromEdges.push(_.pick(d, ['data.source', 'data.target']))
+    })
+    _.forEach(to.edges, d => {
+        toEdges.push(_.pick(d, ['data.source', 'data.target']))
+    })
+    let removedEdges = _.differenceWith(fromEdges, toEdges, _.isEqual)
+    let addedEdges = _.differenceWith(toEdges, fromEdges, _.isEqual)
+
+    var changeObj = {
+        version: to.version,
+        addedNodes: addedNodes,
+        removedNodes: removedNodes,
+        addedParents: addedParents,
+        removedParents: removedParents,
+        addedEdges: addedEdges,
+        removedEdges: removedEdges
+      }
+      c.push(changeObj)
+  })
+  return c
+}
+
+// get list of all elements related to given class for versions which contains the class
+function getRelatedElements(selectedClass) {
+  let relevantElements = []
+  _.forEach(versions, v => {
+    // only continue if the class exist 
+    const n = _.find(elements.nodes, n => { 
+      return n.data.id === selectedClass && n.data.version === v
+    })
+    if(n !== undefined) {
+      const nodes = _.filter(elements.nodes, ['data.version', v])
+      const edges = _.filter(elements.edges, ['data.version', v])
+      
+      // find in edges 
+      let inEdges = []
+      const firstLvlInEdges = _.filter(edges, ['data.target', selectedClass])
+      const firstLvlInNodes = _.map(firstLvlInEdges, 'data.source')
+      const secondLvlInEdges = _.filter(edges, e => {
+          return _.includes(firstLvlInNodes, e.data.target)
+      })
+      const secondLvlInNodes = _.map(secondLvlInEdges, 'data.source')
+      const thirdLvlInEdges = _.filter(edges, e => {
+          return _.includes(secondLvlInNodes, e.data.target)
+      })
+      const thirdLvlInNodes = _.map(thirdLvlInEdges, 'data.source')
+      inEdges = _.union(firstLvlInEdges, secondLvlInEdges, thirdLvlInEdges)
+
+      // find out edges
+      let outEdges = []
+      const firstLvlOutEdges = _.filter(edges, ['data.source', selectedClass])
+      const firstLvlOutNodes = _.map(firstLvlOutEdges, 'data.target')
+      const secondLvlOutEdges = _.filter(edges, e => {
+          return _.includes(firstLvlOutNodes, e.data.source)
+      })
+      const secondLvlOutNodes = _.map(secondLvlOutEdges, 'data.target')
+      const thirdLvlOutEdges = _.filter(edges, e => {
+          return _.includes(secondLvlOutNodes, e.data.source)
+      })
+      const thirdLvlOutNodes = _.map(thirdLvlOutEdges, 'data.target')
+      outEdges = _.union(firstLvlOutEdges, secondLvlOutEdges, thirdLvlOutEdges)
+  
+      const edgeList = _.union(inEdges, outEdges)
+
+      // // get list of nodes in found edges
+      // let sourceNodes = _.map(edgeList, 'data.source')
+      // let targetNodes = _.map(edgeList, 'data.target')
+      // const nodesFromEdges = _.union(sourceNodes, targetNodes)
+      const nodesFromEdges = _.union(firstLvlInNodes, secondLvlInNodes, thirdLvlInNodes, firstLvlOutNodes, secondLvlOutNodes, thirdLvlOutNodes)
+      let nodeList = _.filter(nodes, n => {
+        return _.includes(nodesFromEdges, n.data.id)
+      })
+
+      // add node when no edge
+      const selectedClassNode = _.find(nodes, ['data.id', selectedClass])
+      nodeList.push(selectedClassNode)
+      nodeList = _.uniq(nodeList)
+      
+      // get list of parent nodes
+      let parentIdList = []
+      _.forEach(nodesFromEdges, n => {
+        while(getParentPackage(n) !== '') {
+          parentIdList.push(getParentPackage(n))
+          n = getParentPackage(n)
+        }
+      })
+      parentIdList = _.uniq(parentIdList)
+      const parentList = _.filter(nodes, n => {
+        return _.includes(parentIdList, n.data.id)
+      })
+
+      const elementObj = { version: v, nodes: nodeList, edges: edgeList, parents: parentList }
+      relevantElements.push(elementObj)
+    }
+  })
+  return relevantElements
+}
 
 module.exports = router
