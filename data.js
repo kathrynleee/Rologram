@@ -193,52 +193,76 @@ router.get('/changes/class/:version/:class', async function (req, res) {
   res.json(getClassChanges(selectedVersion, selectedClass))
 })
 
+router.get('/changes/elements/:class', async function (req, res) {
+  var selectedClass = req.params.class
+  res.json(getRelatedElements(selectedClass))
+})
+
+router.get('/class/exist/:version/:class', async function (req, res) {
+  var selectedVersion = req.params.version
+  var selectedClass = req.params.class
+  const node = checkExistence(selectedVersion, selectedClass)
+  if(node !== undefined) {
+    res.json({ 'message': 'Exist.' })
+  } else {
+    res.json({ 'message': 'Selected element does not exist in current version.' })
+    // res.status(204).json({'message': 'Selected element does not exist in current version.'})
+  }
+})
+
+// check if element exists in given version
+function checkExistence(selectedVersion, selected) {
+  const node = _.find(elements.nodes, n => { 
+    return n.data.id === selected && n.data.version === selectedVersion
+  })
+  return node
+}
+
 // find lists of difference between the given version and each version of given class
 function getClassChanges(selectedVersion, selectedClass) {
   let c = []
   const relatedElements = getRelatedElements(selectedClass)
   let from = _.find(relatedElements, ['version', selectedVersion])
-  if(from === undefined) {
-    console.log('error from getting class changes for ' + selectedVersion + ' ' + selectedClass)
+  if(from !== undefined) {
+    _.remove(from.nodes, n => {
+      return n.data.id === selectedClass
+    })
+  
+    _.forEach(relatedElements, to => {
+      let addedNodes = _.differenceBy(to.nodes, from.nodes, 'data.id')
+      let removedNodes = _.differenceBy(from.nodes, to.nodes, 'data.id')
+  
+      let addedParents = _.differenceBy(to.parents, from.parents, 'data.id')
+      let removedParents = _.differenceBy(from.parents, to.parents, 'data.id')
+  
+      let fromEdges = [], toEdges = []
+      _.forEach(from.edges, d => {
+          fromEdges.push(_.pick(d, ['data.source', 'data.target']))
+      })
+      _.forEach(to.edges, d => {
+          toEdges.push(_.pick(d, ['data.source', 'data.target']))
+      })
+      let removedEdges = _.differenceWith(fromEdges, toEdges, _.isEqual)
+      let addedEdges = _.differenceWith(toEdges, fromEdges, _.isEqual)
+  
+      var changeObj = {
+          version: to.version,
+          addedNodes: addedNodes,
+          removedNodes: removedNodes,
+          addedParents: addedParents,
+          removedParents: removedParents,
+          addedEdges: addedEdges,
+          removedEdges: removedEdges
+        }
+        c.push(changeObj)
+    })
   }
-  _.remove(from.nodes, n => {
-    return n.data.id === selectedClass
-  })
-
-  _.forEach(relatedElements, to => {
-    let addedNodes = _.differenceBy(to.nodes, from.nodes, 'data.id')
-    let removedNodes = _.differenceBy(from.nodes, to.nodes, 'data.id')
-
-    let addedParents = _.differenceBy(to.parents, from.parents, 'data.id')
-    let removedParents = _.differenceBy(from.parents, to.parents, 'data.id')
-
-    let fromEdges = [], toEdges = []
-    _.forEach(from.edges, d => {
-        fromEdges.push(_.pick(d, ['data.source', 'data.target']))
-    })
-    _.forEach(to.edges, d => {
-        toEdges.push(_.pick(d, ['data.source', 'data.target']))
-    })
-    let removedEdges = _.differenceWith(fromEdges, toEdges, _.isEqual)
-    let addedEdges = _.differenceWith(toEdges, fromEdges, _.isEqual)
-
-    var changeObj = {
-        version: to.version,
-        addedNodes: addedNodes,
-        removedNodes: removedNodes,
-        addedParents: addedParents,
-        removedParents: removedParents,
-        addedEdges: addedEdges,
-        removedEdges: removedEdges
-      }
-      c.push(changeObj)
-  })
   return c
 }
 
 // get list of all elements related to given class for versions which contains the class
 function getRelatedElements(selectedClass) {
-  let relevantElements = []
+  let relatedElements = []
   _.forEach(versions, v => {
     // only continue if the class exist 
     const n = _.find(elements.nodes, n => { 
@@ -305,11 +329,11 @@ function getRelatedElements(selectedClass) {
         return _.includes(parentIdList, n.data.id)
       })
 
-      const elementObj = { version: v, nodes: nodeList, edges: edgeList, parents: parentList }
-      relevantElements.push(elementObj)
+      const elementObj = { version: v, nodes: nodeList, edges: edgeList, parents: parentList, firstLvlInNodes:firstLvlInNodes, secondLvlInNodes:secondLvlInNodes, thirdLvlInNodes:thirdLvlInNodes, firstLvlOutNodes:firstLvlOutNodes, secondLvlOutNodes:secondLvlOutNodes, thirdLvlOutNodes:thirdLvlOutNodes }
+      relatedElements.push(elementObj)
     }
   })
-  return relevantElements
+  return relatedElements
 }
 
 module.exports = router

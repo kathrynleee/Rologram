@@ -1,5 +1,6 @@
 let cy
 let selectedClass, selectedPackage, selectedVersion
+// let edgeType = 'in&out', dependencyLevel = 1
 let classChanges = []
 let versionElements = []
 let level = 'system'
@@ -138,6 +139,8 @@ const showClassChanges = v => {
 const getAllClassChanges = async () => {
     const changes = await getClassChangesList()
     classChanges = changes.data
+    const e = await getClassElements()
+    console.log(e.data)
 }
 
 const createGraph = async () => {
@@ -179,11 +182,10 @@ const createGraph = async () => {
                     cy.layout(options).run()
                 }
             })
-            this.on('tap', 'node', (e) => {
+            this.on('tap', 'node', async (e) => {
                 const target = e.target
-                const isNotExisted = target.hasClass('removed') || target.hasClass('added')
-                console.log(isNotExisted)
-                if(!isNotExisted) {
+                const isExisted = await checkExistence(target._private.data.id)
+                if(_.isEqual(isExisted.data.message, 'Exist.')) {
                     cy.elements().removeClass(['hide', 'selected', 'showLabel', 'hover', 'faded'])
                     if(target.isParent()) {
                         clearClassInfo()
@@ -197,6 +199,7 @@ const createGraph = async () => {
                         cy.elements().not(nodes).not(parents).not(edges).addClass('hide')
                         cy.layout(options).run()
                     } else {
+                        // document.getElementById('classLevelOptions').style.display = 'flex'
                         clearClassInfo()
                         level = 'class'
                         selectedClass = target._private.data.id
@@ -217,7 +220,7 @@ const createGraph = async () => {
                         cy.layout(options).run()
                     }
                 } else {
-                    alert('Selected class/package does not exist in current version')
+                    console.log(isExisted.data.message)
                 }
             })
             this.on('mouseover', 'node', (e) => {
@@ -256,6 +259,39 @@ const createGraph = async () => {
         }
     })
 }
+
+// const draw = () => {
+//     const target = cy.elements(`node[id="${selectedClass}"]`)
+//     let firstLvlOutNodes = target.outgoers()
+//     let firstLvlInNodes = target.incomers()
+//     let secondLvlOutNodes = firstLvlOutNodes.outgoers()
+//     let secondLvlInNodes = firstLvlInNodes.incomers()
+//     let thirdLvlOutNodes = secondLvlOutNodes.outgoers()
+//     let thirdLvlInNodes = secondLvlInNodes.incomers()
+//     switch(edgeType) {
+//         case 'in&out': {
+//             nodes = cy.elements(target).union(firstLvlInNodes).union(secondLvlInNodes).union(thirdLvlInNodes).union(firstLvlOutNodes).union(secondLvlOutNodes).union(thirdLvlOutNodes)
+//            break;
+//         }
+//         case 'in': {
+//             nodes = cy.elements(target).union(firstLvlInNodes).union(secondLvlInNodes).union(thirdLvlInNodes)
+//            break;
+//         }
+//         case 'out': {
+//             nodes = cy.elements(target).union(firstLvlOutNodes).union(secondLvlOutNodes).union(thirdLvlOutNodes)
+//            break
+//         }
+//         default: {
+//            break
+//         }
+//     }
+//     const parents = nodes.ancestors()
+//     // cy.remove(cy.elements('.removed, .added'))
+//     target.addClass('selected')
+//     nodes.addClass('showLabel')
+//     cy.elements().not(nodes).not(parents).addClass('hide')
+//     cy.layout(options).run()
+// }
 
 const createVersionList = async () => {
     const versions = await getVersions()
@@ -308,6 +344,22 @@ const getClassChangesList = async () => {
     }
 }
 
+const checkExistence = async (selected) => {
+    try {
+        return axios.get(`/api/data/class/exist/${selectedVersion}/${selected}`)
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+const getClassElements = async () => {
+    try {
+        return await axios.get(`/api/data/changes/elements/${selectedClass}`)
+    } catch (e) {
+        console.error(e)
+    }
+}
+
 const getAllElements = async () => {
     try {
         return await axios.get('/api/data/elements')
@@ -341,6 +393,16 @@ const hierarchy = () => {
     hierarchyOptions.klay.layoutHierarchy = true
     cy.layout(hierarchyOptions).run()
 }
+
+// const setEdgeType = () => {
+//     edgeType = document.getElementById('edgeType').value
+//     draw()
+// }
+
+// const setDependencyLevel = () => {
+//     dependencyLevel = document.getElementById('dependencyLevel').value
+//     draw()
+// }
 
 // const changeLayout = () => {
 //     const dagreOptions = {

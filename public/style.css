@@ -18,6 +18,13 @@ body {
     display: flex;
     flex-direction: row;
 }
+#options div {
+    padding-right: 10px;
+}
+#classLevelOptions {
+    display: none;
+    flex-direction: row;
+}
 .slider .irs--flat .irs-bar {
     background-color: #3b444d;
 }
