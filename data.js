@@ -36,6 +36,17 @@ router.get('/elements', async function (req, res) {
   res.json(elements)
 })
 
+// return list of dominant role in each version
+router.get('/roles/versions', async function (req, res) {
+  res.json(getVersionDominantRoleList())
+})
+
+// return list of dominant role changes in specific package
+router.get('/roles/package/:id', async function (req, res) {
+  var id = req.params.id
+  res.json(getPackageDominantRoleList(id))
+})
+
 // return role list of specific class
 router.get('/roles/:id', async function (req, res) {
   var id = req.params.id
@@ -76,9 +87,9 @@ router.get('/versions', function (req, res) {
   res.json(versions)
 })
 
-router.get('/changes', async function (req, res) {
-  res.json(findAllChanges())
-})
+// router.get('/changes', async function (req, res) {
+//   res.json(findAllChanges())
+// })
 
 // return changes between previous and given versions
 // router.get('/changes/:version', async (req, res) => {
@@ -86,44 +97,44 @@ router.get('/changes', async function (req, res) {
 //   res.json(findChanges(version))
 // })
 
-function findAllChanges () {
-  var changes = []
-  _.forEach(versions, function (v, i) {
-    if (i !== versions.length - 1) {
-      var from = getDataByVersion(v)
-      var to = getDataByVersion(versions[i + 1])
+// function findAllChanges () {
+//   var changes = []
+//   _.forEach(versions, function (v, i) {
+//     if (i !== versions.length - 1) {
+//       var from = getDataByVersion(v)
+//       var to = getDataByVersion(versions[i + 1])
 
-      var addedNodes = _.differenceBy(to.nodes, from.nodes, 'data.id')
-      var removedNodes = _.differenceBy(from.nodes, to.nodes, 'data.id')
+//       var addedNodes = _.differenceBy(to.nodes, from.nodes, 'data.id')
+//       var removedNodes = _.differenceBy(from.nodes, to.nodes, 'data.id')
 
-      /* find change of roles and store the later version in changedRoles */
-      var fromObjects = []
-      var toObjects = []
-      _.forEach(from.nodes, function (d) {
-        var obj = _.pick(d, ['data.id', 'data.role'])
-        fromObjects.push(obj)
-      })
-      _.forEach(to.nodes, function (d) {
-        var obj = _.pick(d, ['data.id', 'data.role'])
-        toObjects.push(obj)
-      })
-      var fromChangedRolesPlusRemovedNodes = _.differenceWith(fromObjects, toObjects, _.isEqual)
-      var toChangedRolesPlusAddedNodes = _.differenceWith(toObjects, fromObjects, _.isEqual)
+//       /* find change of roles and store the later version in changedRoles */
+//       var fromObjects = []
+//       var toObjects = []
+//       _.forEach(from.nodes, function (d) {
+//         var obj = _.pick(d, ['data.id', 'data.role'])
+//         fromObjects.push(obj)
+//       })
+//       _.forEach(to.nodes, function (d) {
+//         var obj = _.pick(d, ['data.id', 'data.role'])
+//         toObjects.push(obj)
+//       })
+//       var fromChangedRolesPlusRemovedNodes = _.differenceWith(fromObjects, toObjects, _.isEqual)
+//       var toChangedRolesPlusAddedNodes = _.differenceWith(toObjects, fromObjects, _.isEqual)
 
-      var changedRoles = _.intersectionBy(toChangedRolesPlusAddedNodes, fromChangedRolesPlusRemovedNodes, 'data.id')
+//       var changedRoles = _.intersectionBy(toChangedRolesPlusAddedNodes, fromChangedRolesPlusRemovedNodes, 'data.id')
 
-      var changeObj = {
-        from: v,
-        to: versions[i + 1],
-        addedNodes: addedNodes,
-        removedNodes: removedNodes,
-        changedRoles: changedRoles
-      }
-      changes.push(changeObj)
-    }
-  })
-  return changes
-}
+//       var changeObj = {
+//         from: v,
+//         to: versions[i + 1],
+//         addedNodes: addedNodes,
+//         removedNodes: removedNodes,
+//         changedRoles: changedRoles
+//       }
+//       changes.push(changeObj)
+//     }
+//   })
+//   return changes
+// }
 
 // function findChanges (version) {
 //   // find previous version
@@ -334,6 +345,49 @@ function getRelatedElements(selectedClass) {
     }
   })
   return relatedElements
+}
+
+function getVersionDominantRoleList() {
+  let roleList = []
+  _.forEach(versions, v => {
+    const nodes = _.filter(elements.nodes, ['data.version', v])
+    let count = _.countBy(nodes, 'data.role')
+    delete count[undefined]
+    let max = 0, maxArray = []
+    Object.keys(count).forEach(attr => {
+      max = (max <= count[attr]) ? count[attr] : max
+    })
+    Object.keys(count).forEach(attr => {
+      if(max === count[attr]) {
+        maxArray.push(attr)
+      }
+    })
+    maxArray.sort()
+    const obj = { version: v, role: maxArray }
+    roleList.push(obj)
+  })
+  return roleList
+}
+
+function getPackageDominantRoleList(id) {
+  let roleList = []
+  _.forEach(versions, v => {
+    const nodes = _.filter(elements.nodes, n => n.data.parent.search(id) === 0 && n.data.version === v && n.data.role !== undefined)
+    let count = _.countBy(nodes, 'data.role')
+    let max = 0, maxArray = []
+    Object.keys(count).forEach(attr => {
+      max = (max <= count[attr]) ? count[attr] : max
+    })
+    Object.keys(count).forEach(attr => {
+      if(max === count[attr]) {
+        maxArray.push(attr)
+      }
+    })
+    maxArray.sort()
+    const obj = { version: v, role: maxArray }
+    roleList.push(obj)
+  })
+  return roleList
 }
 
 module.exports = router

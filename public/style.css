@@ -21,8 +21,8 @@ body {
 #options div {
     padding-right: 10px;
 }
-#classLevelOptions {
-    display: none;
+#filterOptions {
+    display: flex;
     flex-direction: row;
 }
 .slider .irs--flat .irs-bar {

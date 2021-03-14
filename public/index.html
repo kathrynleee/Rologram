@@ -34,37 +34,44 @@
         <div id="options">
             <div>Version:</div>
             <div><select id="versionList" onchange="updateVersion()"></select></div>
-            <!-- <div id = "classLevelOptions">
-                <div>Filter edges:</div>
-                <div>
-                    <select id="edgeType" onchange="setEdgeType()">
-                        <option value="in&out">In & Out</option>
-                        <option value="in">In</option>
-                        <option value="out">Out</option>
-                    </select>
-                </div>
-                <div>Dependency level:</div>
-                <div>
-                    <select id="dependencyLevel" onchange="setDependencyLevel()">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                    </select>
-                </div>
-            </div> -->
             <div>
                 <!-- <button onclick="changeLayout()">Dagre layout</button> -->
                 <button onclick="hierarchy()">Hierarchy</button>
-                <button onclick="showLabel()">Show class name for Information Holder</button>
+                <button onclick="resizeNodes()">Node resize by loc</button>
+                <select id="labelVisibility" onchange="toggleLabelVisibility()">
+                    <option disabled selected>Show/Hide labels</option>
+                    <option value="showLabel">Show labels</option>
+                    <option value="hideLabel">Hide labels</option>
+                </select>
                 <!-- <button onclick="showSlider()">Show Slider</button> -->
+            </div>
+            <div id="filterOptions">
+                <select id="fromRole" onchange="setRole()">
+                    <option value=""></option>
+                    <option value="Controller">Controller</option>
+                    <option value="Coordinator">Coordinator</option>
+                    <option value="Interfacer">Interfacer</option>
+                    <option value="Information Holder">Information Holder</option>
+                    <option value="Service Provider">Service Provider</option>
+                    <option value="Structurer">Structurer</option>
+                </select>
+                <select id="toRole" onchange="setRole()">
+                    <option value=""></option>
+                    <option value="Controller">Controller</option>
+                    <option value="Coordinator">Coordinator</option>
+                    <option value="Interfacer">Interfacer</option>
+                    <option value="Information Holder">Information Holder</option>
+                    <option value="Service Provider">Service Provider</option>
+                    <option value="Structurer">Structurer</option>
+                </select>
             </div>
         </div>
         <div id="legend"></div>
         <div id="cy"></div>
         <div id="info">
-            <div id="selectedClass"></div>
+            <!-- <img id="image" width="200"></img> -->
+            <div id="selected"></div>
             <div id="roles"></div>
-            <!-- <div class="slider"><input type="text" id="slider" class="js-range-slider" name="slider" value="" /></div> -->
         </div>
     </body>
 </html>

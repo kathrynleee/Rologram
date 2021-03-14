@@ -14,10 +14,9 @@
                 "width" : "30",
                 "height": "30",
                 "shape": "ellipse",
-                "border-color": "#a9b6c2",
-                "border-width": "3",
                 "font-family": "Inconsolata",
-                "font-weight": "bold"
+                "font-weight": "bold",
+                "min-zoomed-font-size": "15"
             }
         },
         {
@@ -39,6 +38,12 @@
             }
         },
         {
+            "selector": "node.hideLabel",
+            "style": {
+                "label": ""
+            }
+        },
+        {
             "selector": "node:parent",
             "style": {
                 "label": "data(name)",
@@ -53,51 +58,45 @@
             }
         },
         {
-            "selector": "node[role='Controller']",
+            "selector": "node[role='Controller'], .Controller",
             "style": {
                 "background-color": "#755194",
-                "color": "#755194",
-                "border-color": "#755194"
+                "color": "#755194"
             }
         },
         {
-            "selector": "node[role='Coordinator']",
+            "selector": "node[role='Coordinator'], .Coordinator",
             "style": {
                 "background-color": "#539967",
-                "color": "#539967",
-                "border-color": "#539967"
+                "color": "#539967"
             }
         },
         {
-            "selector": "node[role='Interfacer']",
+            "selector": "node[role='Interfacer'], .Interfacer",
             "style": {
                 "background-color": "#E9AB45",
-                "color": "#E9AB45",
-                "border-color": "#E9AB45"
+                "color": "#E9AB45"
             }
         },
         {
-            "selector": "node[role='Information Holder']",
+            "selector": "node[role='Information Holder'], .InformationHolder",
             "style": {
                 "background-color": "#bf3f6a",
-                "color": "#bf3f6a",
-                "border-color": "#bf3f6a"
+                "color": "#bf3f6a"
             }
         },
         {
-            "selector": "node[role='Service Provider']",
+            "selector": "node[role='Service Provider'], .ServiceProvider",
             "style": {
                 "background-color": "#4d82b0",
-                "color": "#4d82b0",
-                "border-color": "#4d82b0"
+                "color": "#4d82b0"
             }
         },
         {
-            "selector": "node[role='Structurer']",
+            "selector": "node[role='Structurer'], .Structurer",
             "style": {
                 "background-color": "#e6a1b2",
-                "color": "#e6a1b2",
-                "border-color": "#e6a1b2"
+                "color": "#e6a1b2"
             }
         },
         {
@@ -149,12 +148,6 @@
                 "line-color": "#a9b6c2",
                 "target-arrow-color": "#a9b6c2",
                 "opacity": "0.2"
-            }
-        },
-        {
-            "selector": "node.roleChanged",
-            "style": {
-                "opacity": "1"
             }
         },
         {
