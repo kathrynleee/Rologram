@@ -1,6 +1,5 @@
 let cy
 let selectedClass, selectedPackage, selectedVersion
-let classChanges = []
 let versionElements = []
 let level = 'system'
 let roleMap = new Map([
@@ -15,12 +14,57 @@ document.addEventListener('DOMContentLoaded', () => {
     createVersionList()
     createGraph()
     createLegend()
-    test()
     createTimeline()
 })
 
 const test = async () => {
+    // const changes = await getSystemChangesList()
+    // console.log(changes.data)
+    // const versionToBeCompared = '2019-10-02-bitcoin-wallet-68ade8ff0a561aab05d4e079bb31ff25f9c30380'
+    // const currentVersion = '2020-01-06-bitcoin-wallet-1b30fd5f58fb2b2df189eedd7b1d7858d8fbe80f'
+    // const elements = await getElements(versionToBeCompared)
+    // const comparedNodes = elements.data.nodes
+    // const comparedEdges = elements.data.edges
+    // const currentNodes = versionElements.nodes
+    // const currentEdges = versionElements.edges
+
+    // // nodes
+    // // in both sets of nodes, included nodes for packages
+    // // const sameNodes = currentNodes.filter(n1 => comparedNodes.some(n2 => n1.data.id === n2.data.id))
+    // // only in current set
+    // const nodesInFirstSetOnly = currentNodes.filter(n1 => !comparedNodes.some(n2 => n1.data.id === n2.data.id))
+    // // only in set to be compared
+    // const nodesInSecondSetOnly = comparedNodes.filter(n1 => !currentNodes.some(n2 => n1.data.id === n2.data.id))
+
+    // // edges 
+    // // in both sets of edges
+    // // const sameEdges = currentEdges.filter(e1 => comparedEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
+    // // only in current set
+    // const edgesInFirstSetOnly = currentEdges.filter(e1 => !comparedEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
+    // // only in set to be compared
+    // const edgesInSecondSetOnly = comparedEdges.filter(e1 => !currentEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
     
+    // // role-changed classes
+    // const roleChangedNodes = currentNodes.filter(n1 => comparedNodes.some(n2 => n1.data.id === n2.data.id && n1.data.role !== n2.data.role))
+
+    // // list of nodes with data of two roles
+    // let roleChangedNodeList = []
+    // roleChangedNodes.forEach( node => {
+    //     const found = comparedNodes.find( n => n.data.id === node.data.id)
+    //     let roleChangedNode = {}
+    //     roleChangedNode.id = node.data.id
+    //     roleChangedNode[node.data.version] =  node.data.role
+    //     roleChangedNode[found.data.version] =  found.data.role
+    //     roleChangedNodeList.push(roleChangedNode)
+    // })
+
+    // const changeObj = {
+    //     from: currentVersion,
+    //     to: versionToBeCompared,
+    //     nodes: { inCurrent: nodesInFirstSetOnly, inCompared: nodesInSecondSetOnly },
+    //     edges: { inCurrent: edgesInFirstSetOnly, inCompared: edgesInSecondSetOnly },
+    //     changedRoles: roleChangedNodeList
+    // }
 }
 
 const createLegend = () => {
@@ -59,6 +103,7 @@ const hoverLegend = (role) => {
 const clearInfo = () => {
     document.getElementById('selected').innerHTML = ''
     document.getElementById('roles').innerHTML = ''
+    document.getElementById('list').innerHTML = ''
 }
 
 const createTimeline = async (id) => {
@@ -90,7 +135,6 @@ const createTimeline = async (id) => {
     } else if(level === 'package') {
         document.getElementById('selected').innerHTML = id
         const roleList = await getPackageRoleList(id)
-        console.log(roleList.data)
         let element, span
         _.forEach(versions.data, v => {
             const list = _.find(roleList.data, ['version', v])
@@ -151,7 +195,7 @@ const createTimeline = async (id) => {
             }
             span = document.createElement('span')
             span.addEventListener('click', () => {
-                showClassChanges(v)
+                showSystemChanges(v)
             })
             element.className = 'role'
             span.className = 'tooltip'
@@ -164,6 +208,7 @@ const createTimeline = async (id) => {
 
 const updateVersion = async () => {
     clearInfo()
+    createTimeline()
     selectedVersion = document.getElementById('versionList').value
     const elements = await getElements(selectedVersion)
     versionElements = elements.data
@@ -172,12 +217,59 @@ const updateVersion = async () => {
     cy.layout(options).run()
 }
 
-// // const showSlider = async () => {
-// //     document.getElementsByClassName("slider")[0].style['display'] = 'block'
-// // }
-
 const showPackageChanges = v => {
     console.log('clicked ' + v)
+}
+
+const showSystemChanges = async (v) => {
+    document.getElementById('list').innerHTML = ''
+    const versions = await getVersions()
+    if(v !== selectedVersion) {
+        const changes = await getSystemChangesList(v)
+        const currentIndex = _.indexOf(versions.data, selectedVersion)
+        const targetIndex = _.indexOf(versions.data, v)
+        let type = (currentIndex > targetIndex) ? 'Removed' : 'Added'
+        let text = changes.data.nodes.inCompared.map(n => n.data.id).join('<br>')
+        let element = document.createElement('div')
+        element.className = 'list'
+        element.innerHTML = 'Compare <br>' + v + '<br>' + type + ' classes:<br>' +text
+        document.getElementById('list').appendChild(element)
+        if(currentIndex < targetIndex) {
+            _.forEach(changes.data.nodes.inCompared, d => d.data['status'] = 'added')
+            _.forEach(changes.data.edges.inCompared, d => d.data['status'] = 'added')
+        } else {
+            _.forEach(changes.data.nodes.inCompared, d => d.data['status'] = 'removed')
+            _.forEach(changes.data.edges.inCompared, d => d.data['status'] = 'removed')
+        }
+        cy.startBatch()
+        cy.remove(cy.elements())
+        cy.add(versionElements)
+        cy.add(changes.data.nodes.inCompared)
+        cy.add(changes.data.edges.inCompared)
+        if(currentIndex < targetIndex){
+            cy.elements('[status="added"]').addClass('added')
+            _.forEach(changes.data.nodes.inCurrent, d => 
+                cy.$id(d.data.id).addClass('removed')
+            )
+            _.forEach(changes.data.edges.inCurrent, d => 
+                cy.elements('edge[source="' + d.data.source + '"][target="' + d.data.target + '"]').addClass('removed')
+            )
+        } else {
+            cy.elements('[status="removed"]').addClass('removed')
+            _.forEach(changes.data.nodes.inCurrent, d => 
+                cy.$id(d.data.id).addClass('added')
+            )
+            _.forEach(changes.data.edges.inCurrent, d => 
+                cy.elements('edge[source="' + d.data.source + '"][target="' + d.data.target + '"]').addClass('added')
+            )
+        }
+        cy.endBatch()
+        cy.layout(options).run()
+    } else {
+        cy.remove(cy.elements())
+        cy.add(versionElements)
+        cy.layout(options).run()
+    }
 }
 
 const showClassChanges = v => {
@@ -221,10 +313,10 @@ const showClassChanges = v => {
 }
 
 const getAllClassChanges = async () => {
-    const changes = await getClassChangesList()
-    classChanges = changes.data
-    const e = await getClassElements()
-    console.log(e.data)
+    // const changes = await getClassChangesList()
+    // classChanges = changes.data
+    // const e = await getClassElements()
+    // console.log(e.data)
 }
 
 const createGraph = async () => {
@@ -246,30 +338,24 @@ const createGraph = async () => {
         style: styles.data.style,
         elements: elements.data,
         ready: function() {
-            // this.on('click', (e)  => {
-            //     const target = e.target
-            //     // To-do: change back node color for role-changed class
-            //     // console.log(selectedClass)
-            //     // if(selectedClass != undefined) {
-            //     //     const selected = cy.elements(`node[id="${selectedClass}"]`)
-            //     //     const node = _.find(versionElements.nodes, ['data.id', selectedClass])
-            //     //     const color = roleMap.get(node.data.role)
-            //     //     selected.style({ 'background-color': color, 'color': color })
-            //     // }
-            //     if (target === cy) {
-            //         clearInfo()
-            //         cy.remove(cy.elements('.removed, .added'))
-            //         level = 'system'
-            //         selectedClass = ''
-            //         selectedPackage = ''
-            //         cy.elements().removeClass(['hide', 'showLabel', 'selected', 'hover', 'faded'])
-            //         cy.layout(options).run()
-            //     }
-            // })
+            this.on('click', (e)  => {
+                const target = e.target
+                if (target === cy) {
+                    clearInfo()
+                    cy.remove(cy.elements('.removed, .added'))
+                    level = 'system'
+                    selectedClass = ''
+                    selectedPackage = ''
+                    cy.elements().removeClass(['hide', 'showLabel', 'selected', 'hover', 'faded'])
+                    cy.layout(options).run()
+                    createTimeline()
+                }
+            })
             this.on('tap', 'node', async (e) => {
                 const target = e.target
-                const isExisted = await checkExistence(target._private.data.id)
-                if(_.isEqual(isExisted.data.message, 'Exist.')) {
+                // const isExisted = await checkExistence(target._private.data.id)
+                const isExisted = target.hasClass('removed')
+                if(!isExisted) {
                     cy.elements().removeClass(['hide', 'selected', 'showLabel', 'hideLabel', 'hover', 'faded'])
                     if(target.isParent()) {
                         level = 'package'
@@ -289,7 +375,7 @@ const createGraph = async () => {
                         selectedClass = target._private.data.id
                         classChanges = []
                         createTimeline(target._private.data.id)
-                        getAllClassChanges()
+                        // getAllClassChanges()
                         cy.startBatch()
                         const edges = target.connectedEdges()
                         const nodes = edges.connectedNodes().union(target)
@@ -305,11 +391,21 @@ const createGraph = async () => {
                         cy.endBatch()
                         cy.layout(options).run()
                     }
-                } else {
-                    console.log(isExisted.data.message)
                 }
             })
-            // this.on('mouseover', 'node', (e) => {
+            this.on('mouseover', 'node', (e) => {
+                const target = e.target
+                if(level === 'system') {
+                    target.addClass('showLabel')
+                }
+            })
+            this.on('mouseout', 'node', (e) => {
+                const target = e.target
+                const choice = document.getElementById('labelVisibility').value
+                if(level === 'system' && choice !== 'showLabel') {
+                    target.removeClass('showLabel')
+                }
+            })
             //     const target = e.target
             //     if(target.isParent() === false) {
             //         if(level === 'system') {
@@ -397,13 +493,13 @@ const getClassChangesList = async () => {
     }
 }
 
-const checkExistence = async (selected) => {
-    try {
-        return axios.get(`/api/data/class/exist/${selectedVersion}/${selected}`)
-    } catch (e) {
-        console.error(e)
-    }
-}
+// const checkExistence = async (selected) => {
+//     try {
+//         return axios.get(`/api/data/class/exist/${selectedVersion}/${selected}`)
+//     } catch (e) {
+//         console.error(e)
+//     }
+// }
 
 const getClassElements = async () => {
     try {
@@ -437,6 +533,14 @@ const getPackageRoleList = async (id) => {
     }
 }
 
+const getSystemChangesList = async (v) => {
+    try {
+        return await axios.get(`/api/data/changes/system/${selectedVersion}/${v}`)
+    } catch (e) {
+        console.error(e)
+    }
+}
+
 const options = {
     name: 'klay',
     nodeDimensionsIncludeLabels: true, 
@@ -458,9 +562,10 @@ const options = {
 }
 
 const hierarchy = () => {
-    const hierarchyOptions = _.cloneDeep(options)
-    hierarchyOptions.klay.layoutHierarchy = true
-    cy.layout(hierarchyOptions).run()
+    // const hierarchyOptions = _.cloneDeep(options)
+    // hierarchyOptions.klay.layoutHierarchy = true
+    // cy.layout(hierarchyOptions).run()
+    test()
 }
 
 const resizeNodes = () => {
@@ -471,14 +576,14 @@ const resizeNodes = () => {
     // cy.elements('node').addClass('resized')
     cy.nodes().style({
         'height' : (node) => {
-            let loc = _.toInteger(node.data('loc'));
-            let size = 2 * _.round(Math.sqrt(loc));
-            return size;
+            let loc = _.toInteger(node.data('loc'))
+            let size = 2 * _.round(Math.sqrt(loc))
+            return size
         },
         'width' : (node) => {
-            let loc = _.toInteger(node.data('loc'));
-            let size = 2 *  _.round(Math.sqrt(loc));
-            return size;
+            let loc = _.toInteger(node.data('loc'))
+            let size = 2 *  _.round(Math.sqrt(loc))
+            return size
         }
     })
     cy.layout(options).run()

@@ -1,6 +1,7 @@
 var express = require('express')
 var _ = require('lodash')
 var fs = require('fs')
+const { version } = require('os')
 var router = express.Router()
 
 var system = 'bitcoin-wallet'
@@ -87,116 +88,12 @@ router.get('/versions', function (req, res) {
   res.json(versions)
 })
 
-// router.get('/changes', async function (req, res) {
-//   res.json(findAllChanges())
-// })
-
-// return changes between previous and given versions
-// router.get('/changes/:version', async (req, res) => {
-//   const { version } = req.params
-//   res.json(findChanges(version))
-// })
-
-// function findAllChanges () {
-//   var changes = []
-//   _.forEach(versions, function (v, i) {
-//     if (i !== versions.length - 1) {
-//       var from = getDataByVersion(v)
-//       var to = getDataByVersion(versions[i + 1])
-
-//       var addedNodes = _.differenceBy(to.nodes, from.nodes, 'data.id')
-//       var removedNodes = _.differenceBy(from.nodes, to.nodes, 'data.id')
-
-//       /* find change of roles and store the later version in changedRoles */
-//       var fromObjects = []
-//       var toObjects = []
-//       _.forEach(from.nodes, function (d) {
-//         var obj = _.pick(d, ['data.id', 'data.role'])
-//         fromObjects.push(obj)
-//       })
-//       _.forEach(to.nodes, function (d) {
-//         var obj = _.pick(d, ['data.id', 'data.role'])
-//         toObjects.push(obj)
-//       })
-//       var fromChangedRolesPlusRemovedNodes = _.differenceWith(fromObjects, toObjects, _.isEqual)
-//       var toChangedRolesPlusAddedNodes = _.differenceWith(toObjects, fromObjects, _.isEqual)
-
-//       var changedRoles = _.intersectionBy(toChangedRolesPlusAddedNodes, fromChangedRolesPlusRemovedNodes, 'data.id')
-
-//       var changeObj = {
-//         from: v,
-//         to: versions[i + 1],
-//         addedNodes: addedNodes,
-//         removedNodes: removedNodes,
-//         changedRoles: changedRoles
-//       }
-//       changes.push(changeObj)
-//     }
-//   })
-//   return changes
-// }
-
-// function findChanges (version) {
-//   // find previous version
-//   var index = versions.indexOf(version)
-//   if (index !== 0) {
-//     var previous = versions[index - 1]
-//   } else {
-//     return
-//   }
-
-//   var from = getDataByVersion(previous)
-//   var to = getDataByVersion(version)
-
-//   var addedNodes = _.differenceBy(to.nodes, from.nodes, 'data.id')
-//   var removedNodes = _.differenceBy(from.nodes, to.nodes, 'data.id')
-
-//   // find newly added and removed edges
-//   var fromEdges = []
-//   var toEdges = []
-//   _.forEach(from.edges, (d) => {
-//     var obj = _.pick(d, ['data.source', 'data.target'])
-//     fromEdges.push(obj)
-//   })
-//   _.forEach(to.edges, (d) => {
-//     var obj = _.pick(d, ['data.source', 'data.target'])
-//     toEdges.push(obj)
-//   })
-
-//   var removedEdges = _.differenceWith(fromEdges, toEdges, _.isEqual)
-//   var addedEdges = _.differenceWith(toEdges, fromEdges, _.isEqual)
-
-//   // find change of roles and store the later version in changedRoles
-//   var fromObjects = []
-//   var toObjects = []
-//   _.forEach(from.nodes, (d) => {
-//     var obj = _.pick(d, ['data.id', 'data.role'])
-//     fromObjects.push(obj)
-//   })
-//   _.forEach(to.nodes, (d) => {
-//     var obj = _.pick(d, ['data.id', 'data.role'])
-//     toObjects.push(obj)
-//   })
-//   var fromChangedRolesPlusRemovedNodes = _.differenceWith(fromObjects, toObjects, _.isEqual)
-//   var toChangedRolesPlusAddedNodes = _.differenceWith(toObjects, fromObjects, _.isEqual)
-
-//   var changedRoles = _.intersectionBy(toChangedRolesPlusAddedNodes, fromChangedRolesPlusRemovedNodes, 'data.id')
-
-//   // get all package nodes
-//   // var parents = from.nodes.filter((n) => n.data.role === undefined)
-
-//   var changeObj = {
-//     from: previous,
-//     to: version,
-//     addedNodes,
-//     removedNodes,
-//     addedEdges,
-//     removedEdges,
-//     changedRoles
-//   }
-
-//   return changeObj
-// }
+// return list of system level changes compared to given version
+router.get('/changes/system/:version/:comparedVersion', async function (req, res) {
+  var version = req.params.version
+  var comparedVersion = req.params.comparedVersion
+  res.json(getSystemLevelChanges(version, comparedVersion))
+})
 
 router.get('/changes/class/:version/:class', async function (req, res) {
   var selectedVersion = req.params.version
@@ -209,25 +106,25 @@ router.get('/changes/elements/:class', async function (req, res) {
   res.json(getRelatedElements(selectedClass))
 })
 
-router.get('/class/exist/:version/:class', async function (req, res) {
-  var selectedVersion = req.params.version
-  var selectedClass = req.params.class
-  const node = checkExistence(selectedVersion, selectedClass)
-  if(node !== undefined) {
-    res.json({ 'message': 'Exist.' })
-  } else {
-    res.json({ 'message': 'Selected element does not exist in current version.' })
-    // res.status(204).json({'message': 'Selected element does not exist in current version.'})
-  }
-})
+// router.get('/class/exist/:version/:class', async function (req, res) {
+//   var selectedVersion = req.params.version
+//   var selectedClass = req.params.class
+//   const node = checkExistence(selectedVersion, selectedClass)
+//   if(node !== undefined) {
+//     res.json({ 'message': 'Exist.' })
+//   } else {
+//     res.json({ 'message': 'Selected element does not exist in current version.' })
+//     // res.status(204).json({'message': 'Selected element does not exist in current version.'})
+//   }
+// })
 
-// check if element exists in given version
-function checkExistence(selectedVersion, selected) {
-  const node = _.find(elements.nodes, n => { 
-    return n.data.id === selected && n.data.version === selectedVersion
-  })
-  return node
-}
+// // check if element exists in given version
+// function checkExistence(selectedVersion, selected) {
+//   const node = _.find(elements.nodes, n => { 
+//     return n.data.id === selected && n.data.version === selectedVersion
+//   })
+//   return node
+// }
 
 // find lists of difference between the given version and each version of given class
 function getClassChanges(selectedVersion, selectedClass) {
@@ -390,4 +287,51 @@ function getPackageDominantRoleList(id) {
   return roleList
 }
 
+const getSystemLevelChanges = (currentVersion, versionToBeCompared) => {
+  const currentNodes = _.filter(elements.nodes, ['data.version', currentVersion])
+  const currentEdges = _.filter(elements.edges, ['data.version', currentVersion])
+
+  const comparedNodes = _.filter(elements.nodes, ['data.version', versionToBeCompared])
+  const comparedEdges = _.filter(elements.edges, ['data.version', versionToBeCompared])
+
+  // nodes
+  // in both sets of nodes, included nodes for packages
+  // const sameNodes = currentNodes.filter(n1 => comparedNodes.some(n2 => n1.data.id === n2.data.id))
+  // only in current set
+  const nodesInFirstSetOnly = currentNodes.filter(n1 => !comparedNodes.some(n2 => n1.data.id === n2.data.id))
+  // only in set to be compared
+  const nodesInSecondSetOnly = comparedNodes.filter(n1 => !currentNodes.some(n2 => n1.data.id === n2.data.id))
+
+  // edges 
+  // in both sets of edges
+  // const sameEdges = currentEdges.filter(e1 => comparedEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
+  // only in current set
+  const edgesInFirstSetOnly = currentEdges.filter(e1 => !comparedEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
+  // only in set to be compared
+  const edgesInSecondSetOnly = comparedEdges.filter(e1 => !currentEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
+  
+  // role-changed classes
+  const roleChangedNodes = currentNodes.filter(n1 => comparedNodes.some(n2 => n1.data.id === n2.data.id && n1.data.role !== n2.data.role))
+
+  // list of nodes with data of two roles
+  let roleChangedNodeList = []
+  roleChangedNodes.forEach( node => {
+    const found = comparedNodes.find( n => n.data.id === node.data.id)
+    let roleChangedNode = {}
+    roleChangedNode.id = node.data.id
+    roleChangedNode[node.data.version] =  node.data.role
+    roleChangedNode[found.data.version] =  found.data.role
+    roleChangedNodeList.push(roleChangedNode)
+  })
+  
+  const changeObj = {
+    from: currentVersion,
+    to: versionToBeCompared,
+    nodes: { inCurrent: nodesInFirstSetOnly, inCompared: nodesInSecondSetOnly },
+    edges: { inCurrent: edgesInFirstSetOnly, inCompared: edgesInSecondSetOnly },
+    changedRoles: roleChangedNodeList
+  }
+  
+  return changeObj
+}
 module.exports = router

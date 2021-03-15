@@ -7,8 +7,8 @@ body {
 #cy {
     margin: 10px;
     height: calc(100vh - 170px);
-    width: calc(100vw - 30px);
-    /* width: 70vw; */
+    /* width: calc(100vw - 30px); */
+    width: calc(70vw - 30px);
     border: 5px solid #3b444d;
     background-color: hsla(208, 13%, 97%, 1);
 }
@@ -94,4 +94,20 @@ body {
     display: flex;
     flex-direction: row;
     margin-right: 20px;
+}
+
+#list {
+    position: absolute;
+    top: 68px;
+    right: 0;
+    width: 28vw;
+    height: calc(100vh - 170px);
+    border: 5px solid black;
+    margin: 0 10px;
+    overflow: auto;
+}
+
+#list .list {
+    overflow: scroll;
+    padding: 10px; 
 }
