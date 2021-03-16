@@ -18,53 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 const test = async () => {
-    // const changes = await getSystemChangesList()
-    // console.log(changes.data)
-    // const versionToBeCompared = '2019-10-02-bitcoin-wallet-68ade8ff0a561aab05d4e079bb31ff25f9c30380'
-    // const currentVersion = '2020-01-06-bitcoin-wallet-1b30fd5f58fb2b2df189eedd7b1d7858d8fbe80f'
-    // const elements = await getElements(versionToBeCompared)
-    // const comparedNodes = elements.data.nodes
-    // const comparedEdges = elements.data.edges
-    // const currentNodes = versionElements.nodes
-    // const currentEdges = versionElements.edges
-
-    // // nodes
-    // // in both sets of nodes, included nodes for packages
-    // // const sameNodes = currentNodes.filter(n1 => comparedNodes.some(n2 => n1.data.id === n2.data.id))
-    // // only in current set
-    // const nodesInFirstSetOnly = currentNodes.filter(n1 => !comparedNodes.some(n2 => n1.data.id === n2.data.id))
-    // // only in set to be compared
-    // const nodesInSecondSetOnly = comparedNodes.filter(n1 => !currentNodes.some(n2 => n1.data.id === n2.data.id))
-
-    // // edges 
-    // // in both sets of edges
-    // // const sameEdges = currentEdges.filter(e1 => comparedEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
-    // // only in current set
-    // const edgesInFirstSetOnly = currentEdges.filter(e1 => !comparedEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
-    // // only in set to be compared
-    // const edgesInSecondSetOnly = comparedEdges.filter(e1 => !currentEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
-    
-    // // role-changed classes
-    // const roleChangedNodes = currentNodes.filter(n1 => comparedNodes.some(n2 => n1.data.id === n2.data.id && n1.data.role !== n2.data.role))
-
-    // // list of nodes with data of two roles
-    // let roleChangedNodeList = []
-    // roleChangedNodes.forEach( node => {
-    //     const found = comparedNodes.find( n => n.data.id === node.data.id)
-    //     let roleChangedNode = {}
-    //     roleChangedNode.id = node.data.id
-    //     roleChangedNode[node.data.version] =  node.data.role
-    //     roleChangedNode[found.data.version] =  found.data.role
-    //     roleChangedNodeList.push(roleChangedNode)
-    // })
-
-    // const changeObj = {
-    //     from: currentVersion,
-    //     to: versionToBeCompared,
-    //     nodes: { inCurrent: nodesInFirstSetOnly, inCompared: nodesInSecondSetOnly },
-    //     edges: { inCurrent: edgesInFirstSetOnly, inCompared: edgesInSecondSetOnly },
-    //     changedRoles: roleChangedNodeList
-    // }
+    // const eles = await getAllElements()
 }
 
 const createLegend = () => {
@@ -163,6 +117,9 @@ const createTimeline = async (id) => {
                 })
                 style += ')'
                 element.style['background-image'] = style
+                span.addEventListener('click', () => {
+                    showPackageChanges(v)
+                })
             }
             element.className = 'role'
             span.className = 'tooltip'
@@ -207,9 +164,9 @@ const createTimeline = async (id) => {
 }
 
 const updateVersion = async () => {
+    selectedVersion = document.getElementById('versionList').value
     clearInfo()
     createTimeline()
-    selectedVersion = document.getElementById('versionList').value
     const elements = await getElements(selectedVersion)
     versionElements = elements.data
     cy.remove(cy.elements())
@@ -217,8 +174,69 @@ const updateVersion = async () => {
     cy.layout(options).run()
 }
 
-const showPackageChanges = v => {
-    console.log('clicked ' + v)
+const showPackageChanges = async (v) => {
+    document.getElementById('list').innerHTML = ''
+    const versions = await getVersions()
+    if(v !== selectedVersion) {
+        const changes = await getPackageChangesList(v)
+        const currentIndex = _.indexOf(versions.data, selectedVersion)
+        const targetIndex = _.indexOf(versions.data, v)
+        let type = (currentIndex > targetIndex) ? 'Removed' : 'Added'
+        let text = changes.data.nodes.inCompared.map(n => n.data.id).join('<br>')
+        let element = document.createElement('div')
+        element.className = 'list'
+        element.innerHTML = 'Compare <br>' + v + '<br>' + type + ' classes:<br>' +text
+        document.getElementById('list').appendChild(element)
+        if(currentIndex < targetIndex) {
+            _.forEach(changes.data.nodes.inCompared, d => d.data['status'] = 'added')
+            _.forEach(changes.data.edges.inCompared, d => d.data['status'] = 'added')
+        } else {
+            _.forEach(changes.data.nodes.inCompared, d => d.data['status'] = 'removed')
+            _.forEach(changes.data.edges.inCompared, d => d.data['status'] = 'removed')
+        }
+        cy.startBatch()
+        cy.remove(cy.elements())
+        cy.add(versionElements)
+        cy.add(changes.data.nodes.inCompared)
+        cy.add(changes.data.edges.inCompared)
+        if(currentIndex < targetIndex){
+            cy.elements('[status="added"]').addClass('added')
+            _.forEach(changes.data.nodes.inCurrent, d => 
+                cy.$id(d.data.id).addClass('removed')
+            )
+            _.forEach(changes.data.edges.inCurrent, d => 
+                cy.elements('edge[source="' + d.data.source + '"][target="' + d.data.target + '"]').addClass('removed')
+            )
+        } else {
+            cy.elements('[status="removed"]').addClass('removed')
+            _.forEach(changes.data.nodes.inCurrent, d => 
+                cy.$id(d.data.id).addClass('added')
+            )
+            _.forEach(changes.data.edges.inCurrent, d => 
+                cy.elements('edge[source="' + d.data.source + '"][target="' + d.data.target + '"]').addClass('added')
+            )
+        }
+        const target = cy.$id(selectedPackage)
+        const nodes = target.union(target.descendants())
+        const parents = target.ancestors()
+        const edges = nodes.connectedEdges()
+        nodes.addClass('showLabel')
+        cy.elements().not(nodes).not(parents).not(edges).addClass('hide')
+        cy.endBatch()
+        cy.layout(options).run()
+    } else {
+        cy.startBatch()
+        cy.remove(cy.elements())
+        cy.add(versionElements)
+        const target = cy.$id(selectedPackage)
+        const nodes = target.union(target.descendants())
+        const parents = target.ancestors()
+        const edges = nodes.connectedEdges()
+        nodes.addClass('showLabel')
+        cy.elements().not(nodes).not(parents).not(edges).addClass('hide')
+        cy.endBatch()
+        cy.layout(options).run()
+    }
 }
 
 const showSystemChanges = async (v) => {
@@ -272,51 +290,101 @@ const showSystemChanges = async (v) => {
     }
 }
 
-const showClassChanges = v => {
-    console.log('clicked ' + v)
-//     const change = _.find(classChanges, ['version', v])
-//     console.log(change)
-//     cy.remove(cy.elements())
-//     cy.add(versionElements)
-//     cy.add(change.addedNodes)
-//     cy.add(change.addedEdges)
-//     cy.add(change.addedParents)
-//     cy.add(change.removedParents)
-
-//     const classNode = _.find(change.addedNodes, ['data.id', selectedClass])
-//     const selected = cy.elements(`node[id="${selectedClass}"]`)
-//     if(classNode !== undefined) {
-//         const color = roleMap.get(classNode.data.role)
-//         selected.style({ 'background-color': color, 'color': color })
-//     }
-//     let firstLvlNodes = selected.outgoers().union(selected.incomers())
-//     let secondLvlNodes = firstLvlNodes.outgoers().union(firstLvlNodes.incomers())
-//     let thirdLvlNodes = secondLvlNodes.outgoers().union(secondLvlNodes.incomers())
-//     const nodes = cy.elements(selected).union(firstLvlNodes).union(secondLvlNodes).union(thirdLvlNodes)
-//     nodes.addClass('faded')
-//     const parents = nodes.ancestors()
-//     nodes.addClass('showLabel')
-//     _.forEach(change.addedNodes, d => d.data['status'] = 'added')
-//     _.forEach(change.addedEdges, d => d.data['status'] = 'added')
-//     _.forEach(change.addedParents, d => d.data['status'] = 'added')
-//     cy.elements('[status="added"]').addClass('added')
-//     selected.addClass(['selected', 'showLabel'])
-
-//     _.forEach(change.removedNodes, d => 
-//         cy.elements('node[id="' + d.data.id + '"]').addClass('removed')
-//     )
-//     _.forEach(change.removedEdges, d => 
-//         cy.elements('edge[source="' + d.data.source + '"][target="' + d.data.target + '"]').addClass('removed')
-//     )
-//     cy.elements().not(selected).not(nodes).not(parents).addClass('hide')
-//     cy.layout(options).run()
-}
-
-const getAllClassChanges = async () => {
-    // const changes = await getClassChangesList()
-    // classChanges = changes.data
-    // const e = await getClassElements()
-    // console.log(e.data)
+const showClassChanges = async (v) => {
+    document.getElementById('list').innerHTML = ''
+    const versions = await getVersions()
+    if(v !== selectedVersion) {
+        const changes = await getClassChangesList(v)
+        const currentIndex = _.indexOf(versions.data, selectedVersion)
+        const targetIndex = _.indexOf(versions.data, v)
+        let type = (currentIndex > targetIndex) ? 'Removed' : 'Added'
+        let text = changes.data.nodes.inCompared.map(n => n.data.id).join('<br>')
+        let element = document.createElement('div')
+        element.className = 'list'
+        element.innerHTML = 'Compare <br>' + v + '<br>' + type + ' classes:<br>' +text
+        document.getElementById('list').appendChild(element)
+        if(currentIndex < targetIndex) {
+            _.forEach(changes.data.nodes.inCompared, d => d.data['status'] = 'added')
+            _.forEach(changes.data.edges.inCompared, d => d.data['status'] = 'added')
+        } else {
+            _.forEach(changes.data.nodes.inCompared, d => d.data['status'] = 'removed')
+            _.forEach(changes.data.edges.inCompared, d => d.data['status'] = 'removed')
+        }
+        cy.startBatch()
+        cy.remove(cy.elements())
+        cy.add(versionElements)
+        cy.add(changes.data.nodes.inCompared)
+        cy.add(changes.data.edges.inCompared)
+        if(currentIndex < targetIndex){
+            cy.elements('[status="added"]').addClass('added')
+            _.forEach(changes.data.nodes.inCurrent, d => 
+                cy.$id(d.data.id).addClass('removed')
+            )
+            _.forEach(changes.data.edges.inCurrent, d => 
+                cy.elements('edge[source="' + d.data.source + '"][target="' + d.data.target + '"]').addClass('removed')
+            )
+        } else {
+            cy.elements('[status="removed"]').addClass('removed')
+            _.forEach(changes.data.nodes.inCurrent, d => 
+                cy.$id(d.data.id).addClass('added')
+            )
+            _.forEach(changes.data.edges.inCurrent, d => 
+                cy.elements('edge[source="' + d.data.source + '"][target="' + d.data.target + '"]').addClass('added')
+            )
+        }
+        const target = cy.$id(selectedClass)
+        // first level edges and nodes
+        const edges = target.connectedEdges()
+        const nodes = edges.connectedNodes().union(target)
+        // second level edges
+        const secondLvlEdges = nodes.connectedEdges().not(edges)
+        const secondLvlNodes = secondLvlEdges.connectedNodes()
+        secondLvlEdges.style({
+            'line-color' : 'red'
+        })
+        // third level edges
+        const thirdLvlEdges = secondLvlNodes.connectedEdges().not(edges).not(secondLvlEdges)
+        const thirdLvlNodes = thirdLvlEdges.connectedNodes()
+        thirdLvlEdges.style({
+            'line-color' : 'blue'
+        })
+        const parents = nodes.ancestors().union(secondLvlNodes.ancestors()).union(thirdLvlNodes.ancestors())
+        const nodeList = nodes.union(secondLvlNodes).union(thirdLvlNodes)
+        const edgeList = edges.union(secondLvlEdges).union(thirdLvlEdges)
+        nodeList.addClass('showLabel')
+        target.addClass('selected')
+        cy.elements().not(nodeList).not(edgeList).not(parents).addClass('hide')
+        cy.endBatch()
+        cy.layout(options).run()
+    } else {
+        cy.startBatch()
+        cy.remove(cy.elements())
+        cy.add(versionElements)
+        const target = cy.$id(selectedClass)
+        // first level edges and nodes
+        const edges = target.connectedEdges()
+        const nodes = edges.connectedNodes().union(target)
+        // second level edges
+        const secondLvlEdges = nodes.connectedEdges().not(edges)
+        const secondLvlNodes = secondLvlEdges.connectedNodes()
+        secondLvlEdges.style({
+            'line-color' : 'red'
+        })
+        // third level edges
+        const thirdLvlEdges = secondLvlNodes.connectedEdges().not(edges).not(secondLvlEdges)
+        const thirdLvlNodes = thirdLvlEdges.connectedNodes()
+        thirdLvlEdges.style({
+            'line-color' : 'blue'
+        })
+        const parents = nodes.ancestors().union(secondLvlNodes.ancestors()).union(thirdLvlNodes.ancestors())
+        const nodeList = nodes.union(secondLvlNodes).union(thirdLvlNodes)
+        const edgeList = edges.union(secondLvlEdges).union(thirdLvlEdges)
+        nodeList.addClass('showLabel')
+        target.addClass('selected')
+        cy.elements().not(nodeList).not(edgeList).not(parents).addClass('hide')
+        cy.endBatch()
+        cy.layout(options).run()
+    }
 }
 
 const createGraph = async () => {
@@ -342,25 +410,29 @@ const createGraph = async () => {
                 const target = e.target
                 if (target === cy) {
                     clearInfo()
-                    cy.remove(cy.elements('.removed, .added'))
+                    createTimeline()
+                    // cy.remove(cy.elements('.removed, .added'))
                     level = 'system'
                     selectedClass = ''
                     selectedPackage = ''
-                    cy.elements().removeClass(['hide', 'showLabel', 'selected', 'hover', 'faded'])
+                    cy.remove(cy.elements())
+                    cy.add(versionElements)
+                    // cy.elements().removeClass(['hide', 'showLabel', 'selected', 'hover', 'faded'])
                     cy.layout(options).run()
-                    createTimeline()
+                    document.getElementById('labelVisibility').value = 'hideLabel'
                 }
             })
             this.on('tap', 'node', async (e) => {
                 const target = e.target
-                // const isExisted = await checkExistence(target._private.data.id)
-                const isExisted = target.hasClass('removed')
+                const isExisted = target.hasClass('removed') || target.hasClass('added')
                 if(!isExisted) {
                     cy.elements().removeClass(['hide', 'selected', 'showLabel', 'hideLabel', 'hover', 'faded'])
                     if(target.isParent()) {
                         level = 'package'
                         selectedPackage = target._private.data.id
                         createTimeline(target._private.data.id)
+                        // cy.remove(cy.elements())
+                        // cy.add(versionElements)
                         cy.startBatch()
                         const nodes = target.union(target.descendants())
                         const parents = target.ancestors()
@@ -370,13 +442,14 @@ const createGraph = async () => {
                         cy.elements().not(nodes).not(parents).not(edges).addClass('hide')
                         cy.endBatch()
                         cy.layout(options).run()
+                        document.getElementById('labelVisibility').value = 'showLabel'
                     } else {
                         level = 'class'
                         selectedClass = target._private.data.id
-                        classChanges = []
                         createTimeline(target._private.data.id)
-                        // getAllClassChanges()
                         cy.startBatch()
+                        // cy.remove(cy.elements())
+                        // cy.add(versionElements)
                         const edges = target.connectedEdges()
                         const nodes = edges.connectedNodes().union(target)
                         // let firstLvlNodes = target.outgoers().union(target.incomers())
@@ -390,6 +463,7 @@ const createGraph = async () => {
                         cy.elements().not(nodes).not(parents).not(edges).addClass('hide')
                         cy.endBatch()
                         cy.layout(options).run()
+                        document.getElementById('labelVisibility').value = 'showLabel'
                     }
                 }
             })
@@ -406,38 +480,6 @@ const createGraph = async () => {
                     target.removeClass('showLabel')
                 }
             })
-            //     const target = e.target
-            //     if(target.isParent() === false) {
-            //         if(level === 'system') {
-            //             const nodes = target.union(target.successors()).union(target.predecessors())
-            //             const parents = nodes.ancestors()
-            //             target.addClass('showLabel')
-            //             cy.elements().not(nodes).not(parents).addClass('hover')
-            //         } else if(level === 'package') {
-            //             const nodes = target.union(target.successors()).union(target.predecessors())
-            //             const parents = nodes.ancestors()
-            //             cy.elements().not(nodes).not(parents).addClass('hover')
-            //         }
-            //     } else {
-            //         if(level === 'system') {
-            //             cy.elements('edge').addClass('hover')
-            //         }
-            //     }
-            // })
-            // this.on('mouseout', 'node', (e) => {
-            //     const target = e.target
-            //     if(target.isParent() === false) {
-            //         if(level === 'system') {
-            //             cy.elements().removeClass(['hover', 'showLabel'])
-            //         } else if(level === 'package') {
-            //             cy.elements().removeClass('hover')
-            //         }
-            //     } else {
-            //         if(level === 'system') {
-            //             cy.elements('edge').removeClass('hover')
-            //         }
-            //     }
-            // })
         }
     })
 }
@@ -461,9 +503,9 @@ const getVersions = async () => {
     }
 }
 
-const getStyles = async () => {
+const getAllElements = async () => {
     try {
-        return await axios.get( '/api/data/styles')
+        return await axios.get('/api/data/elements')
     } catch (e) {
         console.error(e)
     }
@@ -477,41 +519,9 @@ const getElements = async (version) => {
     }
 }
 
-const getClassRoleList = async (id) => {
+const getStyles = async () => {
     try {
-        return await axios.get(`/api/data/roles/${id}`)
-    } catch (e) {
-        console.error(e)
-    }
-}
-
-const getClassChangesList = async () => {
-    try {
-        return await axios.get(`/api/data/changes/class/${selectedVersion}/${selectedClass}`)
-    } catch (e) {
-        console.error(e)
-    }
-}
-
-// const checkExistence = async (selected) => {
-//     try {
-//         return axios.get(`/api/data/class/exist/${selectedVersion}/${selected}`)
-//     } catch (e) {
-//         console.error(e)
-//     }
-// }
-
-const getClassElements = async () => {
-    try {
-        return await axios.get(`/api/data/changes/elements/${selectedClass}`)
-    } catch (e) {
-        console.error(e)
-    }
-}
-
-const getAllElements = async () => {
-    try {
-        return await axios.get('/api/data/elements')
+        return await axios.get( '/api/data/styles')
     } catch (e) {
         console.error(e)
     }
@@ -533,9 +543,33 @@ const getPackageRoleList = async (id) => {
     }
 }
 
+const getClassRoleList = async (id) => {
+    try {
+        return await axios.get(`/api/data/roles/${id}`)
+    } catch (e) {
+        console.error(e)
+    }
+}
+
 const getSystemChangesList = async (v) => {
     try {
         return await axios.get(`/api/data/changes/system/${selectedVersion}/${v}`)
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+const getPackageChangesList = async (v) => {
+    try {
+        return await axios.get(`/api/data/changes/package/${selectedVersion}/${v}/${selectedPackage}`)
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+const getClassChangesList = async (v) => {
+    try {
+        return await axios.get(`/api/data/changes/class/${selectedVersion}/${v}/${selectedClass}`)
     } catch (e) {
         console.error(e)
     }
@@ -550,7 +584,7 @@ const options = {
     animationEasing: 'spring(500, 50)',
     klay: {
         borderSpacing: 20, // spacing between compound nodes
-        spacing: 10, // spacing between nodes
+        spacing: 15, // spacing between nodes
         compactComponents: true,
         nodePlacement:'SIMPLE',
         direction: 'DOWN',
@@ -562,10 +596,13 @@ const options = {
 }
 
 const hierarchy = () => {
-    // const hierarchyOptions = _.cloneDeep(options)
-    // hierarchyOptions.klay.layoutHierarchy = true
-    // cy.layout(hierarchyOptions).run()
-    test()
+    const hierarchyOptions = _.cloneDeep(options)
+    hierarchyOptions.klay.layoutHierarchy = true
+    cy.layout(hierarchyOptions).run()
+}
+
+const resetLayout = () => {
+    cy.layout(options).run()
 }
 
 const resizeNodes = () => {
@@ -577,12 +614,12 @@ const resizeNodes = () => {
     cy.nodes().style({
         'height' : (node) => {
             let loc = _.toInteger(node.data('loc'))
-            let size = 2 * _.round(Math.sqrt(loc))
+            let size = 5 * _.round(Math.sqrt(loc))
             return size
         },
         'width' : (node) => {
             let loc = _.toInteger(node.data('loc'))
-            let size = 2 *  _.round(Math.sqrt(loc))
+            let size = 5 *  _.round(Math.sqrt(loc))
             return size
         }
     })
