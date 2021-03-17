@@ -10,8 +10,8 @@ let roleMap = new Map([
 ])
 
 document.addEventListener('DOMContentLoaded', () => {
-    axios.baseURL = 'localhost:3000'
-    // axios.baseURL = 'https://visdemo.herokuapp.com'
+    // axios.baseURL = 'localhost:3000'
+    axios.baseURL = 'https://visdemo.herokuapp.com'
     createVersionList()
     createGraph()
     createLegend()
