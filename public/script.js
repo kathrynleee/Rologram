@@ -222,6 +222,7 @@ const showChanges = async (v) => {
 const updateGraph = () => {
     switch(level) {
         case 'system':
+            document.getElementById('labelVisibility').value = 'hideLabel'
             cy.layout(options).run()
             break
         case 'package':
@@ -383,6 +384,7 @@ const resizeNodes = () => {
 
 const setRole = () => {
     cy.elements().removeClass('hide')
+    document.getElementById('labelVisibility').value = 'showLabel'
     let fromRole = document.getElementById('fromRole').value
     let toRole = document.getElementById('toRole').value
     let fromNodes = [], toNodes = []
