@@ -23,8 +23,8 @@
         <link rel="stylesheet" href="../style.css"/>
     </head>
     <body>
-        <div id="options">
-            <div>Version:</div>
+        <div id="options" class="flex-row">
+            <div>VERSION:</div>
             <div><select id="versionList" onchange="updateVersion()"></select></div>
             <div>
                 <!-- <button onclick="changeLayout()">Dagre layout</button> -->
@@ -38,8 +38,9 @@
                 </select>
             </div>
             <div id="filterOptions">
+                <div>PATTERN:</div>
                 <select id="fromRole" onchange="setRole()">
-                    <option value=""></option>
+                    <option value="">All roles</option>
                     <option value="Controller">Controller</option>
                     <option value="Coordinator">Coordinator</option>
                     <option value="Interfacer">Interfacer</option>
@@ -47,8 +48,9 @@
                     <option value="Service Provider">Service Provider</option>
                     <option value="Structurer">Structurer</option>
                 </select>
+                <div class="removeRightPadding">→</div>
                 <select id="toRole" onchange="setRole()">
-                    <option value=""></option>
+                    <option value="">All roles</option>
                     <option value="Controller">Controller</option>
                     <option value="Coordinator">Coordinator</option>
                     <option value="Interfacer">Interfacer</option>
@@ -57,10 +59,25 @@
                     <option value="Structurer">Structurer</option>
                 </select>
             </div>
+            <div>DEPENDENCY LEVEL:</div>
+            <div class="flex-row">
+                <button onclick="updateDependencyLevel(1)">1</button>
+                <button onclick="updateDependencyLevel(2)">2</button>
+                <button onclick="updateDependencyLevel(3)">3</button>
+            </div>
         </div>
-        <div id="legend"></div>
+        <div id="legend" class="flex-row"></div>
         <div id="cy"></div>
-        <div id="list"></div>
+        <div id="changesDialogBox">
+            <div class="flex-row justity-space-between">
+                <button onclick="updateChangesList('removed')">Removed</button>
+                <button onclick="updateChangesList('added')">Added</button>
+                <button onclick="updateChangesList('changed')">Changed</button>
+            </div>
+            <div id="list">
+                <div id="classList"></div>
+            </div>
+        </div>
         <div id="info">
             <!-- <img id="image" width="200"></img> -->
             <div id="selected"></div>
