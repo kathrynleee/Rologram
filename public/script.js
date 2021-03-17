@@ -282,39 +282,34 @@ const createGraph = async () => {
                 }
             })
             this.on('tap', 'node', async (e) => {
-                const target = e.target
-                // const version = target._private.data.version
-                // let target = e.target
-                // const selected = target._private.data.id
-                // const version = target._private.data.version
-                // if(version !== selectedVersion) {
-                //     document.getElementById('versionList').value = version
-                //     selectedVersion = version
-                //     const elements = await getElements(version)
-                //     versionElements = elements.data
-                //     cy.remove(cy.elements())
-                //     cy.add(versionElements)
-                //     target = cy.$id(selected)
-                // }
-                const isExisted = target.hasClass('removed') || target.hasClass('added')
-                if(!isExisted) {
-                    cy.elements().removeClass(['hide', 'selected', 'showLabel', 'hideLabel', 'hover', 'faded'])
-                    if(target.isParent()) {
-                        level = 'package'
-                        updateElementsVisibility()
-                        selectedPackage = target._private.data.id
-                        createTimeline(target._private.data.id)
-                        updateGraph()
-                        document.getElementById('labelVisibility').value = 'showLabel'
-                    } else {
-                        level = 'class'
-                        updateElementsVisibility()
-                        document.getElementById('dependency').style.display = 'flex'
-                        selectedClass = target._private.data.id
-                        createTimeline(target._private.data.id)
-                        updateGraph()
-                        document.getElementById('labelVisibility').value = 'showLabel'
-                    }
+                let target = e.target
+                const selected = target._private.data.id
+                const version = target._private.data.version
+                if(version !== selectedVersion) {
+                    const elements = await getElements(version)
+                    versionElements = elements.data
+                    document.getElementById('versionList').value = version
+                    selectedVersion = version
+                    cy.remove(cy.elements())
+                    cy.add(versionElements)
+                    target = cy.$id(selected)
+                } else {
+                    cy.remove(cy.elements())
+                    cy.add(versionElements)
+                    target = cy.$id(selected)
+                }
+                if(target.isParent()) {
+                    level = 'package'
+                    updateElementsVisibility()
+                    selectedPackage = selected
+                    createTimeline(selected)
+                    updateGraph()
+                } else {
+                    level = 'class'
+                    updateElementsVisibility()
+                    selectedClass = selected
+                    createTimeline(selected)
+                    updateGraph()
                 }
             })
             this.on('mouseover', 'node', (e) => {
@@ -641,9 +636,11 @@ const updateElementsVisibility = () => {
         document.getElementById('dependency').style.display = 'none'
         document.getElementById('filterOptions').style.display = 'flex'
     } else if(level === 'package') {
+        document.getElementById('labelVisibility').value = 'showLabel'
         document.getElementById('dependency').style.display = 'none'
         document.getElementById('filterOptions').style.display = 'none'
     } else if(level === 'class') {
+        document.getElementById('labelVisibility').value = 'showLabel'
         document.getElementById('dependency').style.display = 'flex'
         document.getElementById('filterOptions').style.display = 'none'
     }
