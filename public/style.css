@@ -107,7 +107,6 @@ body {
     right: 0;
     width: 28vw;
     height: calc(100vh - 170px);
-    border: 5px solid #3b444d;
     margin: 0 10px;
     overflow: auto;
 }

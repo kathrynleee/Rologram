@@ -217,6 +217,12 @@
             "style": {
                 "opacity": "0"
             }
+        },
+        {
+            "selector": "node:parent.hover",
+            "style": {
+                "opacity": "1"
+            }
         }
     ]
 }
