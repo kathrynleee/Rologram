@@ -18,6 +18,7 @@
         <link rel="preconnect" href="https://fonts.gstatic.com"> 
         <link href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap" rel="stylesheet">
         <!-- js -->
+        <script src="../api.js"></script>
         <script src="../script.js"></script>
         <!-- style -->
         <link rel="stylesheet" href="../style.css"/>
@@ -27,14 +28,13 @@
             <div>VERSION:</div>
             <div><select id="versionList" onchange="updateVersion()"></select></div>
             <div>
-                <!-- <button onclick="changeLayout()">Dagre layout</button> -->
                 <button onclick="resetLayout()">Relayout</button>
                 <button onclick="hierarchy()">Hierarchy</button>
                 <button onclick="resizeNodes()">Node resize by loc</button>
                 <select id="labelVisibility" onchange="toggleLabelVisibility()">
                     <option disabled selected>Show/Hide labels</option>
-                    <option value="showLabel">Show labels</option>
-                    <option value="hideLabel">Hide labels</option>
+                    <option value="showLabel">Labels shown</option>
+                    <option value="hideLabel">Labels hidden</option>
                 </select>
             </div>
             <div id="filterOptions">
@@ -59,11 +59,13 @@
                     <option value="Structurer">Structurer</option>
                 </select>
             </div>
-            <div>DEPENDENCY LEVEL:</div>
-            <div class="flex-row">
-                <button onclick="updateDependencyLevel(1)">1</button>
-                <button onclick="updateDependencyLevel(2)">2</button>
-                <button onclick="updateDependencyLevel(3)">3</button>
+            <div id="dependency" class="flex-row">
+                <div>DEPENDENCY LEVEL:</div>
+                <div class="flex-row">
+                    <button onclick="updateDependencyLevel(1)">1</button>
+                    <button onclick="updateDependencyLevel(2)">2</button>
+                    <button onclick="updateDependencyLevel(3)">3</button>
+                </div>
             </div>
         </div>
         <div id="legend" class="flex-row"></div>
@@ -79,7 +81,6 @@
             </div>
         </div>
         <div id="info">
-            <!-- <img id="image" width="200"></img> -->
             <div id="selected"></div>
             <div id="roles"></div>
         </div>

@@ -7,8 +7,8 @@ body {
 #cy {
     margin: 10px;
     height: calc(100vh - 170px);
-    /* width: calc(100vw - 30px); */
-    width: calc(70vw - 30px);
+    width: calc(100vw - 30px);
+    /* width: calc(70vw - 30px); */
     border: 5px solid #3b444d;
     background-color: hsla(208, 13%, 97%, 1);
 }
@@ -75,6 +75,7 @@ body {
 .role .tooltip:hover:before {
     opacity: 1;
 }
+
 .slider {
     display: none;
     padding-top: 10px;
@@ -106,7 +107,7 @@ body {
     right: 0;
     width: 28vw;
     height: calc(100vh - 170px);
-    border: 5px solid black;
+    border: 5px solid #3b444d;
     margin: 0 10px;
     overflow: auto;
 }
@@ -128,4 +129,37 @@ body {
 #list #classList {
     overflow: scroll;
     padding: 10px; 
+    max-width: 1000px;
 }
+
+#list #classList .listItem {
+    display: flex;
+    flex-direction: row;
+    padding: 1px;
+    min-width: 200px;
+    width: max-content;
+}
+
+#list #classList .listItem .listItemCircle {
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    margin-right: 5px;
+}
+
+#list #classList .listItem .listItemPackage {
+    background-color: #a9b6c2;
+    min-width: 16px;
+    height: 16px;
+    margin-right: 5px;
+}
+
+#list #classList .listItem .listItemCircle.fromRoleCircle:after {
+    font-size: 12px;
+    width: 10px;
+    height: 10px;
+    color: #3b444d;
+    content: '→';
+    right: -15px;
+    position: relative;
+} 

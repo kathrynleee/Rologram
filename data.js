@@ -153,9 +153,9 @@ const getSystemLevelChanges = (currentVersion, versionToBeCompared) => {
   // in both sets of nodes, included nodes for packages
   // const sameNodes = currentNodes.filter(n1 => comparedNodes.some(n2 => n1.data.id === n2.data.id))
   // only in current set
-  const nodesInFirstSetOnly = currentNodes.filter(n1 => !comparedNodes.some(n2 => n1.data.id === n2.data.id))
+  const nodesInFirstSetOnly = _.sortBy(currentNodes.filter(n1 => !comparedNodes.some(n2 => n1.data.id === n2.data.id)), ['data.id'])
   // only in set to be compared
-  const nodesInSecondSetOnly = comparedNodes.filter(n1 => !currentNodes.some(n2 => n1.data.id === n2.data.id))
+  const nodesInSecondSetOnly = _.sortBy(comparedNodes.filter(n1 => !currentNodes.some(n2 => n1.data.id === n2.data.id)), ['data.id'])
 
   // edges 
   // in both sets of edges
@@ -178,7 +178,7 @@ const getSystemLevelChanges = (currentVersion, versionToBeCompared) => {
     roleChangedNode[found.data.version] =  found.data.role
     roleChangedNodeList.push(roleChangedNode)
   })
-  
+
   const changeObj = {
     from: currentVersion,
     to: versionToBeCompared,
@@ -211,9 +211,9 @@ const getPackageLevelChanges = (currentVersion, versionToBeCompared, package) =>
   // in both sets of nodes, included nodes for packages
   // const sameNodes = currentNodes.filter(n1 => comparedNodes.some(n2 => n1.data.id === n2.data.id))
   // only in current set
-  const nodesInFirstSetOnly = currentNodes.filter(n1 => !comparedNodes.some(n2 => n1.data.id === n2.data.id))
+  const nodesInFirstSetOnly = _.sortBy(currentNodes.filter(n1 => !comparedNodes.some(n2 => n1.data.id === n2.data.id)), ['data.id'])
   // only in set to be compared
-  const nodesInSecondSetOnly = comparedNodes.filter(n1 => !currentNodes.some(n2 => n1.data.id === n2.data.id))
+  const nodesInSecondSetOnly = _.sortBy(comparedNodes.filter(n1 => !currentNodes.some(n2 => n1.data.id === n2.data.id)), ['data.id'])
 
   // edges 
   // in both sets of edges
@@ -303,9 +303,9 @@ const getClassLevelChanges = (currentVersion, versionToBeCompared, selectedClass
   // in both sets of nodes, included nodes for packages
   // const sameNodes = currentNodes.filter(n1 => comparedNodes.some(n2 => n1.data.id === n2.data.id))
   // only in current set
-  const nodesInFirstSetOnly = currentNodes.filter(n1 => !comparedNodes.some(n2 => n1.data.id === n2.data.id))
+  const nodesInFirstSetOnly = _.sortBy(currentNodes.filter(n1 => !comparedNodes.some(n2 => n1.data.id === n2.data.id)), ['data.id'])
   // only in set to be compared
-  const nodesInSecondSetOnly = comparedNodes.filter(n1 => !currentNodes.some(n2 => n1.data.id === n2.data.id))
+  const nodesInSecondSetOnly = _.sortBy(comparedNodes.filter(n1 => !currentNodes.some(n2 => n1.data.id === n2.data.id)), ['data.id'])
 
   // edges 
   // in both sets of edges
@@ -328,7 +328,7 @@ const getClassLevelChanges = (currentVersion, versionToBeCompared, selectedClass
     roleChangedNode[found.data.version] =  found.data.role
     roleChangedNodeList.push(roleChangedNode)
   })
-  
+
   const changeObj = {
     from: currentVersion,
     to: versionToBeCompared,
