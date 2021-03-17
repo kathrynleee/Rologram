@@ -207,6 +207,38 @@
             }
         },
         {
+            "selector": ".first",
+            "style": {
+                "width": "13"
+            }
+        },
+        {
+            "selector": ".second",
+            "style": {
+                "width": "7",
+                "opacity": "0.8"
+            }
+        },
+        {
+            "selector": ".third",
+            "style": {
+                "width": "3",
+                "opacity": "0.6"
+            }
+        },
+        {
+            "selector": ".hover",
+            "style": {
+                "opacity": "0.1"
+            }
+        },
+        {
+            "selector": ".hover",
+            "style": {
+                "opacity": "0.1"
+            }
+        },
+        {
             "selector": ".hover",
             "style": {
                 "opacity": "0.1"

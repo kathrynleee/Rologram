@@ -162,6 +162,7 @@ const createTimeline = async (id) => {
 
 const updateVersion = async () => {
     selectedVersion = document.getElementById('versionList').value
+    level = 'system'
     clearInfo()
     createTimeline()
     const elements = await getElements(selectedVersion)
@@ -271,8 +272,8 @@ const createGraph = async () => {
                 if (target === cy) {
                     document.getElementById('filterOptions').style.display = 'flex'
                     clearInfo()
-                    createTimeline()
                     level = 'system'
+                    createTimeline()
                     updateElementsVisibility()
                     selectedClass = ''
                     selectedPackage = ''
@@ -428,25 +429,18 @@ const updateClassGraph = () => {
     const target = cy.$id(selectedClass).addClass('selected')
     cy.startBatch()
     cy.elements().removeClass('hide')
+    cy.edges().removeClass(['first', 'second', 'third'])
     // first level edges and nodes
     const edges = target.connectedEdges()
     const nodes = edges.connectedNodes().union(target)
-    edges.style({
-        'width' : '3'
-    })
     let nodeList = nodes , edgeList = edges, parents = nodes.ancestors()
     let secondLvlEdges = [], secondLvlNodes = [], thirdLvlEdges = [], thirdLvlNodes = []
     if(dependencyLevel > 1) {
-        edges.style({
-            'width' : '13'
-        })
+        edges.addClass('first')
         // second level edges
         secondLvlEdges = nodes.connectedEdges().not(edges)
         secondLvlNodes = secondLvlEdges.connectedNodes()
-        secondLvlEdges.style({
-            'width' : '7',
-            'opacity' : '0.8'
-        })
+        secondLvlEdges.addClass('second')
         parents = nodes.ancestors().union(secondLvlNodes.ancestors())
         nodeList = nodes.union(secondLvlNodes)
         edgeList = edges.union(secondLvlEdges)
@@ -455,10 +449,7 @@ const updateClassGraph = () => {
         // third level edges
         thirdLvlEdges = secondLvlNodes.connectedEdges().not(edges).not(secondLvlEdges)
         thirdLvlNodes = thirdLvlEdges.connectedNodes()
-        thirdLvlEdges.style({
-            'width' : '3',
-            'opacity' : '0.6'
-        })
+        thirdLvlEdges.addClass('third')
         parents = nodes.ancestors().union(secondLvlNodes.ancestors()).union(thirdLvlNodes.ancestors())
         nodeList = nodes.union(secondLvlNodes).union(thirdLvlNodes)
         edgeList = edges.union(secondLvlEdges).union(thirdLvlEdges)
