@@ -314,14 +314,15 @@ const createGraph = async () => {
             })
             this.on('mouseover', 'node', (e) => {
                 const target = e.target
-                if(level === 'system') {
+                const choice = document.getElementById('labelVisibility').value
+                if(choice === 'hideLabel') {
                     target.addClass('showLabel')
                 }
             })
             this.on('mouseout', 'node', (e) => {
                 const target = e.target
                 const choice = document.getElementById('labelVisibility').value
-                if(level === 'system' && choice !== 'showLabel') {
+                if(choice === 'hideLabel') {
                     target.removeClass('showLabel')
                 }
             })
@@ -408,10 +409,11 @@ const setRole = () => {
 
 const toggleLabelVisibility = () => {
     let labelVisibility = document.getElementById('labelVisibility').value
-    cy.startBatch()
-    cy.nodes().removeClass(['showLabel', 'hideLabel'])
-    cy.nodes().addClass(`${labelVisibility}`)
-    cy.endBatch()
+    if(labelVisibility === 'showLabel') {
+        cy.nodes().addClass('showLabel')
+    } else {
+        cy.nodes().removeClass('showLabel')
+    }
     cy.layout(options).run()
 }
 
