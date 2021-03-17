@@ -176,7 +176,18 @@ const showChanges = async (v) => {
     const versions = await getVersions()
     if(versionToCompare !== selectedVersion) {
         toggleChangesDialogBox(true)
-        const changes = await getPackageChangesList(versionToCompare)
+        let changes
+        switch(level) {
+            case 'system':
+                changes = await getSystemChangesList(versionToCompare)
+                break
+            case 'package':
+                changes = await getPackageChangesList(versionToCompare)
+                break
+            case 'class':
+                changes = await getClassChangesList(versionToCompare)
+                break
+        }
         const currentIndex = _.indexOf(versions.data, selectedVersion)
         const targetIndex = _.indexOf(versions.data, versionToCompare)
         if(currentIndex < targetIndex) {
