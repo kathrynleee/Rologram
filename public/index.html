@@ -74,6 +74,20 @@
             </div>
         </div>
         <div id="legend" class="flex-row"></div>
+        <div id="filterNodes" class="flex-row">
+            <input type="checkbox" name="roleFilter" value="Controller" checked onchange="toggleNodeFilter(this)">
+            <label>Controller</label>
+            <input type="checkbox" name="roleFilter" value="Coordinator" checked onchange="toggleNodeFilter(this)">
+            <label>Coordinator</label>
+            <input type="checkbox" name="roleFilter" value="Interfacer" checked onchange="toggleNodeFilter(this)">
+            <label>Interfacer</label>
+            <input type="checkbox" name="roleFilter" value="Information Holder" checked onchange="toggleNodeFilter(this)">
+            <label>Information Holder</label>
+            <input type="checkbox" name="roleFilter" value="Service Provider" checked onchange="toggleNodeFilter(this)">
+            <label>Service Provider</label>
+            <input type="checkbox" name="roleFilter" value="Structurer" checked onchange="toggleNodeFilter(this)">
+            <label>Structurer</label>
+        </div>
         <div id="cy"></div>
         <div id="changesDialogBox">
             <div class="flex-row justity-space-between">

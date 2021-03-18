@@ -195,7 +195,7 @@
             }
         },
         {
-            "selector": ".hide",
+            "selector": ".hide, .filter",
             "style": {
                 "display": "none"
             }

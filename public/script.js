@@ -27,8 +27,11 @@ const initCodeMirror = () => {
         lineWrapping: true,
         readOnly: 'nocursor'
     })
+    document.getElementsByClassName('CodeMirror')[0].style.display = 'none'
 }
+
 const displaySourceCode = async () => {
+    document.getElementsByClassName('CodeMirror')[0].style.display = 'block'
     const index = selectedVersion.lastIndexOf('-')
     const systemName = selectedVersion.slice(11, index)
     const commitId = selectedVersion.slice(index + 1)
@@ -306,6 +309,7 @@ const createGraph = async () => {
         ready: function() {
             this.on('click', (e)  => {
                 toggleChangesDialogBox(false)
+                document.getElementsByClassName('CodeMirror')[0].style.display = 'none'
                 const target = e.target
                 if (target === cy) {
                     document.getElementById('filterOptions').style.display = 'flex'
@@ -410,8 +414,7 @@ const hierarchy = () => {
 }
 
 const resetLayout = () => {
-    // cy.layout(options).run()
-    test()
+    cy.layout(options).run()
 }
 
 const resizeNodes = () => {
@@ -664,6 +667,10 @@ const clickChangesListItem = (id) => {
 
 const updateElementsVisibility = () => {
     toggleChangesDialogBox(false)
+    let filters = document.getElementsByName('roleFilter')
+    for (var item of filters) {
+        item.checked = true
+    }
     if(level === 'system') {
         document.getElementById('labelVisibility').value = 'hideLabel'
         document.getElementById('dependency').style.display = 'none'
@@ -687,5 +694,13 @@ const toggleChangesDialogBox = (toShow) => {
     } else {
         document.getElementById('cy').style.width = 'calc(100vw - 30px)'
         document.getElementById('changesDialogBox').style.display = 'none'
+    }
+}
+
+const toggleNodeFilter = (eles) => {
+    if(!eles.checked) {
+        cy.elements(`node[role="${eles.value}"]`).not('.hide').addClass('filter')
+    } else {
+        cy.elements(`node[role="${eles.value}"]`).not('.hide').removeClass('filter')
     }
 }
