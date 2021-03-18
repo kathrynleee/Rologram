@@ -3,14 +3,15 @@ const _ = require('lodash')
 const fs = require('fs')
 const router = express.Router()
 
-const system = 'bitcoin-wallet'
-// const system = 'k9'
-const dataFile = __dirname + '/data/' + system + '-data-parent.json'
-const versionFile = __dirname + '/data/' + system + '.txt'
+const dataFile = __dirname + '/data/data.json'
+const versionFile = __dirname + '/data/version.txt'
+const sourceCodePathFile = __dirname + '/data/path.txt'
 const styleFile = __dirname + '/data/style.cycss'
 
-// read version file
+// read text file
 const versions = readTextFile(versionFile)
+const paths = readTextFile(sourceCodePathFile)
+
 // read data json file
 const elements = JSON.parse(fs.readFileSync(dataFile))
 
@@ -22,6 +23,11 @@ router.get('/elements', async function (req, res) {
 // return list of versions
 router.get('/versions', function (req, res) {
   res.json(versions)
+})
+
+// return list of paths
+router.get('/paths', function (req, res) {
+  res.json(paths)
 })
 
 // return styles for cytoscape

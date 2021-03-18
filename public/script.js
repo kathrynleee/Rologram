@@ -1,4 +1,4 @@
-let cy
+let cy, javaEditor
 let selectedClass, selectedPackage, selectedVersion, versionToCompare
 let versionElements = []
 let level = 'system'
@@ -10,13 +10,51 @@ let roleMap = new Map([
 ])
 
 document.addEventListener('DOMContentLoaded', () => {
-    // axios.baseURL = 'localhost:3000'
-    axios.baseURL = 'https://visdemo.herokuapp.com'
+    axios.baseURL = 'localhost:3000'
+    // axios.baseURL = 'https://visdemo.herokuapp.com'
     createVersionList()
     createGraph()
     createLegend()
     createTimeline()
+    initCodeMirror()
 })
+
+const initCodeMirror = () => {
+    javaEditor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+        mode: 'text/x-java',
+        theme: 'eclipse',
+        lineNumbers: true,
+        lineWrapping: true,
+        readOnly: 'nocursor'
+    })
+}
+const displaySourceCode = async () => {
+    const index = selectedVersion.lastIndexOf('-')
+    const systemName = selectedVersion.slice(11, index)
+    const commitId = selectedVersion.slice(index + 1)
+    let className = selectedClass
+    // handle inner class
+    if(selectedClass.indexOf('$') !== -1) {
+        className = className.slice(0, selectedClass.indexOf('$'))
+    }
+    const filePath = className.split('.').join('/') + '.java'
+    const paths = await getPaths()
+    // try main path
+    const ownerName = paths.data[0]
+    let i = 0, path, url, code
+    do {
+        i = i + 1
+        path = paths.data[i]
+        url = `https://raw.githubusercontent.com/${ownerName}/${systemName}/${commitId}/${path}/${filePath}`
+        code = await getSourceCode(url)
+    } while (code === undefined && i < paths.data.length)
+    if(code !== undefined) {
+        javaEditor.setValue(code.data)
+    } else {
+        javaEditor.setValue('')
+        // still not working alert error message
+    }
+}
 
 const createLegend = () => {
     let element, sub, text
@@ -311,6 +349,7 @@ const createGraph = async () => {
                     selectedClass = selected
                     createTimeline(selected)
                     updateGraph()
+                    displaySourceCode()
                 }
             })
             this.on('mouseover', 'node', (e) => {
@@ -371,7 +410,8 @@ const hierarchy = () => {
 }
 
 const resetLayout = () => {
-    cy.layout(options).run()
+    // cy.layout(options).run()
+    test()
 }
 
 const resizeNodes = () => {
