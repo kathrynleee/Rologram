@@ -90,6 +90,6 @@ const getSourceCode = async (url) => {
   try {
     return await axios.get(url)
   } catch (e) {
-    console.error(e)
+    // console.error(e)
   }
 }

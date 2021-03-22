@@ -27,7 +27,8 @@ body {
     display: flex;
     flex-direction: row;
 }
-.slider .irs--flat .irs-bar {
+
+/* .slider .irs--flat .irs-bar {
     background-color: #3b444d;
 }
 .slider .irs-single {
@@ -41,7 +42,8 @@ body {
 }
 .slider .irs--flat .irs-grid-pol.small {
     background-color: transparent;
-}
+} */
+
 #info {
     height: 80px;
     width: 76vw;
@@ -51,36 +53,94 @@ body {
 #roles {
     display: flex;
     flex-direction: row;
+    overflow-x: scroll;
+    min-height: 75px;
+    padding-left: 2px;
+    padding-top: 20px;
 }
 #roles div {
     margin-top: 20px;
-    width: 16px;
+    min-width: 16px;
     height: 16px;
     border-radius: 8px;
+    margin-right: 2px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
 }
+#roles div.selected-version {
+    width: 80px;
+}
+
 .tooltip {
     position: relative;
 }
-.role .tooltip:before {
+
+.role .date:before {
     font-size: 12px;
     width: 100px;
-    height: 40px;
+    height: 50px;
     color: #3b444d;
-    content: attr(data-text);
+    content: attr(data-date);
     opacity: 0;
-    transition: .3s opacity;
     position: absolute;
-    top: -15px;
+    bottom: -25px;
+    left: -10px;
+    text-align: left;
 } 
-.role .tooltip:hover:before {
+
+.role .date:hover:before {
     opacity: 1;
 }
 
-.slider {
+.role:hover {
+    transform: translateY(-3px);
+}
+
+.role.hover-no-effect:hover {
+    transform: none;
+}
+
+.role .selected:before {
+    font-size: 12px;
+    width: 100px;
+    font-weight: bold;
+    color: #3b444d;
+    content: attr(data-text);
+    opacity: 1;
+    position: absolute;
+    left: -24px;
+    top: -15px;
+} 
+
+/* .role .currentIndicator:before {
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    content: 'CURRENT';
+    opacity: 1;
+    position: absolute;
+    top: 2px;
+    left: 5px;
+} 
+
+.role .compareIndicator:before {
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    content: 'COMPARE';
+    opacity: 1;
+    position: absolute;
+    top: 2px;
+    left: 5px;
+}  */
+
+/* .slider {
     display: none;
     padding-top: 10px;
     padding-bottom: 10px;
-}
+} */
 #legend {
     font-size: 12px;
     margin: 5px 10px;
@@ -162,3 +222,7 @@ body {
     right: -15px;
     position: relative;
 } 
+
+.indicator {
+    opacity: 0;
+}

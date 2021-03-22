@@ -44,7 +44,7 @@
             }
         },
         {
-            "selector": "node:parent",
+            "selector": "node:parent, node:parent.added, node:parent.faded",
             "style": {
                 "label": "data(name)",
                 "font-size": "30",
@@ -201,7 +201,7 @@
             }
         },
         {
-            "selector": ".added",
+            "selector": "node.added, edge.added",
             "style": {
                 "opacity": "1"
             }

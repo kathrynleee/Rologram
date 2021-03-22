@@ -296,11 +296,11 @@ const getClassLevelChanges = (currentVersion, versionToBeCompared, selectedClass
   })
   let comparedNodes = [], comparedEdges = comparedEdgeList
   if(comparedNodeList.length === 0) { // if no edges connected to the class at all
-    const comparedClassNode = elements.nodes.find( n => n.data.id === selectedClass && n.data.version === versionToBeCompared)
+    const comparedClassNode = elements.nodes.find(n => n.data.id === selectedClass && n.data.version === versionToBeCompared)
     comparedNodes.push(comparedClassNode)
   } else {
     comparedNodeList.forEach(nodeId => {
-      const found = elements.nodes.find( n => n.data.id === nodeId && n.data.version === versionToBeCompared)
+      const found = elements.nodes.find(n => n.data.id === nodeId && n.data.version === versionToBeCompared)
       comparedNodes.push(found)
     })
   }
@@ -312,6 +312,30 @@ const getClassLevelChanges = (currentVersion, versionToBeCompared, selectedClass
   const nodesInFirstSetOnly = _.sortBy(currentNodes.filter(n1 => !comparedNodes.some(n2 => n1.data.id === n2.data.id)), ['data.id'])
   // only in set to be compared
   const nodesInSecondSetOnly = _.sortBy(comparedNodes.filter(n1 => !currentNodes.some(n2 => n1.data.id === n2.data.id)), ['data.id'])
+
+  // parents
+  let parents = []
+  nodesInFirstSetOnly.forEach(n => {
+    let id = n.data.id
+    while(getParentPackageName(id) !== '' && !parents.includes(getParentPackageName(id))) {
+      parents.push(getParentPackageName(id))
+      id = getParentPackageName(id)
+    }
+  })
+  nodesInSecondSetOnly.forEach(n => {
+    let id = n.data.id
+    while(getParentPackageName(id) !== '' && !parents.includes(getParentPackageName(id))) {
+      parents.push(getParentPackageName(id))
+      id = getParentPackageName(id)
+    }
+  })
+  parents = _.uniq(parents)
+  let parentList = []
+  parents.forEach(id => {
+    const found = elements.nodes.find(n => n.data.id === id && (n.data.version === currentVersion || n.data.version === versionToBeCompared))
+    parentList.push(found)
+  })
+  parentList = _.uniq(parentList)
 
   // edges 
   // in both sets of edges
@@ -340,10 +364,17 @@ const getClassLevelChanges = (currentVersion, versionToBeCompared, selectedClass
     to: versionToBeCompared,
     nodes: { inCurrent: nodesInFirstSetOnly, inCompared: nodesInSecondSetOnly },
     edges: { inCurrent: edgesInFirstSetOnly, inCompared: edgesInSecondSetOnly },
+    parents: parentList,
     changedRoles: roleChangedNodeList
   }
   
   return changeObj
+}
+
+
+const getParentPackageName = (id) => {
+  const index = id.lastIndexOf('.')
+  return (index != -1) ? id.substring(0, index) : ''
 }
 
 module.exports = router

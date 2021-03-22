@@ -1,3 +1,5 @@
+'use strict'
+
 let cy, javaEditor
 let selectedClass, selectedPackage, selectedVersion, versionToCompare
 let versionElements = []
@@ -9,16 +11,30 @@ let roleMap = new Map([
     ['Service Provider', '#4d82b0'], ['Structurer', '#e6a1b2']
 ])
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     axios.baseURL = 'localhost:3000'
     // axios.baseURL = 'https://visdemo.herokuapp.com'
-    createVersionList()
+    await createVersionList()
     createGraph()
     createLegend()
     createTimeline()
     initCodeMirror()
 })
 
+const test = async () => {
+    let roleList = ['Controller', 'Coordinator', 'Interfacer', 'Information Holder', 'Service Provider', 'Structurer']
+    let resultPairs = [...roleList.flatMap(r1 => roleList.map(r2 => [r1, r2, []]))]
+    const eles = await getAllElements()
+    const versions = await getVersions()
+    versions.data.forEach(version => {
+        resultPairs.forEach(pair => {
+            const resultEdges = eles.data.edges.filter(edge => edge.data.sourceRole === pair[0] && edge.data.targetRole === pair[1] && edge.data.version === version)
+            pair[2].push(resultEdges.length)
+        })
+    })
+    // remove large package can affect the numbers greatly
+    // console.log(resultPairs)
+}
 const initCodeMirror = () => {
     javaEditor = CodeMirror.fromTextArea(document.getElementById('editor'), {
         mode: 'text/x-java',
@@ -102,42 +118,50 @@ const createTimeline = async (id) => {
     const versions = await getVersions()
     if(level === 'class') {
         const roleList = await getClassRoleList(id)
-        let element, span, role
+        let element, span, role, text
         document.getElementById('selected').innerHTML = id
         _.forEach(versions.data, v => {
             element = document.createElement('div')
+            element.className = 'role'
             span = document.createElement('span')
             const node = _.find(roleList.data, ['data.version', v])
             if(node == undefined) {
                 element.style['background-color'] = '#a9b6c2'
+                element.className = 'role hover-no-effect'
             } else {
                 role = node.data.role
                 element.style['background-color'] = roleMap.get(role)
                 span.addEventListener('click', () => {
                     showChanges(v)
-                    span.className += 'comparedVersionSelected'
+                    createIndicators(v)
                 })
             }
-            element.className = 'role'
             span.className = 'tooltip'
             span.setAttribute('data-text', v.slice(0, 10))
             element.appendChild(span)
+            text = document.createElement('span')
+            text.setAttribute('data-date', v.slice(0, 10))
+            text.className = 'date'
+            span.appendChild(text)
             document.getElementById('roles').appendChild(element)
         })
     } else if(level === 'package') {
         document.getElementById('selected').innerHTML = id
         const roleList = await getPackageRoleList(id)
-        let element, span
+        let element, span, text
         _.forEach(versions.data, v => {
             const list = _.find(roleList.data, ['version', v])
             element = document.createElement('div')
+            element.className = 'role'
             span = document.createElement('span')
             if(list.role.length === 0) {
                 element.style['background-color'] = '#a9b6c2'
+                element.className = 'role hover-no-effect'
             } else if(list.role.length === 1) {
                 element.style['background-color'] = roleMap.get(list.role[0])
                 span.addEventListener('click', () => {
                     showChanges(v)
+                    createIndicators(v)
                 })
             } else if(list.role.length === 2) {
                 let color1 = roleMap.get(list.role[0])
@@ -145,6 +169,7 @@ const createTimeline = async (id) => {
                 element.style['background-image'] = `linear-gradient(to right, ${color1} 50%, ${color2} 50%)`
                 span.addEventListener('click', () => {
                     showChanges(v)
+                    createIndicators(v)
                 })
             } else {
                 let style = 'linear-gradient(to right'
@@ -157,18 +182,22 @@ const createTimeline = async (id) => {
                 element.style['background-image'] = style
                 span.addEventListener('click', () => {
                     showChanges(v)
+                    createIndicators(v)
                 })
             }
-            element.className = 'role'
             span.className = 'tooltip'
             span.setAttribute('data-text', v.slice(0, 10))
             element.appendChild(span)
+            text = document.createElement('span')
+            text.setAttribute('data-date', v.slice(0, 10))
+            text.className = 'date'
+            span.appendChild(text)
             document.getElementById('roles').appendChild(element)
         })
     } else {
         document.getElementById('selected').innerHTML = selectedVersion
         const roleList = await getSystemRoleList()
-        let element, span
+        let element, span, text
         _.forEach(versions.data, v => {
             const list = _.find(roleList.data, ['version', v])
             element = document.createElement('div')
@@ -191,13 +220,52 @@ const createTimeline = async (id) => {
             span = document.createElement('span')
             span.addEventListener('click', () => {
                 showChanges(v)
+                createIndicators(v)
             })
             element.className = 'role'
             span.className = 'tooltip'
             span.setAttribute('data-text', v.slice(0, 10))
             element.appendChild(span)
+            text = document.createElement('span')
+            text.setAttribute('data-date', v.slice(0, 10))
+            text.className = 'date'
+            span.appendChild(text)
             document.getElementById('roles').appendChild(element)
         })
+    }
+}
+
+const createIndicators = (version) => {
+    let selectedElements = document.getElementsByClassName('selected-version')
+    while(selectedElements.length > 0){
+        selectedElements[0].classList.remove('selected-version')
+    }
+    selectedElements = document.getElementsByClassName('selected')
+    while(selectedElements.length > 0){
+        selectedElements[0].textContent = ''
+        let text = document.createElement('span')
+        let date = selectedElements[0].getAttribute('data-text').slice(0, 10)
+        text.setAttribute('data-date', date)
+        text.className = 'date'
+        selectedElements[0].appendChild(text)
+        selectedElements[0].classList.remove('selected')
+    }
+    const indicators = document.getElementsByClassName('indicator')
+    while(indicators.length > 0){
+        indicators[0].parentNode.removeChild(indicators[0])
+    }
+    if(version !== selectedVersion) {
+        // comparing version indicator
+        let date = version.slice(0, 10)
+        let eles = document.querySelectorAll(`[data-text='${date}']`)[0]
+        eles.className = 'tooltip selected'
+        eles.textContent = 'COMPARE'
+        eles.parentNode.classList.add('selected-version')
+        // current version indicator
+        let currentEles = document.querySelectorAll(`[data-text='${selectedVersion.slice(0, 10)}']`)[0]
+        currentEles.className = 'tooltip selected'
+        currentEles.textContent = 'CURRENT'
+        currentEles.parentNode.classList.add('selected-version')
     }
 }
 
@@ -230,6 +298,7 @@ const showChanges = async (v) => {
                 changes = await getClassChangesList(versionToCompare)
                 break
         }
+        console.log(changes.data)
         const currentIndex = _.indexOf(versions.data, selectedVersion)
         const targetIndex = _.indexOf(versions.data, versionToCompare)
         if(currentIndex < targetIndex) {
@@ -244,13 +313,16 @@ const showChanges = async (v) => {
         cy.add(versionElements)
         cy.add(changes.data.nodes.inCompared)
         cy.add(changes.data.edges.inCompared)
+        if(level === 'class') {
+            cy.add(changes.data.parents)
+        }
         if(currentIndex < targetIndex){
             cy.elements('[status="added"]').addClass('added')
             _.forEach(changes.data.nodes.inCurrent, d => 
                 cy.$id(d.data.id).addClass('removed')
             )
             _.forEach(changes.data.edges.inCurrent, d => 
-                cy.elements('edge[source="' + d.data.source + '"][target="' + d.data.target + '"]').addClass('removed')
+                cy.edges('edge[source="' + d.data.source + '"][target="' + d.data.target + '"]').addClass('removed')
             )
         } else {
             cy.elements('[status="removed"]').addClass('removed')
@@ -258,7 +330,7 @@ const showChanges = async (v) => {
                 cy.$id(d.data.id).addClass('added')
             )
             _.forEach(changes.data.edges.inCurrent, d => 
-                cy.elements('edge[source="' + d.data.source + '"][target="' + d.data.target + '"]').addClass('added')
+                cy.edges('edge[source="' + d.data.source + '"][target="' + d.data.target + '"]').addClass('added')
             )
         }
         cy.endBatch()
@@ -421,12 +493,12 @@ const resizeNodes = () => {
     cy.nodes().style({
         'height' : (node) => {
             let loc = _.toInteger(node.data('loc'))
-            let size = 5 * _.round(Math.sqrt(loc))
+            let size = 2 * _.round(Math.sqrt(loc))
             return size
         },
         'width' : (node) => {
             let loc = _.toInteger(node.data('loc'))
-            let size = 5 *  _.round(Math.sqrt(loc))
+            let size = 2 * _.round(Math.sqrt(loc))
             return size
         }
     })
@@ -471,7 +543,7 @@ const updateDependencyLevel = (lvl) => {
 const updateClassGraph = () => {
     const target = cy.$id(selectedClass).addClass('selected')
     cy.startBatch()
-    cy.elements().removeClass('hide')
+    cy.elements().removeClass(['hide', 'showLabel'])
     cy.edges().removeClass(['first', 'second', 'third'])
     // first level edges and nodes
     const edges = target.connectedEdges()
@@ -484,20 +556,25 @@ const updateClassGraph = () => {
         secondLvlEdges = nodes.connectedEdges().not(edges)
         secondLvlNodes = secondLvlEdges.connectedNodes()
         secondLvlEdges.addClass('second')
-        parents = nodes.ancestors().union(secondLvlNodes.ancestors())
-        nodeList = nodes.union(secondLvlNodes)
-        edgeList = edges.union(secondLvlEdges)
+        parents = parents.union(secondLvlNodes.ancestors())
+        nodeList = nodeList.union(secondLvlNodes)
+        edgeList = edgeList.union(secondLvlEdges)
     }
     if(dependencyLevel === 3) {
         // third level edges
         thirdLvlEdges = secondLvlNodes.connectedEdges().not(edges).not(secondLvlEdges)
         thirdLvlNodes = thirdLvlEdges.connectedNodes()
         thirdLvlEdges.addClass('third')
-        parents = nodes.ancestors().union(secondLvlNodes.ancestors()).union(thirdLvlNodes.ancestors())
-        nodeList = nodes.union(secondLvlNodes).union(thirdLvlNodes)
-        edgeList = edges.union(secondLvlEdges).union(thirdLvlEdges)
+        parents = parents.union(thirdLvlNodes.ancestors())
+        nodeList = nodeList.union(thirdLvlNodes)
+        edgeList = edgeList.union(thirdLvlEdges)
     }
-    nodeList.addClass('showLabel')
+    if(dependencyLevel === 1) {
+        nodeList.addClass('showLabel')
+        document.getElementById('labelVisibility').value = 'showLabel'
+    } else {
+        document.getElementById('labelVisibility').value = 'hideLabel'
+    }
     cy.elements().not(nodeList).not(edgeList).not(parents).addClass('hide')
     cy.endBatch()
     cy.layout(options).run()
@@ -528,7 +605,9 @@ const updateChangesList = async (type) => {
             changes = await getPackageChangesList(versionToCompare)
             break
         case 'class':
-            cy.nodes().addClass('showLabel')
+            if(dependencyLevel === 1) {
+                cy.nodes().addClass('showLabel')
+            }
             changes = await getClassChangesList(versionToCompare)
             break
     }
@@ -542,7 +621,7 @@ const updateChangesList = async (type) => {
         removedItems = changes.data.nodes.inCompared
         addedItems = changes.data.nodes.inCurrent
     }
-
+    
     switch(type) {
         case 'removed':
             cy.startBatch()
@@ -579,7 +658,9 @@ const updateChangesList = async (type) => {
             cy.startBatch()
             cy.elements().removeClass('faded')
             cy.elements('.removed').addClass('hide')
-            cy.elements().not('.added').not('.removed').addClass('faded')
+            const parents = cy.nodes('.added').ancestors()
+            parents.removeClass('hide')
+            cy.elements().not('.added').addClass('faded')
             cy.elements('.changedRole').removeClass(['Controller', 'Coordinator', 'Interfacer', 'InformationHolder', 'ServiceProvider', 'Structurer'])
             cy.elements().removeClass('changedRole')
             cy.endBatch()
@@ -655,20 +736,21 @@ const updateChangesList = async (type) => {
 }
 
 const clickChangesListItem = (id) => {
-    cy.fit()
-    if(cy.getElementById(id).hasClass('hide')) {
-        updateDependencyLevel(3)
-    } 
-    cy.zoom({
-        level: 1.2,
-        position: cy.getElementById(id).position()
-    })
+    // cy.fit()
+    // if(cy.getElementById(id).hasClass('hide')) {
+    //     updateDependencyLevel(3)
+    // } 
+    cy.center(cy.getElementById(id))
+    // cy.zoom({
+    //     level: 1.2,
+    //     position: cy.getElementById(id).position()
+    // })
 }
 
 const updateElementsVisibility = () => {
     toggleChangesDialogBox(false)
     let filters = document.getElementsByName('roleFilter')
-    for (var item of filters) {
+    for (let item of filters) {
         item.checked = true
     }
     if(level === 'system') {
@@ -699,8 +781,8 @@ const toggleChangesDialogBox = (toShow) => {
 
 const toggleNodeFilter = (eles) => {
     if(!eles.checked) {
-        cy.elements(`node[role="${eles.value}"]`).not('.hide').addClass('filter')
+        cy.nodes(`[role="${eles.value}"]`).not('.hide').addClass('filter')
     } else {
-        cy.elements(`node[role="${eles.value}"]`).not('.hide').removeClass('filter')
+        cy.nodes(`[role="${eles.value}"]`).not('.hide').removeClass('filter')
     }
 }
