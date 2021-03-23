@@ -371,7 +371,6 @@ const getClassLevelChanges = (currentVersion, versionToBeCompared, selectedClass
   return changeObj
 }
 
-
 const getParentPackageName = (id) => {
   const index = id.lastIndexOf('.')
   return (index != -1) ? id.substring(0, index) : ''

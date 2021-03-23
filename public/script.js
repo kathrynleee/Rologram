@@ -1,208 +1,87 @@
 'use strict'
-
-let cy, javaEditor
-let selectedClass, selectedPackage, selectedVersion, versionToCompare
-let versionElements = []
+let cy, codeEditor
 let level = 'system'
-let dependencyLevel = 1
+let selectedVersion, selectedPackage, selectedClass
+let versionElements = [], historyList = []
 let roleMap = new Map([
-    ['Controller', '#755194'], ['Coordinator', '#539967'],
-    ['Interfacer', '#E9AB45'], ['Information Holder', '#bf3f6a'],
+    ['Controller', '#755194'], ['Coordinator', '#539967'], 
+    ['Information Holder', '#bf3f6a'], ['Interfacer', '#E9AB45'],
     ['Service Provider', '#4d82b0'], ['Structurer', '#e6a1b2']
 ])
 
 document.addEventListener('DOMContentLoaded', async () => {
     axios.baseURL = 'localhost:3000'
+    const versions = await getVersions()
     // axios.baseURL = 'https://visdemo.herokuapp.com'
-    await createVersionList()
+    const versionIndex = versions.data.length - 1
+    selectedVersion = versions.data[versionIndex]
+    createTimeline(selectedVersion)
     createGraph()
     createLegend()
-    createTimeline()
-    initCodeMirror()
+    createInfo()
+    // const dragger = new Dragdealer('slider', {
+    //     steps: versions.data.length,
+    //     callback: () => {
+    //         alert(dragger.getStep())
+    //     }
+    // })
 })
 
-const test = async () => {
-    let roleList = ['Controller', 'Coordinator', 'Interfacer', 'Information Holder', 'Service Provider', 'Structurer']
-    let resultPairs = [...roleList.flatMap(r1 => roleList.map(r2 => [r1, r2, []]))]
-    const eles = await getAllElements()
-    const versions = await getVersions()
-    versions.data.forEach(version => {
-        resultPairs.forEach(pair => {
-            const resultEdges = eles.data.edges.filter(edge => edge.data.sourceRole === pair[0] && edge.data.targetRole === pair[1] && edge.data.version === version)
-            pair[2].push(resultEdges.length)
-        })
-    })
-    // remove large package can affect the numbers greatly
-    // console.log(resultPairs)
-}
-const initCodeMirror = () => {
-    javaEditor = CodeMirror.fromTextArea(document.getElementById('editor'), {
-        mode: 'text/x-java',
-        theme: 'eclipse',
-        lineNumbers: true,
-        lineWrapping: true,
-        readOnly: 'nocursor'
-    })
-    document.getElementsByClassName('CodeMirror')[0].style.display = 'none'
-}
-
-const displaySourceCode = async () => {
-    document.getElementsByClassName('CodeMirror')[0].style.display = 'block'
-    const index = selectedVersion.lastIndexOf('-')
-    const systemName = selectedVersion.slice(11, index)
-    const commitId = selectedVersion.slice(index + 1)
-    let className = selectedClass
-    // handle inner class
-    if(selectedClass.indexOf('$') !== -1) {
-        className = className.slice(0, selectedClass.indexOf('$'))
-    }
-    const filePath = className.split('.').join('/') + '.java'
+const createInfo = async () => {
     const paths = await getPaths()
-    // try main path
-    const ownerName = paths.data[0]
-    let i = 0, path, url, code
-    do {
-        i = i + 1
-        path = paths.data[i]
-        url = `https://raw.githubusercontent.com/${ownerName}/${systemName}/${commitId}/${path}/${filePath}`
-        code = await getSourceCode(url)
-    } while (code === undefined && i < paths.data.length)
-    if(code !== undefined) {
-        javaEditor.setValue(code.data)
-    } else {
-        javaEditor.setValue('')
-        // still not working alert error message
-    }
+    let ownerName = paths.data[0]
+    let index = selectedVersion.lastIndexOf('-')
+    let systemName = selectedVersion.slice(11, index)
+    let fullCommitId = selectedVersion.slice(index + 1)
+    let commitId = selectedVersion.slice(index + 1, index + 8)
+    let commitDate = selectedVersion.slice(0, 10)
+    document.querySelector('#info .system').textContent = systemName
+    document.querySelector('#info .commit-date').textContent = 'on ' + commitDate
+    let link = document.createElement('a')
+    link.href = `https://github.com/${ownerName}/${systemName}/tree/${fullCommitId}`
+    link.textContent = commitId
+    link.target = '_blank'
+    document.querySelector('#info .commit-id').appendChild(link)
+    setVisible('#info', true)
 }
 
-const createLegend = () => {
-    let element, sub, text
-    for (let role of roleMap.keys()) {
-        element = document.createElement('div')
-        element.className = 'legendRole'
-        sub = document.createElement('div')
-        sub.className = 'legendCircle'
-        sub.addEventListener('mouseover', () => {
-            hoverLegend(role)
-        })
-        sub.addEventListener('mouseout', () => {
-            removeHoverLegend()
-        })
-        sub.style['background-color'] = roleMap.get(role)
-        element.appendChild(sub)
-        text = document.createElement('div')
-        text.className = 'legendText'
-        text.innerHTML = role
-        element.appendChild(text)
-        document.getElementById('legend').appendChild(element)
-    }
-}
-
-const removeHoverLegend = () => {
-    cy.elements().removeClass('hover')
-}
-
-const hoverLegend = (role) => {
-    const nodes = cy.elements(`node[role="${role}"]`)
-    const parents = nodes.ancestors()
-    cy.elements().not(nodes).not(parents).addClass('hover')
-}
-
-const clearInfo = () => {
-    document.getElementById('selected').innerHTML = ''
+const createTimeline = async (selected) => {
     document.getElementById('roles').innerHTML = ''
-}
-
-const createTimeline = async (id) => {
-    clearInfo()
     const versions = await getVersions()
-    if(level === 'class') {
-        const roleList = await getClassRoleList(id)
-        let element, span, role, text
-        document.getElementById('selected').innerHTML = id
-        _.forEach(versions.data, v => {
-            element = document.createElement('div')
-            element.className = 'role'
-            span = document.createElement('span')
+    let roleList = []
+    if(level === 'system') {
+        roleList = await getSystemRoleList(selected)
+    } else if(level === 'package') {
+        roleList = await getPackageRoleList(selected)
+    } else if(level === 'class') {
+        roleList = await getClassRoleList(selected)
+    }
+    let element, span, text
+    _.forEach(versions.data, v => {
+        element = document.createElement('div')
+        element.className = 'role'
+        span = document.createElement('span')
+        span.className = 'tooltip'
+        if(level === 'class') {
             const node = _.find(roleList.data, ['data.version', v])
-            if(node == undefined) {
+            if(node === undefined) {
                 element.style['background-color'] = '#a9b6c2'
                 element.className = 'role hover-no-effect'
             } else {
-                role = node.data.role
+                let role = node.data.role
                 element.style['background-color'] = roleMap.get(role)
                 span.addEventListener('click', () => {
-                    showChanges(v)
+                    // showChanges(v)
                     createIndicators(v)
                 })
             }
-            span.className = 'tooltip'
-            span.setAttribute('data-text', v.slice(0, 10))
-            element.appendChild(span)
-            text = document.createElement('span')
-            text.setAttribute('data-date', v.slice(0, 10))
-            text.className = 'date'
-            span.appendChild(text)
-            document.getElementById('roles').appendChild(element)
-        })
-    } else if(level === 'package') {
-        document.getElementById('selected').innerHTML = id
-        const roleList = await getPackageRoleList(id)
-        let element, span, text
-        _.forEach(versions.data, v => {
+        } else {
             const list = _.find(roleList.data, ['version', v])
-            element = document.createElement('div')
-            element.className = 'role'
-            span = document.createElement('span')
             if(list.role.length === 0) {
                 element.style['background-color'] = '#a9b6c2'
                 element.className = 'role hover-no-effect'
             } else if(list.role.length === 1) {
                 element.style['background-color'] = roleMap.get(list.role[0])
-                span.addEventListener('click', () => {
-                    showChanges(v)
-                    createIndicators(v)
-                })
-            } else if(list.role.length === 2) {
-                let color1 = roleMap.get(list.role[0])
-                let color2 = roleMap.get(list.role[1])
-                element.style['background-image'] = `linear-gradient(to right, ${color1} 50%, ${color2} 50%)`
-                span.addEventListener('click', () => {
-                    showChanges(v)
-                    createIndicators(v)
-                })
-            } else {
-                let style = 'linear-gradient(to right'
-                _.forEach(list.role, (r, i) => {
-                    let color = roleMap.get(r)
-                    let size = _.round(100 / list.role.length, 2)
-                    style += `, ${color} ${size * i}%,  ${color} ${size * (i+1)}%`
-                })
-                style += ')'
-                element.style['background-image'] = style
-                span.addEventListener('click', () => {
-                    showChanges(v)
-                    createIndicators(v)
-                })
-            }
-            span.className = 'tooltip'
-            span.setAttribute('data-text', v.slice(0, 10))
-            element.appendChild(span)
-            text = document.createElement('span')
-            text.setAttribute('data-date', v.slice(0, 10))
-            text.className = 'date'
-            span.appendChild(text)
-            document.getElementById('roles').appendChild(element)
-        })
-    } else {
-        document.getElementById('selected').innerHTML = selectedVersion
-        const roleList = await getSystemRoleList()
-        let element, span, text
-        _.forEach(versions.data, v => {
-            const list = _.find(roleList.data, ['version', v])
-            element = document.createElement('div')
-            if(list.role.length === 1) {
-                element.style['background-color'] = roleMap.get(list.role[0])
             } else if(list.role.length === 2) {
                 let color1 = roleMap.get(list.role[0])
                 let color2 = roleMap.get(list.role[1])
@@ -217,22 +96,26 @@ const createTimeline = async (id) => {
                 style += ')'
                 element.style['background-image'] = style
             }
-            span = document.createElement('span')
-            span.addEventListener('click', () => {
-                showChanges(v)
-                createIndicators(v)
-            })
-            element.className = 'role'
-            span.className = 'tooltip'
-            span.setAttribute('data-text', v.slice(0, 10))
-            element.appendChild(span)
-            text = document.createElement('span')
-            text.setAttribute('data-date', v.slice(0, 10))
-            text.className = 'date'
-            span.appendChild(text)
-            document.getElementById('roles').appendChild(element)
-        })
-    }
+            if(list.role.length > 0) {
+                span.addEventListener('click', () => {
+                    // showChanges(v)
+                    createIndicators(v)
+                })
+            }
+        }
+        span.setAttribute('data-text', v.slice(0, 10))
+        element.appendChild(span)
+        text = document.createElement('span')
+        text.setAttribute('data-date', v.slice(0, 10))
+        text.className = 'date'
+        span.appendChild(text)
+        document.getElementById('roles').appendChild(element)
+    })
+    // current version indicator
+    let currentEles = document.querySelectorAll(`[data-text='${selectedVersion.slice(0, 10)}']`)[0]
+    currentEles.className = 'tooltip selected'
+    currentEles.textContent = 'CURRENT'
+    currentEles.parentNode.classList.add('selected-version')
 }
 
 const createIndicators = (version) => {
@@ -269,102 +152,7 @@ const createIndicators = (version) => {
     }
 }
 
-const updateVersion = async () => {
-    selectedVersion = document.getElementById('versionList').value
-    level = 'system'
-    clearInfo()
-    createTimeline()
-    const elements = await getElements(selectedVersion)
-    versionElements = elements.data
-    cy.remove(cy.elements())
-    cy.add(elements.data)
-    cy.layout(options).run()
-}
-
-const showChanges = async (v) => {
-    versionToCompare = v
-    const versions = await getVersions()
-    if(versionToCompare !== selectedVersion) {
-        toggleChangesDialogBox(true)
-        let changes
-        switch(level) {
-            case 'system':
-                changes = await getSystemChangesList(versionToCompare)
-                break
-            case 'package':
-                changes = await getPackageChangesList(versionToCompare)
-                break
-            case 'class':
-                changes = await getClassChangesList(versionToCompare)
-                break
-        }
-        console.log(changes.data)
-        const currentIndex = _.indexOf(versions.data, selectedVersion)
-        const targetIndex = _.indexOf(versions.data, versionToCompare)
-        if(currentIndex < targetIndex) {
-            _.forEach(changes.data.nodes.inCompared, d => d.data['status'] = 'added')
-            _.forEach(changes.data.edges.inCompared, d => d.data['status'] = 'added')
-        } else {
-            _.forEach(changes.data.nodes.inCompared, d => d.data['status'] = 'removed')
-            _.forEach(changes.data.edges.inCompared, d => d.data['status'] = 'removed')
-        }
-        cy.startBatch()
-        cy.remove(cy.elements())
-        cy.add(versionElements)
-        cy.add(changes.data.nodes.inCompared)
-        cy.add(changes.data.edges.inCompared)
-        if(level === 'class') {
-            cy.add(changes.data.parents)
-        }
-        if(currentIndex < targetIndex){
-            cy.elements('[status="added"]').addClass('added')
-            _.forEach(changes.data.nodes.inCurrent, d => 
-                cy.$id(d.data.id).addClass('removed')
-            )
-            _.forEach(changes.data.edges.inCurrent, d => 
-                cy.edges('edge[source="' + d.data.source + '"][target="' + d.data.target + '"]').addClass('removed')
-            )
-        } else {
-            cy.elements('[status="removed"]').addClass('removed')
-            _.forEach(changes.data.nodes.inCurrent, d => 
-                cy.$id(d.data.id).addClass('added')
-            )
-            _.forEach(changes.data.edges.inCurrent, d => 
-                cy.edges('edge[source="' + d.data.source + '"][target="' + d.data.target + '"]').addClass('added')
-            )
-        }
-        cy.endBatch()
-        updateGraph()
-        updateChangesList('removed')
-    } else {
-        toggleChangesDialogBox(false)
-        cy.remove(cy.elements())
-        cy.add(versionElements)
-        updateGraph()
-    }
-}
-
-const updateGraph = () => {
-    switch(level) {
-        case 'system':
-            document.getElementById('labelVisibility').value = 'hideLabel'
-            cy.layout(options).run()
-            break
-        case 'package':
-            updatePackageGraph()
-            break
-        case 'class':
-            updateClassGraph()
-            break
-    }
-}
-
 const createGraph = async () => {
-    updateElementsVisibility()
-    const versions = await getVersions()
-    const versionIndex = versions.data.length - 1
-    selectedVersion = versions.data[versionIndex]
-    document.getElementById('versionList').value = selectedVersion
     const elements = await getElements(selectedVersion)
     versionElements = elements.data
     const styles = await getStyles()
@@ -380,17 +168,14 @@ const createGraph = async () => {
         elements: elements.data,
         ready: function() {
             this.on('click', (e)  => {
-                toggleChangesDialogBox(false)
-                document.getElementsByClassName('CodeMirror')[0].style.display = 'none'
                 const target = e.target
                 if (target === cy) {
-                    document.getElementById('filterOptions').style.display = 'flex'
-                    clearInfo()
                     level = 'system'
-                    createTimeline()
-                    updateElementsVisibility()
-                    selectedClass = ''
+                    createTimeline(selectedVersion)
                     selectedPackage = ''
+                    selectedClass = ''
+                    historyList.push({ version: selectedVersion, package: selectedPackage, class: selectedClass })
+                    setVisible('#info .class-id', false)
                     cy.remove(cy.elements())
                     cy.add(versionElements)
                     cy.layout(options).run()
@@ -400,63 +185,49 @@ const createGraph = async () => {
                 let target = e.target
                 const selected = target._private.data.id
                 const version = target._private.data.version
-                if(version !== selectedVersion) {
-                    const elements = await getElements(version)
-                    versionElements = elements.data
-                    document.getElementById('versionList').value = version
-                    selectedVersion = version
-                    cy.remove(cy.elements())
-                    cy.add(versionElements)
-                    target = cy.$id(selected)
-                } else {
-                    cy.remove(cy.elements())
-                    cy.add(versionElements)
-                    target = cy.$id(selected)
-                }
+                const elements = await getElements(version)
+                versionElements = elements.data
+                selectedVersion = version
+                cy.remove(cy.elements())
+                cy.add(versionElements)
+                target = cy.$id(selected)
+                setVisible('#info .class-id', true, 'flex')
                 if(target.isParent()) {
                     level = 'package'
-                    updateElementsVisibility()
                     selectedPackage = selected
+                    historyList.push({ version: selectedVersion, package: selectedPackage, class: selectedClass })
+                    document.querySelector('#info .package').textContent = selectedPackage
+                    document.querySelector('#info .class').textContent = ''
                     createTimeline(selected)
                     updateGraph()
                 } else {
                     level = 'class'
-                    updateElementsVisibility()
                     selectedClass = selected
+                    historyList.push({ version: selectedVersion, package: selectedPackage, class: selectedClass })
+                    let index = selectedClass.lastIndexOf('.')
+                    let className = selectedClass.slice(index + 1)
+                    document.querySelector('#info .package').textContent = target._private.data.parent
+                    document.querySelector('#info .class').textContent = className
                     createTimeline(selected)
                     updateGraph()
-                    displaySourceCode()
                 }
             })
-            this.on('mouseover', 'node', (e) => {
-                const target = e.target
-                const choice = document.getElementById('labelVisibility').value
-                if(choice === 'hideLabel') {
-                    target.addClass('showLabel')
-                }
-            })
-            this.on('mouseout', 'node', (e) => {
-                const target = e.target
-                const choice = document.getElementById('labelVisibility').value
-                if(choice === 'hideLabel') {
-                    target.removeClass('showLabel')
-                }
-            })
+            // this.on('mouseover', 'node', (e) => {
+            //     const target = e.target
+            //     const choice = document.getElementById('labelVisibility').value
+            //     if(choice === 'hideLabel') {
+            //         target.addClass('showLabel')
+            //     }
+            // })
+            // this.on('mouseout', 'node', (e) => {
+            //     const target = e.target
+            //     const choice = document.getElementById('labelVisibility').value
+            //     if(choice === 'hideLabel') {
+            //         target.removeClass('showLabel')
+            //     }
+            // })
         }
     })
-}
-
-const createVersionList = async () => {
-    const versions = await getVersions()
-    const select = document.getElementById('versionList')
-    versions.data.forEach(v => {
-        let option = document.createElement('option')
-        option.innerHTML = v.slice(0, 10)
-        option.value = v
-        select.append(option)
-    })
-    const versionIndex = versions.data.length - 1
-    selectedVersion = versions.data[versionIndex]
 }
 
 const options = {
@@ -476,108 +247,62 @@ const options = {
         edgeSpacingFactor: 0.3,
         layoutHierarchy: false
     },
-    // stop: () => console.log('layout completed')
+    start: () => setVisible('#loader', true),
+    stop: () => setVisible('#loader', false)
 }
 
-const hierarchy = () => {
-    const hierarchyOptions = _.cloneDeep(options)
-    hierarchyOptions.klay.layoutHierarchy = true
-    cy.layout(hierarchyOptions).run()
-}
-
-const resetLayout = () => {
-    cy.layout(options).run()
-}
-
-const resizeNodes = () => {
-    cy.nodes().style({
-        'height' : (node) => {
-            let loc = _.toInteger(node.data('loc'))
-            let size = 2 * _.round(Math.sqrt(loc))
-            return size
-        },
-        'width' : (node) => {
-            let loc = _.toInteger(node.data('loc'))
-            let size = 2 * _.round(Math.sqrt(loc))
-            return size
-        }
-    })
-    cy.layout(options).run()
-}
-
-const setRole = () => {
-    cy.elements().removeClass('hide')
-    document.getElementById('labelVisibility').value = 'showLabel'
-    let fromRole = document.getElementById('fromRole').value
-    let toRole = document.getElementById('toRole').value
-    let fromNodes = [], toNodes = []
-    fromNodes = (fromRole === '') ? cy.nodes() : cy.elements(`node[role="${fromRole}"]`)
-    toNodes = (toRole === '') ? cy.nodes() : cy.elements(`node[role="${toRole}"]`)
-    cy.startBatch()
-    const edges = fromNodes.edgesTo(toNodes)
-    const nodes = edges.connectedNodes()
-    const parents = nodes.ancestors()
-    nodes.addClass('showLabel')
-    cy.elements().not(edges).not(nodes).not(parents).addClass('hide')
-    cy.layout(options).run()
-    cy.endBatch()
-}
-
-const toggleLabelVisibility = () => {
-    let labelVisibility = document.getElementById('labelVisibility').value
-    if(labelVisibility === 'showLabel') {
-        cy.nodes().addClass('showLabel')
-    } else {
-        cy.nodes().removeClass('showLabel')
-    }
-    cy.layout(options).run()
-}
-
-const updateDependencyLevel = (lvl) => {
-    dependencyLevel = lvl
-    if(level === 'class') {
-        updateClassGraph()
+const updateGraph = () => {
+    switch(level) {
+        case 'system':
+            cy.layout(options).run()
+            break
+        case 'package':
+            updatePackageGraph()
+            break
+        case 'class':
+            updateClassGraph()
+            break
     }
 }
 
 const updateClassGraph = () => {
     const target = cy.$id(selectedClass).addClass('selected')
-    cy.startBatch()
-    cy.elements().removeClass(['hide', 'showLabel'])
-    cy.edges().removeClass(['first', 'second', 'third'])
-    // first level edges and nodes
-    const edges = target.connectedEdges()
-    const nodes = edges.connectedNodes().union(target)
-    let nodeList = nodes , edgeList = edges, parents = nodes.ancestors()
-    let secondLvlEdges = [], secondLvlNodes = [], thirdLvlEdges = [], thirdLvlNodes = []
-    if(dependencyLevel > 1) {
-        edges.addClass('first')
-        // second level edges
-        secondLvlEdges = nodes.connectedEdges().not(edges)
-        secondLvlNodes = secondLvlEdges.connectedNodes()
-        secondLvlEdges.addClass('second')
-        parents = parents.union(secondLvlNodes.ancestors())
-        nodeList = nodeList.union(secondLvlNodes)
-        edgeList = edgeList.union(secondLvlEdges)
-    }
-    if(dependencyLevel === 3) {
-        // third level edges
-        thirdLvlEdges = secondLvlNodes.connectedEdges().not(edges).not(secondLvlEdges)
-        thirdLvlNodes = thirdLvlEdges.connectedNodes()
-        thirdLvlEdges.addClass('third')
-        parents = parents.union(thirdLvlNodes.ancestors())
-        nodeList = nodeList.union(thirdLvlNodes)
-        edgeList = edgeList.union(thirdLvlEdges)
-    }
-    if(dependencyLevel === 1) {
-        nodeList.addClass('showLabel')
-        document.getElementById('labelVisibility').value = 'showLabel'
-    } else {
-        document.getElementById('labelVisibility').value = 'hideLabel'
-    }
-    cy.elements().not(nodeList).not(edgeList).not(parents).addClass('hide')
-    cy.endBatch()
-    cy.layout(options).run()
+    // cy.startBatch()
+    // cy.elements().removeClass(['hide', 'showLabel'])
+    // cy.edges().removeClass(['first', 'second', 'third'])
+    // // first level edges and nodes
+    // const edges = target.connectedEdges()
+    // const nodes = edges.connectedNodes().union(target)
+    // let nodeList = nodes , edgeList = edges, parents = nodes.ancestors()
+    // let secondLvlEdges = [], secondLvlNodes = [], thirdLvlEdges = [], thirdLvlNodes = []
+    // if(dependencyLevel > 1) {
+    //     edges.addClass('first')
+    //     // second level edges
+    //     secondLvlEdges = nodes.connectedEdges().not(edges)
+    //     secondLvlNodes = secondLvlEdges.connectedNodes()
+    //     secondLvlEdges.addClass('second')
+    //     parents = parents.union(secondLvlNodes.ancestors())
+    //     nodeList = nodeList.union(secondLvlNodes)
+    //     edgeList = edgeList.union(secondLvlEdges)
+    // }
+    // if(dependencyLevel === 3) {
+    //     // third level edges
+    //     thirdLvlEdges = secondLvlNodes.connectedEdges().not(edges).not(secondLvlEdges)
+    //     thirdLvlNodes = thirdLvlEdges.connectedNodes()
+    //     thirdLvlEdges.addClass('third')
+    //     parents = parents.union(thirdLvlNodes.ancestors())
+    //     nodeList = nodeList.union(thirdLvlNodes)
+    //     edgeList = edgeList.union(thirdLvlEdges)
+    // }
+    // if(dependencyLevel === 1) {
+    //     nodeList.addClass('showLabel')
+    //     document.getElementById('labelVisibility').value = 'showLabel'
+    // } else {
+    //     document.getElementById('labelVisibility').value = 'hideLabel'
+    // }
+    // cy.elements().not(nodeList).not(edgeList).not(parents).addClass('hide')
+    // cy.endBatch()
+    // cy.layout(options).run()
 }
 
 const updatePackageGraph = () => {
@@ -586,203 +311,7 @@ const updatePackageGraph = () => {
     const nodes = target.union(target.descendants())
     const parents = target.ancestors()
     const edges = nodes.connectedEdges()
-    nodes.addClass('showLabel')
-    cy.elements().not(nodes).not(parents).not(edges).addClass('hide')
+    cy.remove(cy.elements().not(nodes).not(parents).not(edges))
     cy.endBatch()
     cy.layout(options).run()
-}
-
-const updateChangesList = async (type) => {
-    document.getElementById('classList').innerHTML = ''
-    const versions = await getVersions()
-    let changes = {}
-    switch(level) {
-        case 'system':
-            changes = await getSystemChangesList(versionToCompare)
-            break
-        case 'package':
-            cy.nodes().addClass('showLabel')
-            changes = await getPackageChangesList(versionToCompare)
-            break
-        case 'class':
-            if(dependencyLevel === 1) {
-                cy.nodes().addClass('showLabel')
-            }
-            changes = await getClassChangesList(versionToCompare)
-            break
-    }
-    const currentIndex = _.indexOf(versions.data, selectedVersion)
-    const targetIndex = _.indexOf(versions.data, versionToCompare)
-    let removedItems = [], addedItems = []
-    if(currentIndex < targetIndex){
-        removedItems = changes.data.nodes.inCurrent
-        addedItems = changes.data.nodes.inCompared
-    } else {
-        removedItems = changes.data.nodes.inCompared
-        addedItems = changes.data.nodes.inCurrent
-    }
-    
-    switch(type) {
-        case 'removed':
-            cy.startBatch()
-            cy.elements('.removed').removeClass('hide')
-            cy.elements().removeClass('faded')
-            cy.elements('.changedRole').removeClass(['Controller', 'Coordinator', 'Interfacer', 'InformationHolder', 'ServiceProvider', 'Structurer'])
-            cy.elements().removeClass('changedRole')
-            cy.endBatch()
-            document.getElementById('classList').innerHTML = 'Compare with<br>' + versionToCompare + '<br><br>' + 'Removed classes:<br>'
-            removedItems.forEach(c => {
-                let element, sub, text
-                element = document.createElement('div')
-                element.className = 'listItem'
-                element.addEventListener('click', () => {
-                    clickChangesListItem(c.data.id)
-                })
-                sub = document.createElement('div')
-                sub = document.createElement('div')
-                if(c.data.role === undefined) {
-                    sub.className = 'listItemPackage'
-                } else {
-                    sub.className = 'listItemCircle'
-                    sub.style['background-color'] = roleMap.get(c.data.role)
-                }
-                element.appendChild(sub)
-                text = document.createElement('div')
-                text.className = 'listItemText'
-                text.innerHTML = c.data.id
-                element.appendChild(text)
-                document.getElementById('classList').appendChild(element)
-            })
-            break
-        case 'added':
-            cy.startBatch()
-            cy.elements().removeClass('faded')
-            cy.elements('.removed').addClass('hide')
-            const parents = cy.nodes('.added').ancestors()
-            parents.removeClass('hide')
-            cy.elements().not('.added').addClass('faded')
-            cy.elements('.changedRole').removeClass(['Controller', 'Coordinator', 'Interfacer', 'InformationHolder', 'ServiceProvider', 'Structurer'])
-            cy.elements().removeClass('changedRole')
-            cy.endBatch()
-            document.getElementById('classList').innerHTML = 'Compare with<br>' + versionToCompare + '<br><br>' + 'Added classes:<br>'
-            addedItems.forEach(c => {
-                let element, sub, text
-                element = document.createElement('div')
-                element.className = 'listItem'
-                element.addEventListener('click', () => {
-                    clickChangesListItem(c.data.id)
-                })
-                sub = document.createElement('div')
-                if(c.data.role === undefined) {
-                    sub.className = 'listItemPackage'
-                } else {
-                    sub.className = 'listItemCircle'
-                    sub.style['background-color'] = roleMap.get(c.data.role)
-                }
-                element.appendChild(sub)
-                text = document.createElement('div')
-                text.className = 'listItemText'
-                text.innerHTML = c.data.id
-                element.appendChild(text)
-                document.getElementById('classList').appendChild(element)
-            })
-            break
-        case 'changed':
-            cy.startBatch()
-            cy.elements().removeClass(['changedRole', 'faded'])
-            cy.elements('.removed').addClass('hide')
-            changes.data.changedRoles.forEach(n => {
-                let fromRole = n[versionToCompare]
-                fromRole = fromRole.replace(/\s+/g, '')
-                cy.$id(n.id).addClass(['changedRole', fromRole])
-            })
-            cy.endBatch()
-            document.getElementById('classList').innerHTML = 'Compare with<br>' + versionToCompare + '<br><br>' + 'Role-changed classes:<br>'
-            changes.data.changedRoles.forEach(c => {
-                let element, from, to, text
-                element = document.createElement('div')
-                element.className = 'listItem'
-                element.addEventListener('click', () => {
-                    clickChangesListItem(c.id)
-                })
-                if(currentIndex < targetIndex){
-                    from = document.createElement('div')
-                    from.className = 'listItemCircle fromRoleCircle'
-                    from.style['background-color'] = roleMap.get(c[`${selectedVersion}`])
-                    element.appendChild(from)
-                    to = document.createElement('div')
-                    to.className = 'listItemCircle'
-                    to.style['background-color'] = roleMap.get(c[`${versionToCompare}`])
-                    element.appendChild(to)
-                } else {
-                    from = document.createElement('div')
-                    from.className = 'listItemCircle fromRoleCircle'
-                    from.style['background-color'] = roleMap.get(c[`${versionToCompare}`])
-                    element.appendChild(from)
-                    to = document.createElement('div')
-                    to.className = 'listItemCircle'
-                    to.style['background-color'] = roleMap.get(c[`${selectedVersion}`])
-                    element.appendChild(to)
-                }
-                text = document.createElement('div')
-                text.className = 'listItemText'
-                text.innerHTML = c.id
-                element.appendChild(text)
-                document.getElementById('classList').appendChild(element)
-            })
-            break
-    }
-    cy.layout(options).run()
-}
-
-const clickChangesListItem = (id) => {
-    // cy.fit()
-    // if(cy.getElementById(id).hasClass('hide')) {
-    //     updateDependencyLevel(3)
-    // } 
-    cy.center(cy.getElementById(id))
-    // cy.zoom({
-    //     level: 1.2,
-    //     position: cy.getElementById(id).position()
-    // })
-}
-
-const updateElementsVisibility = () => {
-    toggleChangesDialogBox(false)
-    let filters = document.getElementsByName('roleFilter')
-    for (let item of filters) {
-        item.checked = true
-    }
-    if(level === 'system') {
-        document.getElementById('labelVisibility').value = 'hideLabel'
-        document.getElementById('dependency').style.display = 'none'
-        document.getElementById('filterOptions').style.display = 'flex'
-    } else if(level === 'package') {
-        document.getElementById('labelVisibility').value = 'showLabel'
-        document.getElementById('dependency').style.display = 'none'
-        document.getElementById('filterOptions').style.display = 'none'
-    } else if(level === 'class') {
-        document.getElementById('labelVisibility').value = 'showLabel'
-        document.getElementById('dependency').style.display = 'flex'
-        document.getElementById('filterOptions').style.display = 'none'
-    }
-}
-
-const toggleChangesDialogBox = (toShow) => {
-    document.getElementById('classList').innerHTML = ''
-    if(toShow) {
-        document.getElementById('cy').style.width = 'calc(70vw - 30px)'
-        document.getElementById('changesDialogBox').style.display = 'block'
-    } else {
-        document.getElementById('cy').style.width = 'calc(100vw - 30px)'
-        document.getElementById('changesDialogBox').style.display = 'none'
-    }
-}
-
-const toggleNodeFilter = (eles) => {
-    if(!eles.checked) {
-        cy.nodes(`[role="${eles.value}"]`).not('.hide').addClass('filter')
-    } else {
-        cy.nodes(`[role="${eles.value}"]`).not('.hide').removeClass('filter')
-    }
 }

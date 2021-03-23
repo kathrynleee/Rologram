@@ -5,104 +5,160 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>Vis Demo</title>
-        <!-- lodash -->
-        <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js"></script>
-        <!-- cytoscape -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.18.1/cytoscape.min.js"></script>
-        <!-- cytoscape layout klay -->
-        <script src="https://unpkg.com/klayjs@0.4.1/klay.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/cytoscape-klay@3.1.4/cytoscape-klay.js"></script>
-        <!-- axios -->
-        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <!-- font -->
         <link rel="preconnect" href="https://fonts.gstatic.com"> 
         <link href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <!-- js -->
         <script src="../api.js"></script>
+        <script src="../tools.js"></script>
         <script src="../script.js"></script>
         <!-- style -->
         <link rel="stylesheet" href="../style.css"/>
+        <!-- axios -->
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <!-- cytoscape -->
+        <script src="../lib/cytoscape/cytoscape.min.js"></script>
+        <!-- cytoscape layout klay -->
+        <script src="../lib/cytoscape/klay.js"></script>
+        <script src="../lib/cytoscape/cytoscape-klay.js"></script>
+        <!-- lodash -->
+        <script src="../lib/lodash/lodash.min.js"></script>
+        <!-- dragdealer -->
+        <!-- <script src="../lib/dragdealer/dragdealer.js"></script> -->
         <!-- code mirror -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.4/codemirror.min.js"></script>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.4/codemirror.min.css" rel="stylesheet">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.4/theme/eclipse.min.css" rel="stylesheet">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.4/mode/clike/clike.min.js"></script>
+        <script src="../lib/codemirror/codemirror.min.js"></script>
+        <link href="../lib/codemirror/codemirror.min.css" rel="stylesheet">
+        <link href="../lib/codemirror/eclipse.min.css" rel="stylesheet">
+        <script src="../lib/codemirror/clike.min.js"></script>
     </head>
     <body>
-        <div id="options" class="flex-row">
-            <div>VERSION:</div>
-            <div><select id="versionList" onchange="updateVersion()"></select></div>
-            <div>
-                <button onclick="resetLayout()">Relayout</button>
-                <button onclick="hierarchy()">Hierarchy</button>
-                <button onclick="resizeNodes()">Node resize by loc</button>
-                <select id="labelVisibility" onchange="toggleLabelVisibility()">
-                    <option disabled selected>Show/Hide labels</option>
-                    <option value="showLabel">Labels shown</option>
-                    <option value="hideLabel">Labels hidden</option>
-                </select>
-            </div>
-            <div id="filterOptions">
-                <div>PATTERN:</div>
-                <select id="fromRole" onchange="setRole()">
-                    <option value="">All roles</option>
-                    <option value="Controller">Controller</option>
-                    <option value="Coordinator">Coordinator</option>
-                    <option value="Interfacer">Interfacer</option>
-                    <option value="Information Holder">Information Holder</option>
-                    <option value="Service Provider">Service Provider</option>
-                    <option value="Structurer">Structurer</option>
-                </select>
-                <div class="removeRightPadding">→</div>
-                <select id="toRole" onchange="setRole()">
-                    <option value="">All roles</option>
-                    <option value="Controller">Controller</option>
-                    <option value="Coordinator">Coordinator</option>
-                    <option value="Interfacer">Interfacer</option>
-                    <option value="Information Holder">Information Holder</option>
-                    <option value="Service Provider">Service Provider</option>
-                    <option value="Structurer">Structurer</option>
-                </select>
-            </div>
-            <div id="dependency" class="flex-row">
-                <div>DEPENDENCY LEVEL:</div>
+        <div class="header">
+            <div id="info" class="hide">
                 <div class="flex-row">
-                    <button onclick="updateDependencyLevel(1)">1</button>
-                    <button onclick="updateDependencyLevel(2)">2</button>
-                    <button onclick="updateDependencyLevel(3)">3</button>
+                    <div class="system"></div>
+                    <div class="commit">
+                        <div>
+                            <img alt="Octicons-git-commit" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Octicons-git-commit.svg/512px-Octicons-git-commit.svg.png">
+                        </div>
+                        <div class="commit-id"></div>
+                        <div class="commit-date"></div>
+                    </div>
+                </div>
+                <div class="flex-row class-id hide">
+                    <div class="package"></div>
+                    <div class="class"></div>
+                </div>
+            </div>
+            <div class="timeline">
+                <!-- <div id="slider" class="dragdealer">
+                    <div class="handle"><div id="pointer" class="material-icons">place</div></div>
+                </div> -->
+                <!-- <div id="selected"></div> -->
+                <div id="roles"></div>
+            </div>
+            <div class="icons">
+                <div class="icon" data-text="Tools" onclick="closeOpenedDialog(); showTools();">
+                    <div class="material-icons">edit</div>
+                </div>
+                <div class="icon" data-text="Compare">
+                    <div class="material-icons">compare</div>
+                </div>
+                <div class="icon" data-text="Animation">
+                    <div class="material-icons">play_circle</div>
+                </div>
+                <div class="icon" data-text="Pattern">
+                    <div class="material-icons">pattern</div>
+                </div>
+                <div class="icon" data-text="Code" onclick="closeOpenedDialog(); showSourceCode();">
+                    <div class="material-icons">code</div>
+                </div>
+                <div class="icon" data-text="History" onclick="closeOpenedDialog(); showHistory();">
+                    <div class="material-icons">restore</div>
+                </div>
+                <div class="icon" data-text="Download" onclick="download()">
+                    <div class="material-icons">download</div>
+                </div>
+                <div class="icon" data-text="Guide">
+                    <div class="material-icons">info</div>
                 </div>
             </div>
         </div>
-        <div id="legend" class="flex-row"></div>
-        <div id="filterNodes" class="flex-row">
-            <input type="checkbox" name="roleFilter" value="Controller" checked onchange="toggleNodeFilter(this)">
-            <label>Controller</label>
-            <input type="checkbox" name="roleFilter" value="Coordinator" checked onchange="toggleNodeFilter(this)">
-            <label>Coordinator</label>
-            <input type="checkbox" name="roleFilter" value="Interfacer" checked onchange="toggleNodeFilter(this)">
-            <label>Interfacer</label>
-            <input type="checkbox" name="roleFilter" value="Information Holder" checked onchange="toggleNodeFilter(this)">
-            <label>Information Holder</label>
-            <input type="checkbox" name="roleFilter" value="Service Provider" checked onchange="toggleNodeFilter(this)">
-            <label>Service Provider</label>
-            <input type="checkbox" name="roleFilter" value="Structurer" checked onchange="toggleNodeFilter(this)">
-            <label>Structurer</label>
-        </div>
         <div id="cy"></div>
-        <div id="changesDialogBox">
-            <div class="flex-row justity-space-between">
-                <button onclick="updateChangesList('removed')">Removed</button>
-                <button onclick="updateChangesList('added')">Added</button>
-                <button onclick="updateChangesList('changed')">Changed</button>
+        <div id="legend"></div>
+        <div id="loader"></div>
+        <div id="tools" class="hide dialog">
+            <div class="close material-icons" onclick="closeDialog('tools')">close</div>
+            <div class="tool-row">
+                <div class="tool-title">Layout</div>
+                <div class="tool-row-items">
+                    <div class="selected-option">Klay</div>
+                    <div>Hierarchy</div>
+                </div>
             </div>
-            <div id="list">
-                <div id="classList"></div>
+            <div class="tool-row">
+                <div class="tool-title">Labels</div>
+                <div class="tool-row-items">
+                    <div>Shown</div>
+                    <div class="selected-option">Hidden</div>
+                </div>
+            </div>
+            <div class="tool-row">
+                <div class="tool-title">Metrics</div>
+                <div class="tool-row-items">
+                    <div class="selected-option">Roles Only</div>
+                    <div>Lines of Codes</div>
+                </div>
+            </div>
+            <div class="tool-row">
+                <div class="tool-title">Filter Roles</div>
+                <div class="tool-row-items roles-filter">
+                    <div data-role="Controller" class="tool-role"></div>
+                    <div data-role="Coordinator" class="tool-role"></div>
+                    <div data-role="Interfacer" class="tool-role"></div>
+                    <div data-role="Information Holder" class="tool-role"></div>
+                    <div data-role="Service Provider" class="tool-role"></div>
+                    <div data-role="Structurer" class="tool-role"></div>
+                </div>
+            </div>
+            <div class="tool-row">
+                <div class="tool-title">Dependency Type</div>
+                <div class="tool-row-items">
+                    <div class="selected-option">All</div>
+                    <div>In</div>
+                    <div>Out</div>
+                </div>
+            </div>
+            <div class="tool-row">
+                <div class="tool-title">Dependency Level</div>
+                <div class="tool-row-items dep-level">
+                    <div class="selected-option">1</div>
+                    <div>2</div>
+                    <div>3</div>
+                </div>
             </div>
         </div>
-        <div id="info">
-            <div id="selected"></div>
-            <div id="roles"></div>
+        <div id="sourceCode" class="hide dialog">
+            <div class="close material-icons" onclick="closeDialog('sourceCode')">close</div>
+            <div class="code hide">
+                <textarea id="editor"></textarea>
+            </div>
+            <div class="not-found hide"></div>
         </div>
-        <textarea id="editor"></textarea>
+        <div id="history" class="hide dialog">
+            <div class="history-title">History</div>
+            <div class="close material-icons" onclick="closeDialog('sourceCode')">close</div>
+            <div class="history-row">
+                <div class="flex-row">
+                    <div>
+                        <img alt="Octicons-git-commit" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Octicons-git-commit.svg/512px-Octicons-git-commit.svg.png">
+                    </div>
+                    <div class="commit-id">1b30fd5</div>
+                    <div class="commit-date">on 2020-01-06</div>
+                </div>
+                <div class="package">wallet.ui</div>
+                <div class="class">WalletApplication</div>
+            </div>
+        </div>
     </body>
 </html>
