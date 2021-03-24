@@ -134,13 +134,14 @@ body {
 .timeline {
   margin: 0 10px;
   width: calc(100vw - 800px);
+  height: 100px;
+  overflow-x: scroll;
+  overflow-y: hidden;
 }
 
 #roles {
   display: flex;
   flex-direction: row;
-  overflow-x: scroll;
-  overflow-y: hidden;
   padding-left: 2px;
   padding-top: 20px;
 }

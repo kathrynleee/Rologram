@@ -148,6 +148,9 @@ body {
 .timeline {
   margin: 0 10px;
   width: calc(100vw - 800px);
+  height: 100px;
+  overflow-x: scroll;
+  overflow-y: hidden;
   // #slider.dragdealer {
   //   // width: calc(70vw - 20px);
   //   left: -5px;
@@ -171,8 +174,6 @@ body {
 #roles {
   display: flex;
   flex-direction: row;
-  overflow-x: scroll;
-  overflow-y: hidden;
   // min-height: 75px;
   padding-left: 2px;
   padding-top: 20px;
