@@ -44,7 +44,7 @@
             }
         },
         {
-            "selector": "node:parent, node:parent.added, node:parent.faded",
+            "selector": "node:parent, node:parent.added, node:parent.faded, .parent",
             "style": {
                 "label": "data(name)",
                 "font-size": "30",

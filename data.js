@@ -157,15 +157,46 @@ const getSystemLevelChanges = (currentVersion, versionToBeCompared) => {
 
   // nodes
   // in both sets of nodes, included nodes for packages
-  // const sameNodes = currentNodes.filter(n1 => comparedNodes.some(n2 => n1.data.id === n2.data.id))
+  const sameNodes = currentNodes.filter(n1 => comparedNodes.some(n2 => n1.data.id === n2.data.id))
   // only in current set
   const nodesInFirstSetOnly = _.sortBy(currentNodes.filter(n1 => !comparedNodes.some(n2 => n1.data.id === n2.data.id)), ['data.id'])
   // only in set to be compared
   const nodesInSecondSetOnly = _.sortBy(comparedNodes.filter(n1 => !currentNodes.some(n2 => n1.data.id === n2.data.id)), ['data.id'])
 
+  // parents
+  let parents = []
+  sameNodes.forEach(n => {
+    let id = n.data.id
+    while(getParentPackageName(id) !== '' && !parents.includes(getParentPackageName(id))) {
+      parents.push(getParentPackageName(id))
+      id = getParentPackageName(id)
+    }
+  })
+  nodesInFirstSetOnly.forEach(n => {
+    let id = n.data.id
+    while(getParentPackageName(id) !== '' && !parents.includes(getParentPackageName(id))) {
+      parents.push(getParentPackageName(id))
+      id = getParentPackageName(id)
+    }
+  })
+  nodesInSecondSetOnly.forEach(n => {
+    let id = n.data.id
+    while(getParentPackageName(id) !== '' && !parents.includes(getParentPackageName(id))) {
+      parents.push(getParentPackageName(id))
+      id = getParentPackageName(id)
+    }
+  })
+  parents = _.uniq(parents)
+  let parentList = []
+  parents.forEach(id => {
+    const found = elements.nodes.find(n => n.data.id === id && (n.data.version === currentVersion || n.data.version === versionToBeCompared))
+    parentList.push(found)
+  })
+  parentList = _.uniq(parentList)
+  
   // edges 
   // in both sets of edges
-  // const sameEdges = currentEdges.filter(e1 => comparedEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
+  const sameEdges = currentEdges.filter(e1 => comparedEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
   // only in current set
   const edgesInFirstSetOnly = currentEdges.filter(e1 => !comparedEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
   // only in set to be compared
@@ -188,8 +219,9 @@ const getSystemLevelChanges = (currentVersion, versionToBeCompared) => {
   const changeObj = {
     from: currentVersion,
     to: versionToBeCompared,
-    nodes: { inCurrent: nodesInFirstSetOnly, inCompared: nodesInSecondSetOnly },
-    edges: { inCurrent: edgesInFirstSetOnly, inCompared: edgesInSecondSetOnly },
+    nodes: { same: sameNodes, inCurrent: nodesInFirstSetOnly, inCompared: nodesInSecondSetOnly },
+    edges: { same: sameEdges, inCurrent: edgesInFirstSetOnly, inCompared: edgesInSecondSetOnly },
+    parents: parentList,
     changedRoles: roleChangedNodeList
   }
   
@@ -215,15 +247,46 @@ const getPackageLevelChanges = (currentVersion, versionToBeCompared, package) =>
 
   // nodes
   // in both sets of nodes, included nodes for packages
-  // const sameNodes = currentNodes.filter(n1 => comparedNodes.some(n2 => n1.data.id === n2.data.id))
+  const sameNodes = currentNodes.filter(n1 => comparedNodes.some(n2 => n1.data.id === n2.data.id))
   // only in current set
   const nodesInFirstSetOnly = _.sortBy(currentNodes.filter(n1 => !comparedNodes.some(n2 => n1.data.id === n2.data.id)), ['data.id'])
   // only in set to be compared
   const nodesInSecondSetOnly = _.sortBy(comparedNodes.filter(n1 => !currentNodes.some(n2 => n1.data.id === n2.data.id)), ['data.id'])
 
+  // parents
+  let parents = []
+  sameNodes.forEach(n => {
+    let id = n.data.id
+    while(getParentPackageName(id) !== '' && !parents.includes(getParentPackageName(id))) {
+      parents.push(getParentPackageName(id))
+      id = getParentPackageName(id)
+    }
+  })
+  nodesInFirstSetOnly.forEach(n => {
+    let id = n.data.id
+    while(getParentPackageName(id) !== '' && !parents.includes(getParentPackageName(id))) {
+      parents.push(getParentPackageName(id))
+      id = getParentPackageName(id)
+    }
+  })
+  nodesInSecondSetOnly.forEach(n => {
+    let id = n.data.id
+    while(getParentPackageName(id) !== '' && !parents.includes(getParentPackageName(id))) {
+      parents.push(getParentPackageName(id))
+      id = getParentPackageName(id)
+    }
+  })
+  parents = _.uniq(parents)
+  let parentList = []
+  parents.forEach(id => {
+    const found = elements.nodes.find(n => n.data.id === id && (n.data.version === currentVersion || n.data.version === versionToBeCompared))
+    parentList.push(found)
+  })
+  parentList = _.uniq(parentList)
+
   // edges 
   // in both sets of edges
-  // const sameEdges = currentEdges.filter(e1 => comparedEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
+  const sameEdges = currentEdges.filter(e1 => comparedEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
   // only in current set
   const edgesInFirstSetOnly = currentEdges.filter(e1 => !comparedEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
   // only in set to be compared
@@ -246,8 +309,9 @@ const getPackageLevelChanges = (currentVersion, versionToBeCompared, package) =>
   const changeObj = {
     from: currentVersion,
     to: versionToBeCompared,
-    nodes: { inCurrent: nodesInFirstSetOnly, inCompared: nodesInSecondSetOnly },
-    edges: { inCurrent: edgesInFirstSetOnly, inCompared: edgesInSecondSetOnly },
+    nodes: { same: sameNodes, inCurrent: nodesInFirstSetOnly, inCompared: nodesInSecondSetOnly },
+    edges: { same: sameEdges, inCurrent: edgesInFirstSetOnly, inCompared: edgesInSecondSetOnly },
+    parents: parentList,
     changedRoles: roleChangedNodeList
   }
   
@@ -307,7 +371,7 @@ const getClassLevelChanges = (currentVersion, versionToBeCompared, selectedClass
 
   // nodes
   // in both sets of nodes, included nodes for packages
-  // const sameNodes = currentNodes.filter(n1 => comparedNodes.some(n2 => n1.data.id === n2.data.id))
+  const sameNodes = currentNodes.filter(n1 => comparedNodes.some(n2 => n1.data.id === n2.data.id))
   // only in current set
   const nodesInFirstSetOnly = _.sortBy(currentNodes.filter(n1 => !comparedNodes.some(n2 => n1.data.id === n2.data.id)), ['data.id'])
   // only in set to be compared
@@ -315,6 +379,13 @@ const getClassLevelChanges = (currentVersion, versionToBeCompared, selectedClass
 
   // parents
   let parents = []
+  sameNodes.forEach(n => {
+    let id = n.data.id
+    while(getParentPackageName(id) !== '' && !parents.includes(getParentPackageName(id))) {
+      parents.push(getParentPackageName(id))
+      id = getParentPackageName(id)
+    }
+  })
   nodesInFirstSetOnly.forEach(n => {
     let id = n.data.id
     while(getParentPackageName(id) !== '' && !parents.includes(getParentPackageName(id))) {
@@ -339,7 +410,7 @@ const getClassLevelChanges = (currentVersion, versionToBeCompared, selectedClass
 
   // edges 
   // in both sets of edges
-  // const sameEdges = currentEdges.filter(e1 => comparedEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
+  const sameEdges = currentEdges.filter(e1 => comparedEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
   // only in current set
   const edgesInFirstSetOnly = currentEdges.filter(e1 => !comparedEdges.some(e2 => e1.data.source === e2.data.source && e1.data.target === e2.data.target))
   // only in set to be compared
@@ -362,8 +433,8 @@ const getClassLevelChanges = (currentVersion, versionToBeCompared, selectedClass
   const changeObj = {
     from: currentVersion,
     to: versionToBeCompared,
-    nodes: { inCurrent: nodesInFirstSetOnly, inCompared: nodesInSecondSetOnly },
-    edges: { inCurrent: edgesInFirstSetOnly, inCompared: edgesInSecondSetOnly },
+    nodes: { same: sameNodes, inCurrent: nodesInFirstSetOnly, inCompared: nodesInSecondSetOnly },
+    edges: { same: sameEdges, inCurrent: edgesInFirstSetOnly, inCompared: edgesInSecondSetOnly },
     parents: parentList,
     changedRoles: roleChangedNodeList
   }
