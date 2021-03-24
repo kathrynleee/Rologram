@@ -275,7 +275,14 @@ body {
     padding: 20px;
     border: solid $bg-color;
     border-width: 5px 0;
+    border-bottom-width: 0;
     font-size: 20px;
+    &:last-child {
+      border-bottom-width: 5px;
+    }
+    .history-commit {
+      @extend %flex-row;
+    }
     .package {
       padding: 2px;
       font-size: 18px;
@@ -306,6 +313,17 @@ body {
       text-transform: uppercase;
       font-size: 16px;
       margin-bottom: 2px;
+    }
+    &.disabled {
+      opacity: 0.4;
+      .tool-row-items {
+        div {
+          &:hover {
+            cursor: default;
+            opacity: 1;
+          }
+        }
+      }
     }
     .tool-row-items {
       font-size: 30px;

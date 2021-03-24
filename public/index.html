@@ -10,11 +10,11 @@
         <link href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <!-- js -->
-        <script src="../api.js"></script>
-        <script src="../tools.js"></script>
-        <script src="../script.js"></script>
+        <script src="../script/api.js"></script>
+        <script src="../script/tools.js"></script>
+        <script src="../script/script.js"></script>
         <!-- style -->
-        <link rel="stylesheet" href="../style.css"/>
+        <link rel="stylesheet" href="../style/style.css"/>
         <!-- axios -->
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <!-- cytoscape -->
@@ -59,13 +59,13 @@
             </div>
             <div class="icons">
                 <div class="icon" data-text="Tools" onclick="closeOpenedDialog(); showTools();">
-                    <div class="material-icons">edit</div>
+                    <div class="material-icons">tune</div>
                 </div>
                 <div class="icon" data-text="Compare">
                     <div class="material-icons">compare</div>
                 </div>
                 <div class="icon" data-text="Animation">
-                    <div class="material-icons">play_circle</div>
+                    <div class="material-icons">animation</div>
                 </div>
                 <div class="icon" data-text="Pattern">
                     <div class="material-icons">pattern</div>
@@ -92,49 +92,49 @@
             <div class="tool-row">
                 <div class="tool-title">Layout</div>
                 <div class="tool-row-items">
-                    <div class="selected-option">Klay</div>
-                    <div>Hierarchy</div>
+                    <div data-option="klay" class="selected-option" onclick="changeLayout('klay')">Klay</div>
+                    <div data-option="hierarchy" onclick="changeLayout('hierarchy')">Hierarchy</div>
                 </div>
             </div>
             <div class="tool-row">
                 <div class="tool-title">Labels</div>
-                <div class="tool-row-items">
-                    <div>Shown</div>
-                    <div class="selected-option">Hidden</div>
+                <div class="tool-row-items label-visibility">
+                    <div data-option="showLabels" onclick="toggleLabelVisibility('showLabels')">Shown</div>
+                    <div data-option="hideLabels" class="selected-option" onclick="toggleLabelVisibility('hideLabels')">Hidden</div>
                 </div>
             </div>
             <div class="tool-row">
                 <div class="tool-title">Metrics</div>
                 <div class="tool-row-items">
-                    <div class="selected-option">Roles Only</div>
-                    <div>Lines of Codes</div>
+                    <div data-option="rolesOnly" class="selected-option" onclick="resizeNodes('rolesOnly')">Roles Only</div>
+                    <div data-option="linesOfCode" onclick="resizeNodes('linesOfCode')">Lines of Code</div>
                 </div>
             </div>
             <div class="tool-row">
                 <div class="tool-title">Filter Roles</div>
                 <div class="tool-row-items roles-filter">
-                    <div data-role="Controller" class="tool-role"></div>
-                    <div data-role="Coordinator" class="tool-role"></div>
-                    <div data-role="Interfacer" class="tool-role"></div>
-                    <div data-role="Information Holder" class="tool-role"></div>
-                    <div data-role="Service Provider" class="tool-role"></div>
-                    <div data-role="Structurer" class="tool-role"></div>
+                    <div data-role="Controller" class="tool-role" onclick="filterRole('Controller')"></div>
+                    <div data-role="Coordinator" class="tool-role" onclick="filterRole('Coordinator')"></div>
+                    <div data-role="Information Holder" class="tool-role" onclick="filterRole('Information Holder')"></div>
+                    <div data-role="Interfacer" class="tool-role" onclick="filterRole('Interfacer')"></div>
+                    <div data-role="Service Provider" class="tool-role" onclick="filterRole('Service Provider')"></div>
+                    <div data-role="Structurer" class="tool-role" onclick="filterRole('Structurer')"></div>
                 </div>
             </div>
-            <div class="tool-row">
+            <div class="class-level tool-row">
                 <div class="tool-title">Dependency Type</div>
-                <div class="tool-row-items">
-                    <div class="selected-option">All</div>
-                    <div>In</div>
-                    <div>Out</div>
+                <div class="tool-row-items dep-type">
+                    <div data-option="all" class="selected-option" onclick="updateDependencyType('all')">All</div>
+                    <div data-option="in" onclick="updateDependencyType('in')">In</div>
+                    <div data-option="out" onclick="updateDependencyType('out')">Out</div>
                 </div>
             </div>
-            <div class="tool-row">
+            <div class="class-level tool-row">
                 <div class="tool-title">Dependency Level</div>
                 <div class="tool-row-items dep-level">
-                    <div class="selected-option">1</div>
-                    <div>2</div>
-                    <div>3</div>
+                    <div data-option="1" class="selected-option" onclick="updateDependencyLevel(1)">1</div>
+                    <div data-option="2" onclick="updateDependencyLevel(2)">2</div>
+                    <div data-option="3" onclick="updateDependencyLevel(3)">3</div>
                 </div>
             </div>
         </div>
@@ -147,17 +147,8 @@
         </div>
         <div id="history" class="hide dialog">
             <div class="history-title">History</div>
-            <div class="close material-icons" onclick="closeDialog('sourceCode')">close</div>
-            <div class="history-row">
-                <div class="flex-row">
-                    <div>
-                        <img alt="Octicons-git-commit" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Octicons-git-commit.svg/512px-Octicons-git-commit.svg.png">
-                    </div>
-                    <div class="commit-id">1b30fd5</div>
-                    <div class="commit-date">on 2020-01-06</div>
-                </div>
-                <div class="package">wallet.ui</div>
-                <div class="class">WalletApplication</div>
+            <div class="close material-icons" onclick="closeDialog('history')">close</div>
+            <div id="history-list">
             </div>
         </div>
     </body>

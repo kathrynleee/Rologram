@@ -1,3 +1,5 @@
+'use strict'
+
 const getVersions = async () => {
   try {
       return await axios.get( '/api/data/versions')

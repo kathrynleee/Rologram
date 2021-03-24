@@ -1,4 +1,4 @@
-#legend .legendRole, #legend, #tools .tool-row .tool-row-items, .icons, #info .commit, .header, .flex-row {
+#legend .legendRole, #legend, #tools .tool-row .tool-row-items, #history .history-row .history-commit, .icons, #info .commit, .header, .flex-row {
   display: flex;
   flex-direction: row;
 }
@@ -241,7 +241,11 @@ body {
   padding: 20px;
   border: solid #f6f7f8;
   border-width: 5px 0;
+  border-bottom-width: 0;
   font-size: 20px;
+}
+#history .history-row:last-child {
+  border-bottom-width: 5px;
 }
 #history .history-row .package {
   padding: 2px;
@@ -273,6 +277,13 @@ body {
   text-transform: uppercase;
   font-size: 16px;
   margin-bottom: 2px;
+}
+#tools .tool-row.disabled {
+  opacity: 0.4;
+}
+#tools .tool-row.disabled .tool-row-items div:hover {
+  cursor: default;
+  opacity: 1;
 }
 #tools .tool-row .tool-row-items {
   font-size: 30px;
