@@ -12,6 +12,9 @@
         <!-- js -->
         <script src="../script/api.js"></script>
         <script src="../script/tools.js"></script>
+        <script src="../script/compare.js"></script>
+        <script src="../script/pattern.js"></script>
+        <script src="../script/animation.js"></script>
         <script src="../script/script.js"></script>
         <!-- style -->
         <link rel="stylesheet" href="../style/style.css"/>
@@ -61,13 +64,13 @@
                 <div class="icon" data-text="Tools" onclick="closeOpenedDialog(); showTools();">
                     <div class="material-icons">tune</div>
                 </div>
-                <div class="icon" data-text="Compare">
+                <div class="icon" data-text="Compare" onclick="closeOpenedDialog(); showCompareDialog();">
                     <div class="material-icons">compare</div>
                 </div>
-                <div class="icon" data-text="Animation">
+                <div class="icon" data-text="Animation" onclick="closeOpenedDialog(); showAnimationDialog();">
                     <div class="material-icons">animation</div>
                 </div>
-                <div class="icon" data-text="Pattern">
+                <div class="icon" data-text="Pattern" onclick="closeOpenedDialog(); showPatternDialog();">
                     <div class="material-icons">pattern</div>
                 </div>
                 <div class="icon" data-text="Code" onclick="closeOpenedDialog(); showSourceCode();">
@@ -150,6 +153,22 @@
             <div class="close material-icons" onclick="closeDialog('history')">close</div>
             <div id="history-list">
             </div>
+        </div>
+        <div id="compare" class="hide dialog">
+            <div class="close material-icons" onclick="closeDialog('compare')">close</div>
+            <div id="version-select"></div>
+            <button onclick="showChangeList('removed')">Removed</button>
+            <button onclick="showChangeList('added')">Added</button>
+            <button onclick="showChangeList('changed')">Role Changed</button>
+            <div class="changeList"></div>
+        </div>
+        <div id="animation" class="hide dialog">
+            <div class="close material-icons" onclick="closeDialog('animation')">close</div>
+            <div>111</div>
+        </div>
+        <div id="pattern" class="hide dialog">
+            <div class="close material-icons" onclick="closeDialog('pattern')">close</div>
+            <div>111</div>
         </div>
     </body>
 </html>

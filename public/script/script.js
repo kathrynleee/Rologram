@@ -2,13 +2,14 @@
 
 let cy, codeEditor
 let level = 'system'
-let selectedVersion, selectedPackage, selectedClass
+let selectedVersion, selectedPackage = '', selectedClass = ''
 let versionElements = [], historyList = []
 let roleMap = new Map([
     ['Controller', '#755194'], ['Coordinator', '#539967'], 
-    ['Information Holder', '#bf3f6a'], ['Interfacer', '#E9AB45'],
-    ['Service Provider', '#4d82b0'], ['Structurer', '#e6a1b2']
+    ['Information Holder', '#BF3F6A'], ['Interfacer', '#E9AB45'],
+    ['Service Provider', '#4D82B0'], ['Structurer', '#E6A1b2']
 ])
+
 const options = {
     name: 'klay',
     nodeDimensionsIncludeLabels: true, 
@@ -41,6 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     createGraph()
     createLegend()
     createInfo()
+    createSelect()
     // const dragger = new Dragdealer('slider', {
     //     steps: versions.data.length,
     //     callback: () => {
@@ -88,20 +90,21 @@ const createTimeline = async (selected) => {
         if(level === 'class') {
             const node = _.find(roleList.data, ['data.version', v])
             if(node === undefined) {
-                element.style['background-color'] = '#a9b6c2'
+                element.style['background-color'] = '#dadad8'
                 element.className = 'role hover-no-effect'
             } else {
                 let role = node.data.role
                 element.style['background-color'] = roleMap.get(role)
                 span.addEventListener('click', () => {
-                    showChanges(v)
-                    createIndicators(v)
+                    initGraph(v, selectedPackage, selectedClass)
+                    // showChanges(v)
+                    // createIndicators(v)
                 })
             }
         } else {
             const list = _.find(roleList.data, ['version', v])
             if(list.role.length === 0) {
-                element.style['background-color'] = '#a9b6c2'
+                element.style['background-color'] = '#dadad8'
                 element.className = 'role hover-no-effect'
             } else if(list.role.length === 1) {
                 element.style['background-color'] = roleMap.get(list.role[0])
@@ -121,8 +124,9 @@ const createTimeline = async (selected) => {
             }
             if(list.role.length > 0) {
                 span.addEventListener('click', () => {
-                    showChanges(v)
-                    createIndicators(v)
+                    initGraph(v, selectedPackage, selectedClass)
+                    // showChanges(v)
+                    // createIndicators(v)
                 })
             }
         }
@@ -194,9 +198,7 @@ const createGraph = async () => {
                 resetTools()
                 const target = e.target
                 if (target === cy) {
-                    selectedPackage = ''
-                    selectedClass = ''
-                    initGraph(selectedVersion, selectedPackage, selectedClass)
+                    initGraph(selectedVersion, '', '')
                 }
             })
             this.on('tap', 'node', async (e) => {
@@ -204,15 +206,10 @@ const createGraph = async () => {
                 const id = target._private.data.id
                 const version = target._private.data.version
                 selectedVersion = version
-                // target = cy.$id(selected)
                 if(target.isParent()) {
-                    selectedPackage = id
-                    selectedClass = ''
-                    initGraph(selectedVersion, selectedPackage, selectedClass)
+                    initGraph(selectedVersion, id, '')
                 } else {
-                    selectedPackage = ''
-                    selectedClass = id
-                    initGraph(selectedVersion, selectedPackage, selectedClass)
+                    initGraph(selectedVersion, '', id)
                 }
             })
             this.on('mouseover', 'node', (e) => {
@@ -268,6 +265,10 @@ const initGraph = async (version, pkg, cls) => {
         createTimeline(selectedClass)
         if(document.querySelector('#sourceCode').style.display === 'flex') {
             showSourceCode()
+            // cy.panBy({
+            //     x: -200,
+            //     y: 0 
+            // })
         }
     }
     createInfo()
@@ -277,7 +278,7 @@ const initGraph = async (version, pkg, cls) => {
 const updateGraph = () => {
     switch(level) {
         case 'system':
-            cy.layout(options).run()
+            cy.layout(currentLayoutOptions).run()
             break
         case 'package':
             updatePackageGraph()
@@ -355,71 +356,4 @@ const updatePackageGraph = () => {
     cy.remove(cy.elements().not(nodes).not(parents).not(edges))
     cy.endBatch()
     cy.layout(currentLayoutOptions).run()
-}
-
-const showChanges = async (versionToCompare) => {
-    const versions = await getVersions()
-    if(versionToCompare !== selectedVersion) {
-        let changes
-        switch(level) {
-            case 'system':
-                changes = await getSystemChangesList(versionToCompare)
-                break
-            case 'package':
-                changes = await getPackageChangesList(versionToCompare)
-                break
-            case 'class':
-                changes = await getClassChangesList(versionToCompare)
-                break
-        }
-        const currentIndex = _.indexOf(versions.data, selectedVersion)
-        const targetIndex = _.indexOf(versions.data, versionToCompare)
-        if(currentIndex < targetIndex) {
-            _.forEach(changes.data.nodes.inCompared, d => d.data['status'] = 'added')
-            _.forEach(changes.data.edges.inCompared, d => d.data['status'] = 'added')
-            _.forEach(changes.data.nodes.inCurrent, d => d.data['status'] = 'removed')
-            _.forEach(changes.data.edges.inCurrent, d => d.data['status'] = 'removed')
-        } else {
-            _.forEach(changes.data.nodes.inCompared, d => d.data['status'] = 'removed')
-            _.forEach(changes.data.edges.inCompared, d => d.data['status'] = 'removed')
-            _.forEach(changes.data.nodes.inCurrent, d => d.data['status'] = 'added')
-            _.forEach(changes.data.edges.inCurrent, d => d.data['status'] = 'added')
-        }
-        _.forEach(changes.data.nodes.same, d => d.data['status'] = 'same')
-        _.forEach(changes.data.edges.same, d => d.data['status'] = 'same')
-        cy.startBatch()
-        cy.remove(cy.elements())
-        cy.add(changes.data.parents)
-        cy.add(changes.data.nodes.same)
-        cy.add(changes.data.nodes.inCurrent)
-        cy.add(changes.data.nodes.inCompared)
-        cy.add(changes.data.edges.same)
-        cy.add(changes.data.edges.inCurrent)
-        cy.add(changes.data.edges.inCompared)
-        if(currentIndex < targetIndex){
-            cy.elements('[status="added"]').addClass('added')
-            _.forEach(changes.data.edges.inCurrent, d => 
-                cy.edges('edge[source="' + d.data.source + '"][target="' + d.data.target + '"]').addClass('removed')
-            )
-        } else {
-            cy.elements('[status="removed"]').addClass('removed')
-            _.forEach(changes.data.edges.inCurrent, d => 
-                cy.edges('edge[source="' + d.data.source + '"][target="' + d.data.target + '"]').addClass('added')
-            )
-        }
-        changes.data.changedRoles.forEach(n => {
-            let fromRole = n[versionToCompare]
-            fromRole = fromRole.replace(/\s+/g, '')
-            cy.$id(n.id).addClass(['changedRole', fromRole])
-        })
-        cy.elements('[status="same"]').addClass('faded')
-        cy.nodes(':parent').addClass('parent')
-        if(level === 'class') {
-            cy.$id(selectedClass).addClass('selected')
-        }
-        cy.endBatch()
-        cy.layout(currentLayoutOptions).run()
-    } else {
-        initGraph(selectedVersion, selectedPackage, selectedClass)
-    }
 }

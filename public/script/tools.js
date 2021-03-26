@@ -5,28 +5,28 @@ const showSourceCode = async () => {
   setVisible('#sourceCode .code', false)
   setVisible('#sourceCode .not-found', false)
   if(level !== 'class') {
-      setVisible('#sourceCode .not-found', true)
-      document.querySelector('#sourceCode .not-found').textContent = 'Source code only available for classes'
+    setVisible('#sourceCode .not-found', true)
+    document.querySelector('#sourceCode .not-found').textContent = 'Source code only available for classes'
   } else {
-      const code = await displaySourceCode()
-      if(code !== undefined) {
-          setVisible('#sourceCode .code', true)
-          if(codeEditor !== undefined) {
-              codeEditor.getWrapperElement().remove()
-              codeEditor = undefined
-          }
-          codeEditor = CodeMirror.fromTextArea(document.getElementById('editor'), {
-              mode: 'text/x-java',
-              theme: 'eclipse',
-              lineNumbers: true,
-              lineWrapping: true,
-              readOnly: 'nocursor'
-          })
-          codeEditor.setValue(code.data)
-      } else {
-          setVisible('#sourceCode .not-found', true)
-          document.querySelector('#sourceCode .not-found').textContent = 'Not found'
+    const code = await displaySourceCode()
+    if(code !== undefined) {
+      setVisible('#sourceCode .code', true)
+      if(codeEditor !== undefined) {
+        codeEditor.getWrapperElement().remove()
+        codeEditor = undefined
       }
+      codeEditor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+        mode: 'text/x-java',
+        theme: 'eclipse',
+        lineNumbers: true,
+        lineWrapping: true,
+        readOnly: 'nocursor'
+      })
+      codeEditor.setValue(code.data)
+    } else {
+      setVisible('#sourceCode .not-found', true)
+      document.querySelector('#sourceCode .not-found').textContent = 'Not found'
+    }
   }
 }
 
@@ -37,7 +37,7 @@ const displaySourceCode = async () => {
   let className = selectedClass
   // handle inner class
   if(selectedClass.indexOf('$') !== -1) {
-      className = className.slice(0, selectedClass.indexOf('$'))
+    className = className.slice(0, selectedClass.indexOf('$'))
   }
   const filePath = className.split('.').join('/') + '.java'
   const paths = await getPaths()
@@ -45,10 +45,10 @@ const displaySourceCode = async () => {
   const ownerName = paths.data[0]
   let i = 0, path, url, code
   do {
-      i = i + 1
-      path = paths.data[i]
-      url = `https://raw.githubusercontent.com/${ownerName}/${systemName}/${commitId}/${path}/${filePath}`
-      code = await getSourceCode(url)
+    i = i + 1
+    path = paths.data[i]
+    url = `https://raw.githubusercontent.com/${ownerName}/${systemName}/${commitId}/${path}/${filePath}`
+    code = await getSourceCode(url)
   } while (code === undefined && i < paths.data.length)
   return code
 }
@@ -64,7 +64,7 @@ const closeDialog = (id) => {
 const closeOpenedDialog = () => {
   let eles = document.getElementsByClassName('dialog')
   for (var i = 0; i < eles.length; i++) {
-      eles[i].style.display = 'none'
+    eles[i].style.display = 'none'
   }
 }
 
@@ -81,9 +81,9 @@ const download = () => {
 
 const setVisible = (selector, visible, flex) => {
   if(visible && flex) {
-      document.querySelector(selector).style.display = 'flex'
+    document.querySelector(selector).style.display = 'flex'
   } else {
-      document.querySelector(selector).style.display = visible ? 'block' : 'none'
+    document.querySelector(selector).style.display = visible ? 'block' : 'none'
   }
 }
 
@@ -95,10 +95,10 @@ const createLegend = () => {
     sub = document.createElement('div')
     sub.className = 'legendCircle'
     sub.addEventListener('mouseover', () => {
-        hoverLegend(role)
+      hoverLegend(role)
     })
     sub.addEventListener('mouseout', () => {
-        removeHoverLegend()
+      removeHoverLegend()
     })
     sub.style['background-color'] = roleMap.get(role)
     element.appendChild(sub)
@@ -111,12 +111,13 @@ const createLegend = () => {
 }
 
 const removeHoverLegend = () => {
-  cy.elements().removeClass('hover')
+  cy.elements().removeClass(['hover', 'hover-selected'])
 }
 
 const hoverLegend = (role) => {
   const nodes = cy.elements(`node[role="${role}"]`)
   const parents = nodes.ancestors()
+  nodes.addClass('hover-selected')
   cy.elements().not(nodes).not(parents).addClass('hover')
 }
 
@@ -131,32 +132,42 @@ const addToHistory = (data) => {
 
 const createHistoryRowElement = (data) => {
   let element = document.createElement('div')
-  let commitDiv = document.createElement('div')
-  let commitIconDiv = document.createElement('div')
-  let commitIdDiv = document.createElement('div')
-  let commitDateDiv = document.createElement('div')
-  let packageDiv = document.createElement('div')
-  let classDiv = document.createElement('div')
-  commitIconDiv.innerHTML = '<img alt="Octicons-git-commit" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Octicons-git-commit.svg/512px-Octicons-git-commit.svg.png">'
   element.className = 'history-row'
-  commitDiv.className = 'history-commit'
+  // commit icon
+  let commitIconDiv = document.createElement('div')
+  commitIconDiv.innerHTML = '<img alt="Octicons-git-commit" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Octicons-git-commit.svg/512px-Octicons-git-commit.svg.png">'
+  // commit id
+  let commitIdDiv = document.createElement('div')
   commitIdDiv.className = 'commit-id'
-  commitDateDiv.className = 'commit-date'
-  packageDiv.className = 'package'
-  classDiv.className = 'class'
   let index = data.version.lastIndexOf('-')
   let commitId = data.version.slice(index + 1, index + 8)
-  let commitDate = data.version.slice(0, 10)
   commitIdDiv.textContent = commitId
+  // commit date
+  let commitDateDiv = document.createElement('div')
+  commitDateDiv.className = 'commit-date'
+  let commitDate = data.version.slice(0, 10)
   commitDateDiv.textContent = 'on ' + commitDate
-  packageDiv.textContent = data.package
-  classDiv.textContent = data.class
+  // append
+  let commitDiv = document.createElement('div')
+  commitDiv.className = 'history-commit'
   commitDiv.appendChild(commitIconDiv)
   commitDiv.appendChild(commitIdDiv)
   commitDiv.appendChild(commitDateDiv)
   element.appendChild(commitDiv)
-  element.appendChild(packageDiv)
-  element.appendChild(classDiv)
+  // package name
+  if(data.package !== '') {
+    let packageDiv = document.createElement('div')
+    packageDiv.className = 'package'
+    packageDiv.textContent = data.package
+    element.appendChild(packageDiv)
+  }
+  // package class
+  if(data.class !== '') {
+    let classDiv = document.createElement('div')
+    classDiv.className = 'class'
+    classDiv.textContent = data.class
+    element.appendChild(classDiv)
+  }
   element.setAttribute('data-version', data.version)
   element.setAttribute('data-package', data.package)
   element.setAttribute('data-class', data.class)
@@ -220,13 +231,19 @@ const resizeNodes = (option) => {
 }
 
 const filterRole = (role) => {
+  cy.startBatch()
+  cy.nodes().removeClass('hide')
   if(document.querySelector(`[data-role="${role}"]`).classList.contains('filtered')) {
     document.querySelector(`[data-role="${role}"]`).classList.remove('filtered')
-    cy.nodes(`[role="${role}"]`).not('.hide').removeClass('filter')
+    cy.nodes(`[role="${role}"]`).removeClass('filter')
   } else {
     document.querySelector(`[data-role="${role}"]`).classList.add('filtered')
-    cy.nodes(`[role="${role}"]`).not('.hide').addClass('filter')
+    cy.nodes(`[role="${role}"]`).addClass('filter')
   }
+  const parents = cy.nodes().not('.filter').not('.hide').ancestors()
+  cy.nodes(':compound').not(parents).addClass('hide')
+  cy.endBatch()
+  cy.layout(currentLayoutOptions).run()
 }
 
 const toggleLabelVisibility = (option) => {
@@ -260,6 +277,8 @@ const resetTools = () => {
     document.querySelector(`[data-role="${role}"]`).classList.add('selected-option')
   }
   currentLayoutOptions = options
+  createSelect()
+  document.querySelector('#compare .changeList').innerHTML = ''
 }
 
 const updateDependencyLevel = (dependencyLevel) => {
