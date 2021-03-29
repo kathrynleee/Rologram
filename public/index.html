@@ -18,6 +18,8 @@
         <script src="../script/script.js"></script>
         <!-- style -->
         <link rel="stylesheet" href="../style/style.css"/>
+        <!-- animate -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
         <!-- axios -->
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <!-- cytoscape -->
@@ -27,13 +29,15 @@
         <script src="../lib/cytoscape/cytoscape-klay.js"></script>
         <!-- lodash -->
         <script src="../lib/lodash/lodash.min.js"></script>
-        <!-- dragdealer -->
-        <!-- <script src="../lib/dragdealer/dragdealer.js"></script> -->
         <!-- code mirror -->
         <script src="../lib/codemirror/codemirror.min.js"></script>
         <link href="../lib/codemirror/codemirror.min.css" rel="stylesheet">
         <link href="../lib/codemirror/eclipse.min.css" rel="stylesheet">
         <script src="../lib/codemirror/clike.min.js"></script>
+        <!-- chartist -->
+        <script src="../lib/chartist/chartist.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartist-plugin-pointlabels@0.0.6/dist/chartist-plugin-pointlabels.min.js"></script>
+        <link href="../lib/chartist/chartist.min.css" rel="stylesheet">
     </head>
     <body>
         <div class="header">
@@ -42,7 +46,7 @@
                     <div class="system"></div>
                     <div class="commit">
                         <div>
-                            <img alt="Octicons-git-commit" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Octicons-git-commit.svg/512px-Octicons-git-commit.svg.png">
+                            <img src="../image/git-commit.png">
                         </div>
                         <div class="commit-id"></div>
                         <div class="commit-date"></div>
@@ -54,10 +58,6 @@
                 </div>
             </div>
             <div class="timeline">
-                <!-- <div id="slider" class="dragdealer">
-                    <div class="handle"><div id="pointer" class="material-icons">place</div></div>
-                </div> -->
-                <!-- <div id="selected"></div> -->
                 <div id="roles"></div>
             </div>
             <div class="icons">
@@ -89,9 +89,9 @@
         </div>
         <div id="cy"></div>
         <div id="legend"></div>
-        <div id="loader"></div>
-        <div id="tools" class="hide dialog">
-            <div class="close material-icons" onclick="closeDialog('tools')">close</div>
+        <div class="loader"></div>
+        <div class="close hide material-icons animate__animated animate__slideInRight" onclick="closeOpenedDialog()">close</div>
+        <div id="tools" class="hide dialog animate__animated animate__slideInRight">
             <div class="tool-row">
                 <div class="tool-title">Layout</div>
                 <div class="tool-row-items">
@@ -124,7 +124,7 @@
                     <div data-role="Structurer" class="tool-role" onclick="filterRole('Structurer')"></div>
                 </div>
             </div>
-            <div class="class-level tool-row">
+            <div class="class-level disabled tool-row">
                 <div class="tool-title">Dependency Type</div>
                 <div class="tool-row-items dep-type">
                     <div data-option="all" class="selected-option" onclick="updateDependencyType('all')">All</div>
@@ -132,7 +132,7 @@
                     <div data-option="out" onclick="updateDependencyType('out')">Out</div>
                 </div>
             </div>
-            <div class="class-level tool-row">
+            <div class="class-level disabled tool-row">
                 <div class="tool-title">Dependency Level</div>
                 <div class="tool-row-items dep-level">
                     <div data-option="1" class="selected-option" onclick="updateDependencyLevel(1)">1</div>
@@ -141,34 +141,83 @@
                 </div>
             </div>
         </div>
-        <div id="sourceCode" class="hide dialog">
-            <div class="close material-icons" onclick="closeDialog('sourceCode')">close</div>
-            <div class="code hide">
+        <div id="sourceCode" class="hide dialog animate__animated animate__slideInRight">
+            <div class="code">
                 <textarea id="editor"></textarea>
             </div>
-            <div class="not-found hide"></div>
+            <div class="message not-found hide"></div>
         </div>
-        <div id="history" class="hide dialog">
-            <div class="history-title">History</div>
-            <div class="close material-icons" onclick="closeDialog('history')">close</div>
+        <div id="history" class="hide dialog animate__animated animate__slideInRight">
+            <div class="history-header">
+                <div class="history-export" onclick="exportHistory()">Export History</div>
+            </div>
             <div id="history-list">
             </div>
         </div>
-        <div id="compare" class="hide dialog">
-            <div class="close material-icons" onclick="closeDialog('compare')">close</div>
-            <div id="version-select"></div>
-            <button onclick="showChangeList('removed')">Removed</button>
-            <button onclick="showChangeList('added')">Added</button>
-            <button onclick="showChangeList('changed')">Role Changed</button>
-            <div class="changeList"></div>
+        <div id="compare" class="hide dialog animate__animated animate__slideInRight">
+            <div id="version-select">
+                <div class="version-select-div flex-row" onclick="createSelect()">
+                    <div class="version-select-text">Select version to compare</div>
+                    <div class="version-selected"></div>
+                    <div class="version-select-icon material-icons">keyboard_arrow_down</div>
+                </div>
+                <div class="version-options-list closed"></div>
+            </div>
+            <div class="hide list-view-options">
+                <div class="list-view selected-view all" onclick="switchChangeListView('all')">
+                    <div>All</div>
+                    <div class="count">0</div>
+                </div>
+                <div class="list-view removed" onclick="switchChangeListView('removed')">
+                    <div>Removed</div>
+                    <div class="count">0</div>
+                </div>
+                <div class="list-view added" onclick="switchChangeListView('added')">
+                    <div>Added</div>
+                    <div class="count">0</div>
+                </div>
+                <div class="list-view role-changed" onclick="switchChangeListView('role-changed')">
+                    <div>Role Changed</div>
+                    <div class="count">0</div>
+                </div>
+            </div>
+            <div class="hide change-lists">
+                <div class="change-list-div removed-div">
+                    <div class="hide change-list-group" onclick="toggleChangeList('removed')">
+                        <div class="removed-message">Removed</div>
+                        <div class="change-list-icon material-icons">keyboard_arrow_down</div>
+                    </div>
+                    <div class="hide change-list removed-list"></div>
+                </div>
+                <div class="change-list-div added-div">
+                    <div class="hide change-list-group" onclick="toggleChangeList('added')">
+                        <div class="added-message">Added</div>
+                        <div class="change-list-icon material-icons">keyboard_arrow_down</div>
+                    </div>
+                    <div class="hide change-list added-list"></div>
+                </div>
+                <div class="change-list-div role-changed-div">
+                    <div class="hide change-list-group" onclick="toggleChangeList('role-changed')">
+                        <div>Role Changed</div>
+                        <div class="change-list-icon material-icons">keyboard_arrow_down</div>
+                    </div>
+                    <div class="hide change-list role-changed-list"></div>
+                </div>
+            </div>
         </div>
-        <div id="animation" class="hide dialog">
-            <div class="close material-icons" onclick="closeDialog('animation')">close</div>
-            <div>111</div>
+        <div id="animation" class="hide dialog animate__animated animate__slideInRight">
+            <div class="animation-options">
+                <div class="material-icons" onclick="startAnimation()">play_arrow</div>
+                <div class="material-icons" onclick="">pause</div>
+                <div class="material-icons" onclick="stopAnimation()">stop</div>
+                <div id="progressBar"></div>
+            </div>
+            <div class="message">Not available for the first commit version.</div>
         </div>
-        <div id="pattern" class="hide dialog">
-            <div class="close material-icons" onclick="closeDialog('pattern')">close</div>
-            <div>111</div>
+        <div id="pattern" class="hide dialog animate__animated animate__slideInRight">
+            <div class="chart-container">
+                <div class="chart-div"></div>
+            </div>
         </div>
     </body>
 </html>

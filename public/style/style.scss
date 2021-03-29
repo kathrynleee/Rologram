@@ -11,6 +11,18 @@ $structurer-color: #E6A1B2;
 %flex-row {
   display: flex;
   flex-direction: row;
+  &.hide {
+    display: none;
+  }
+}
+
+%center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &.hide {
+    display: none;
+  }
 }
 
 .flex-row {
@@ -19,6 +31,15 @@ $structurer-color: #E6A1B2;
 
 .hide {
   display: none;
+}
+
+.material-icons {
+  cursor: pointer;
+  color: $black;
+}
+
+.animate__animated.animate__slideInRight {
+  --animate-duration: 0.5s;
 }
 
 body {
@@ -36,7 +57,7 @@ body {
   background-color: $bg-color;
 }
 
-#loader {
+.loader {
   border: 5px solid #F3F3F3;
   border-radius: 50%;
   border-top: 5px solid $black;
@@ -105,6 +126,7 @@ body {
     }
   }
   .class-id {
+    display: flex;
     .package {
       padding: 2px;
       width: fit-content;
@@ -123,7 +145,6 @@ body {
   min-width: 350px;
   margin-top: 20px;
   .icon {
-    // font-size: 30px;
     padding: 10px;
     cursor: pointer;
     &:hover {
@@ -142,6 +163,9 @@ body {
     &:hover:before {
       opacity: 1;
     }
+    &.selected-icon {
+      border-top: 5px solid $bg-color-dark;
+    }
   }
 }
 
@@ -151,24 +175,6 @@ body {
   height: 100px;
   overflow-x: scroll;
   overflow-y: hidden;
-  // #slider.dragdealer {
-  //   // width: calc(70vw - 20px);
-  //   left: -5px;
-  //   position: relative;
-  //   bottom: -10px;
-  //   width: 640px;
-  //   background-color: beige;
-  //   .handle {
-  //     position: absolute;
-  //     top: 0;
-  //     left: 0;
-  //     cursor: pointer;
-  //   }
-  //   #pointer {
-  //     font-size: 30px;
-  //     // transform: rotate(180deg);
-  //   }
-  // }
 }
 
 #roles {
@@ -230,31 +236,32 @@ body {
   }
 }
 
+.close {
+  position: fixed;
+  cursor: pointer;
+  top: 80px;
+  right: 30px;
+  z-index: 9999;
+  &:hover {
+    opacity: 0.6;
+  }
+}
+
 .dialog {
   background-color: white;
   z-index: 999;
   position: absolute;
   top: 60px;
   right: 10px;
-  width: 50vw;
+  width: 30vw;
   border: 5px solid $bg-color;
-  height: calc(100vh - 90px);
-  overflow-y: scroll;
-  .close {
-    position: absolute;
-    cursor: pointer;
-    top: 10px;
-    right: 10px;
-    z-index: 9999;
-    &:hover {
-      opacity: 0.6;
-    }
-  }
+  height: calc(100vh - 120px);
+  overflow: scroll;
 }
 
 #sourceCode {
-  align-items: center;
-  justify-content: center;
+  width: 40vw;
+  @extend %center;
   .code {
     height: 100%;
     width: 100%;
@@ -267,17 +274,26 @@ body {
 
 #history {
   width: fit-content;
-  .history-title {
-    padding: 20px;
-    font-size: 30px;
+  .history-header {
+    padding: 10px;
     background-color: $bg-color;
+    .history-export {
+      width: fit-content;
+      padding: 10px;
+      font-size: 12px;
+      text-decoration: underline;
+      cursor: pointer;
+      &:hover {
+        text-decoration: none;
+      }
+    }
   }
   .history-row {
     padding: 20px;
     border: solid $bg-color;
     border-width: 5px 0;
     border-bottom-width: 0;
-    font-size: 20px;
+    font-size: 16px;
     &:last-child {
       border-bottom-width: 5px;
     }
@@ -286,14 +302,14 @@ body {
     }
     .package {
       padding: 2px;
-      font-size: 18px;
+      font-size: 14px;
       width: fit-content;
       background-color: $bg-color-dark;
     }
     .commit-date {
       padding-left: 8px;
       padding-top: 3px;
-      font-size: 15px;
+      font-size: 14px;
     }
     &:hover {
       opacity: 0.6;
@@ -302,21 +318,22 @@ body {
   }
   img {
     width: 20px;
-    padding-right: 10px;
+    opacity: 0.7;
+    padding-right: 5px;
   }
 }
 
 #tools {
-  width: 560px;
+  // width: 560px;
   .tool-row {
-    padding: 20px 20px 30px 20px;
+    padding: 10px 10px 20px 10px;
     .tool-title {
       text-transform: uppercase;
-      font-size: 16px;
+      font-size: 10px;
       margin-bottom: 2px;
     }
-    &.disabled {
-      opacity: 0.4;
+    &.class-level.disabled {
+      opacity: 0.3;
       .tool-row-items {
         div {
           &:hover {
@@ -327,16 +344,16 @@ body {
       }
     }
     .tool-row-items {
-      font-size: 30px;
+      font-size: 16px;
       @extend %flex-row;
       &.dep-level {
         div {
-          padding: 20px 30px;
+          padding: 10px 20px;
         }
       }
       div {
-        padding: 20px;
-        margin-right: 20px;
+        padding: 10px;
+        margin-right: 10px;
         &.selected-option {
           background-color: $bg-color;
         }
@@ -347,9 +364,9 @@ body {
       }
       &.roles-filter {
         .tool-role {
-          width: 20px;
-          height: 20px;
-          border-radius: 40px;
+          width: 16px;
+          height: 16px;
+          border-radius: 32px;
           &[data-role='Controller'] {
             background-color: $controller-color;
           }
@@ -375,7 +392,7 @@ body {
             }
           }
           &:before {
-            font-size: 12px;
+            font-size: 10px;
             color: $black;
             content: attr(data-role);
             position: relative;
@@ -409,5 +426,174 @@ body {
   .legendRole {
     @extend %flex-row;
     margin-right: 20px;
+  }
+}
+
+#animation {
+  @extend %center;
+  #progressBar {
+    width: 1%;
+    height: 5px;
+    background-color: $bg-color-dark;
+  }
+}
+
+.message {
+  padding: 10px;
+}
+
+.chart-container {
+  .chart-div {
+    width: 200px;
+    height: 100px;
+    .ct-series-a {
+      .ct-line {
+        stroke: $service-provider-color;
+        stroke-width: 5px;
+      }
+      .ct-point {
+        stroke: $service-provider-color;
+      }
+      .ct-label {
+        fill: $black;
+        color: $black;
+        opacity: 0.6;
+      }
+    }
+  }
+}
+
+#compare {
+  min-width: 500px;
+  overflow-x: hidden;
+  padding: 10px;
+  #version-select {
+    width: 300px;
+    .version-select-div {
+      cursor: pointer;
+      padding: 10px;
+      @extend %flex-row;
+      justify-content: space-between;
+      .version-selected {
+        .version-option-div {
+          padding: 0 10px;
+          background-color: transparent;
+          transform: scale(1.2);
+        }
+      }
+    }
+    .version-select-icon {
+      padding-left: 20px;
+      transform: translateY(-3px);
+    }
+    .version-options-list {
+      position: fixed;
+      top: 50px;
+      width: 300px;
+      background-color: white;
+      max-height: calc(50vh);
+      overflow: scroll;
+    }
+    .version-option-div {
+      cursor: pointer;
+      @extend %flex-row;
+      @extend %center;
+      background-color: $bg-color;
+      padding: 10px;
+      margin-bottom: 2px;
+      img {
+        width: 14px;
+        opacity: 0.7;
+        padding-right: 5px;
+        transform: translateY(2px);
+      }
+      .commit-id {
+        font-weight: bold;
+        font-size: 14px;
+        padding-right: 10px;
+      }
+      .commit-date {
+        font-size: 12px;
+      }
+      &:hover {
+        opacity: 0.6;
+      }
+    }
+  }
+  .list-view-options {
+    @extend %flex-row;
+    justify-content: space-between;
+    border-bottom: 2px solid $bg-color;
+    .list-view {
+      cursor: pointer;
+      min-width: 90px;
+      text-align: center;
+      padding: 10px;
+      @extend %flex-row;
+      @extend %center;
+      &.selected-view {
+        font-weight: bold;
+        border-bottom: 6px solid $bg-color-dark;
+        margin-bottom: -2px;
+      }
+      .count {
+        margin-left: 10px;
+        padding: 2px 8px;
+        border-radius: 10px;
+        color: $black;
+        background-color: $bg-color-dark;
+        font-size: 10px;
+        font-weight: bold;
+        text-align: center;
+        white-space: nowrap;
+        height: 12px; 
+      }
+    }
+  }
+  .change-list-div {
+    .change-list-group {
+      margin-top: 10px;
+      @extend %flex-row;
+      padding: 10px;
+      background-color: $bg-color;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .change-list {
+      .change-list-row {
+        @extend %flex-row;
+        align-items: center;
+        padding: 10px;
+        cursor: pointer;
+        margin-bottom: 2px;
+        &:hover {
+          background-color: $bg-color;
+        }
+        .list-item-circle {
+          min-width: 20px;
+          min-height: 20px;
+          border-radius: 10px;
+        }
+        .list-item-package {
+          background-color: $black;
+          min-width: 20px;
+          min-height: 20px;
+          margin-right: 5px;
+        }
+        .list-item-text {
+          padding-left: 10px;
+          overflow: hidden;
+          .list-item-package-text {
+            font-size: 12px;
+            padding: 2px;
+            width: fit-content;
+            background-color: $bg-color-dark;
+          }
+          .list-item-class-text {
+            font-size: 14px;
+          }
+        }
+      }
+    }
   }
 }

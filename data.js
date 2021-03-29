@@ -56,8 +56,7 @@ router.get('/roles/package/:id', async function (req, res) {
 // return role list of specific class
 router.get('/roles/:id', async function (req, res) {
   const id = req.params.id
-  const nodeList = _.filter(elements.nodes, ['data.id', id])
-  res.json(nodeList)
+  res.json(getClassRoleList(id))
 })
 
 // return list of system level changes compared to given version
@@ -142,8 +141,22 @@ const getPackageDominantRoleList = (id) => {
       }
     })
     maxArray.sort()
-    const obj = { version: v, role: maxArray }
-    roleList.push(obj)
+    if(maxArray.length > 0) {
+      const obj = { version: v, role: maxArray }
+      roleList.push(obj)
+    }
+  })
+  return roleList
+}
+
+const getClassRoleList = (id) => {
+  let roleList = []
+  _.forEach(versions, v => {
+    const node = elements.nodes.find(n => n.data.id === id && n.data.version === v)
+    if(node !== undefined) {
+      const obj = { version: v, role: node.data.role }
+      roleList.push(obj)
+    }
   })
   return roleList
 }
@@ -235,8 +248,8 @@ const getPackageLevelChanges = (currentVersion, versionToBeCompared, package) =>
   packageList.push(package)
   packageList = _.union(packageList, packages)
   while(packages.length !== 0) {
-      packages = elements.nodes.filter(n => _.includes(packages, n.data.parent) && n.data.role === undefined && n.data.version === currentVersion)
-      packageList = _.union(packageList, _.map(packages, 'data.id'))
+    packages = elements.nodes.filter(n => _.includes(packages, n.data.parent) && n.data.role === undefined && n.data.version === currentVersion)
+    packageList = _.union(packageList, _.map(packages, 'data.id'))
   }
 
   const currentNodes = elements.nodes.filter(n => _.includes(packageList, n.data.parent) && n.data.role !== undefined && n.data.version === currentVersion)
@@ -326,13 +339,22 @@ const getClassLevelChanges = (currentVersion, versionToBeCompared, selectedClass
   let nodes = _.union(_.uniq(edges.map(e => e.data.source)), _.uniq(edges.map(e => e.data.target)))
   currentEdgeList = edges
   currentNodeList = nodes
-  // get second and third levels edges and nodes
-  _.times(2, () => {
-      edges = elements.edges.filter(e => (e.data.version === currentVersion) && (_.includes(nodes, e.data.source) || _.includes(nodes, e.data.target)))
-      nodes = _.union(_.uniq(edges.map(e => e.data.source)), _.uniq(edges.map(e => e.data.target)))
-      currentEdgeList = _.union(currentEdgeList, edges)
-      currentNodeList = _.union(currentNodeList, nodes)
-  })
+  // get second level edges and nodes
+  edges = elements.edges.filter(e => (e.data.version === currentVersion) && (_.includes(nodes, e.data.source) || _.includes(nodes, e.data.target)))
+  nodes = _.union(_.uniq(edges.map(e => e.data.source)), _.uniq(edges.map(e => e.data.target)))
+  currentEdgeList = _.union(currentEdgeList, edges)
+  currentNodeList = _.union(currentNodeList, nodes)
+  // get third level edges and nodes
+  edges = elements.edges.filter(e => (e.data.version === currentVersion) && (_.includes(nodes, e.data.source) || _.includes(nodes, e.data.target)))
+  nodes = _.union(_.uniq(edges.map(e => e.data.source)), _.uniq(edges.map(e => e.data.target)))
+  currentEdgeList = _.union(currentEdgeList, edges)
+  currentNodeList = _.union(currentNodeList, nodes)
+  // _.times(2, () => {
+  //   edges = elements.edges.filter(e => (e.data.version === currentVersion) && (_.includes(nodes, e.data.source) || _.includes(nodes, e.data.target)))
+  //   nodes = _.union(_.uniq(edges.map(e => e.data.source)), _.uniq(edges.map(e => e.data.target)))
+  //   currentEdgeList = _.union(currentEdgeList, edges)
+  //   currentNodeList = _.union(currentNodeList, nodes)
+  // })
   let currentNodes = [], currentEdges = currentEdgeList
   if(currentNodeList.length === 0) { // if no edges connected to the class at all
     const currentClassNode = elements.nodes.find( n => n.data.id === selectedClass && n.data.version === currentVersion)
@@ -351,13 +373,23 @@ const getClassLevelChanges = (currentVersion, versionToBeCompared, selectedClass
   nodes = _.union(_.uniq(edges.map(e => e.data.source)), _.uniq(edges.map(e => e.data.target)))
   comparedEdgeList = edges
   comparedNodeList = nodes
+  // get second level edges and nodes
+  edges = elements.edges.filter(e => (e.data.version === currentVersion) && (_.includes(nodes, e.data.source) || _.includes(nodes, e.data.target)))
+  nodes = _.union(_.uniq(edges.map(e => e.data.source)), _.uniq(edges.map(e => e.data.target)))
+  currentEdgeList = _.union(currentEdgeList, edges)
+  currentNodeList = _.union(currentNodeList, nodes)
+  // get third level edges and nodes
+  edges = elements.edges.filter(e => (e.data.version === currentVersion) && (_.includes(nodes, e.data.source) || _.includes(nodes, e.data.target)))
+  nodes = _.union(_.uniq(edges.map(e => e.data.source)), _.uniq(edges.map(e => e.data.target)))
+  currentEdgeList = _.union(currentEdgeList, edges)
+  currentNodeList = _.union(currentNodeList, nodes)
   // get second and third levels edges and nodes
-  _.times(2, () => {
-      edges = elements.edges.filter(e => (e.data.version === versionToBeCompared) && (_.includes(nodes, e.data.source) || _.includes(nodes, e.data.target)))
-      nodes = _.union(_.uniq(edges.map(e => e.data.source)), _.uniq(edges.map(e => e.data.target)))
-      comparedEdgeList = _.union(comparedEdgeList, edges)
-      comparedNodeList = _.union(comparedNodeList, nodes)
-  })
+  // _.times(2, () => {
+  //   edges = elements.edges.filter(e => (e.data.version === versionToBeCompared) && (_.includes(nodes, e.data.source) || _.includes(nodes, e.data.target)))
+  //   nodes = _.union(_.uniq(edges.map(e => e.data.source)), _.uniq(edges.map(e => e.data.target)))
+  //   comparedEdgeList = _.union(comparedEdgeList, edges)
+  //   comparedNodeList = _.union(comparedNodeList, nodes)
+  // })
   let comparedNodes = [], comparedEdges = comparedEdgeList
   if(comparedNodeList.length === 0) { // if no edges connected to the class at all
     const comparedClassNode = elements.nodes.find(n => n.data.id === selectedClass && n.data.version === versionToBeCompared)

@@ -1,16 +1,25 @@
 'use strict'
 
+const moveGraph = () => {
+  // cy.pan({ x: 20, y: 40 })
+  cy.fit()
+  // shift graph to left
+  cy.panBy({ x: -200, y: 0 })
+}
+
 const showSourceCode = async () => {
-  setVisible('#sourceCode', true, true)
-  setVisible('#sourceCode .code', false)
-  setVisible('#sourceCode .not-found', false)
+  moveGraph()
+  setVisible('.close', true, false)
+  setVisible('#sourceCode', true, false)
+  setVisible('#sourceCode .code', false, false)
+  setVisible('#sourceCode .not-found', false, false)
   if(level !== 'class') {
-    setVisible('#sourceCode .not-found', true)
-    document.querySelector('#sourceCode .not-found').textContent = 'Source code only available for classes'
+    setVisible('#sourceCode .not-found', true, false)
+    document.querySelector('#sourceCode .not-found').textContent = 'Source code only available for classes.'
   } else {
     const code = await displaySourceCode()
     if(code !== undefined) {
-      setVisible('#sourceCode .code', true)
+      setVisible('#sourceCode .code', true, false)
       if(codeEditor !== undefined) {
         codeEditor.getWrapperElement().remove()
         codeEditor = undefined
@@ -24,8 +33,8 @@ const showSourceCode = async () => {
       })
       codeEditor.setValue(code.data)
     } else {
-      setVisible('#sourceCode .not-found', true)
-      document.querySelector('#sourceCode .not-found').textContent = 'Not found'
+      setVisible('#sourceCode .not-found', true, false)
+      document.querySelector('#sourceCode .not-found').textContent = 'Not found.'
     }
   }
 }
@@ -54,18 +63,33 @@ const displaySourceCode = async () => {
 }
 
 const showTools = () => {
-  setVisible('#tools', true)
-}
-
-const closeDialog = (id) => {
-  setVisible(`#${id}.dialog`, false)
+  setVisible('#tools', true, false)
+  setVisible('.close', true, false)
+  moveGraph()
 }
 
 const closeOpenedDialog = () => {
-  let eles = document.getElementsByClassName('dialog')
-  for (var i = 0; i < eles.length; i++) {
-    eles[i].style.display = 'none'
-  }
+  setVisible('.dialog', false, true)
+  setVisible('.close', false, false)
+}
+
+const exportHistory = async () => {
+  // let text = JSON.stringify(historyList)
+  let text = ''
+  historyList.forEach(record => {
+    text += Object.keys(record).map(key => `${record[key]}`).join(',')
+    text += '\r\n'
+  })
+  let data = new Blob([text], {type: 'text/plain', endings: 'native'})
+  let textFile = window.URL.createObjectURL(data)
+  let link = document.createElement('a')
+  document.body.appendChild(link)
+  link.setAttribute("type", 'hidden')
+  link.href = `${textFile}`
+  link.download = 'history.txt'
+  link.click()
+  document.body.removeChild(link)
+  window.URL.revokeObjectURL(textFile)
 }
 
 const download = () => {
@@ -74,16 +98,37 @@ const download = () => {
   document.body.appendChild(link)
   link.setAttribute("type", 'hidden')
   link.href = `${png64}`
-  link.download = 'graph.png'
+  switch(level) {
+    case 'system':
+      link.download = `${selectedVersion}.png`
+      break
+    case 'package':
+      link.download = `${selectedVersion}-${selectedPackage}.png`
+      break
+    case 'class':
+      link.download = `${selectedVersion}-${selectedClass}.png`
+      break
+  }
   link.click()
   document.body.removeChild(link)
 }
 
-const setVisible = (selector, visible, flex) => {
-  if(visible && flex) {
-    document.querySelector(selector).style.display = 'flex'
+const setVisible = (selector, visible, selectAll) => {
+  if(selectAll) {
+    let elements = document.querySelectorAll(selector)
+    for(var i=0; i < elements.length; i++) {
+      if(visible) {
+        elements[i].classList.remove('hide')
+      } else {
+        elements[i].classList.add('hide')
+      }
+    }
   } else {
-    document.querySelector(selector).style.display = visible ? 'block' : 'none'
+    if(visible) {
+      document.querySelector(selector).classList.remove('hide')
+    } else {
+      document.querySelector(selector).classList.add('hide')
+    }
   }
 }
 
@@ -135,7 +180,7 @@ const createHistoryRowElement = (data) => {
   element.className = 'history-row'
   // commit icon
   let commitIconDiv = document.createElement('div')
-  commitIconDiv.innerHTML = '<img alt="Octicons-git-commit" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Octicons-git-commit.svg/512px-Octicons-git-commit.svg.png">'
+  commitIconDiv.innerHTML = '<img src="../image/git-commit.png">'
   // commit id
   let commitIdDiv = document.createElement('div')
   commitIdDiv.className = 'commit-id'
@@ -187,7 +232,8 @@ const showHistory = () => {
     let element = createHistoryRowElement(data)
     document.getElementById('history-list').appendChild(element)
   })
-  setVisible('#history', true)
+  setVisible('#history', true, false)
+  setVisible('.close', true, false)
 }
 
 const changeLayout = (option) => {
@@ -202,19 +248,21 @@ const changeLayout = (option) => {
     currentLayoutOptions = hierarchyOptions
   }
   cy.layout(currentLayoutOptions).run()
+  moveGraph()
 }
 
 const resizeNodes = (option) => {
+  cy.startBatch()
   document.querySelector(`[data-option="${option}"]`).classList.add('selected-option')
   if(option === 'rolesOnly') {
     document.querySelector('[data-option="linesOfCode"]').className = ''
-    cy.nodes().style({
+    cy.nodes().not(':parent').style({
       'height' : 30,
       'width' : 30
     })
   } else {
     document.querySelector('[data-option="rolesOnly"]').className = ''
-    cy.nodes().style({
+    cy.nodes().not(':parent').style({
       'height' : (node) => {
         let loc = _.toInteger(node.data('loc'))
         let size = 2 * _.round(Math.sqrt(loc))
@@ -227,7 +275,9 @@ const resizeNodes = (option) => {
       }
     })
   }
+  cy.endBatch()
   cy.layout(currentLayoutOptions).run()
+  moveGraph()
 }
 
 const filterRole = (role) => {
@@ -244,6 +294,7 @@ const filterRole = (role) => {
   cy.nodes(':compound').not(parents).addClass('hide')
   cy.endBatch()
   cy.layout(currentLayoutOptions).run()
+  moveGraph()
 }
 
 const toggleLabelVisibility = (option) => {
@@ -256,9 +307,19 @@ const toggleLabelVisibility = (option) => {
     cy.nodes().addClass('showLabel')
   }
   cy.layout(currentLayoutOptions).run()
+  moveGraph()
 }
 
 const resetTools = () => {
+  // tool dialog
+  let classLevelElements = document.querySelectorAll('.class-level')
+  for(var i = 0; i < classLevelElements.length; i++) {
+    if(level === 'class') {
+      classLevelElements[i].classList.remove('disabled')
+    } else {
+      classLevelElements[i].classList.add('disabled')
+    }
+  }
   let selectedOptions = document.getElementsByClassName('selected-option')
   while(selectedOptions.length > 0){
     selectedOptions[0].classList.remove('selected-option')
@@ -277,8 +338,19 @@ const resetTools = () => {
     document.querySelector(`[data-role="${role}"]`).classList.add('selected-option')
   }
   currentLayoutOptions = options
-  createSelect()
-  document.querySelector('#compare .changeList').innerHTML = ''
+
+  // compare dialog
+  document.querySelector('#compare .version-selected').innerHTML = ''
+  document.querySelector('#compare .version-options-list').innerHTML = ''
+  document.querySelector('#compare .version-options-list').className = 'version-options-list'
+  document.querySelector('#compare .version-select-text').classList.remove('hide')
+  setVisible('#compare .list-view-options', false, false)
+  setVisible('#compare .change-lists', false, false)
+  document.querySelector('.list-view-options .selected-view').classList.remove('selected-view')
+  document.querySelector('.list-view-options .all').classList.add('selected-view')
+  resetListCount()
+  resetListIcon()
+  clearChangeLists()
 }
 
 const updateDependencyLevel = (dependencyLevel) => {

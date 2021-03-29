@@ -27,8 +27,8 @@ const options = {
         edgeSpacingFactor: 0.3,
         layoutHierarchy: false
     },
-    start: () => setVisible('#loader', true),
-    stop: () => setVisible('#loader', false)
+    start: () => setVisible('.loader', true, false),
+    stop: () => setVisible('.loader', false, false)
 }
 let currentLayoutOptions = options
 
@@ -42,13 +42,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     createGraph()
     createLegend()
     createInfo()
-    createSelect()
-    // const dragger = new Dragdealer('slider', {
-    //     steps: versions.data.length,
-    //     callback: () => {
-    //         alert(dragger.getStep())
-    //     }
-    // })
 })
 
 const createInfo = async () => {
@@ -67,7 +60,7 @@ const createInfo = async () => {
     link.target = '_blank'
     document.querySelector('#info .commit-id').innerHTML = ''
     document.querySelector('#info .commit-id').appendChild(link)
-    setVisible('#info', true)
+    setVisible('#info', true, false)
 }
 
 const createTimeline = async (selected) => {
@@ -88,22 +81,19 @@ const createTimeline = async (selected) => {
         span = document.createElement('span')
         span.className = 'tooltip'
         if(level === 'class') {
-            const node = _.find(roleList.data, ['data.version', v])
+            const node = _.find(roleList.data, ['version', v])
             if(node === undefined) {
                 element.style['background-color'] = '#dadad8'
                 element.className = 'role hover-no-effect'
             } else {
-                let role = node.data.role
-                element.style['background-color'] = roleMap.get(role)
+                element.style['background-color'] = roleMap.get(node.role)
                 span.addEventListener('click', () => {
                     initGraph(v, selectedPackage, selectedClass)
-                    // showChanges(v)
-                    // createIndicators(v)
                 })
             }
         } else {
             const list = _.find(roleList.data, ['version', v])
-            if(list.role.length === 0) {
+            if(list === undefined) {
                 element.style['background-color'] = '#dadad8'
                 element.className = 'role hover-no-effect'
             } else if(list.role.length === 1) {
@@ -122,11 +112,9 @@ const createTimeline = async (selected) => {
                 style += ')'
                 element.style['background-image'] = style
             }
-            if(list.role.length > 0) {
+            if(list !== undefined) {
                 span.addEventListener('click', () => {
                     initGraph(v, selectedPackage, selectedClass)
-                    // showChanges(v)
-                    // createIndicators(v)
                 })
             }
         }
@@ -145,40 +133,6 @@ const createTimeline = async (selected) => {
     currentEles.parentNode.classList.add('selected-version')
 }
 
-const createIndicators = (version) => {
-    let selectedElements = document.getElementsByClassName('selected-version')
-    while(selectedElements.length > 0){
-        selectedElements[0].classList.remove('selected-version')
-    }
-    selectedElements = document.getElementsByClassName('selected')
-    while(selectedElements.length > 0){
-        selectedElements[0].textContent = ''
-        let text = document.createElement('span')
-        let date = selectedElements[0].getAttribute('data-text').slice(0, 10)
-        text.setAttribute('data-date', date)
-        text.className = 'date'
-        selectedElements[0].appendChild(text)
-        selectedElements[0].classList.remove('selected')
-    }
-    const indicators = document.getElementsByClassName('indicator')
-    while(indicators.length > 0){
-        indicators[0].parentNode.removeChild(indicators[0])
-    }
-    if(version !== selectedVersion) {
-        // comparing version indicator
-        let date = version.slice(0, 10)
-        let eles = document.querySelectorAll(`[data-text='${date}']`)[0]
-        eles.className = 'tooltip selected'
-        eles.textContent = 'COMPARE'
-        eles.parentNode.classList.add('selected-version')
-        // current version indicator
-        let currentEles = document.querySelectorAll(`[data-text='${selectedVersion.slice(0, 10)}']`)[0]
-        currentEles.className = 'tooltip selected'
-        currentEles.textContent = 'CURRENT'
-        currentEles.parentNode.classList.add('selected-version')
-    }
-}
-
 const createGraph = async () => {
     const elements = await getElements(selectedVersion)
     const styles = await getStyles()
@@ -195,7 +149,6 @@ const createGraph = async () => {
         ready: function() {
             addToHistory({ version: selectedVersion, package: '', class: '' })
             this.on('click', async (e)  => {
-                resetTools()
                 const target = e.target
                 if (target === cy) {
                     initGraph(selectedVersion, '', '')
@@ -218,6 +171,11 @@ const createGraph = async () => {
                 if(!cy.nodes().hasClass('showLabel') || labelVisibility === 'hideLabels') {
                     target.addClass('showLabel')
                 }
+                if(!target.isParent()) {
+                    let nodes = target.union(target.successors()).union(target.predecessors())
+                    let parents = nodes.ancestors()
+                    cy.elements().not(nodes).not(parents).addClass('hover')
+                }
             })
             this.on('mouseout', 'node', (e) => {
                 const target = e.target
@@ -225,6 +183,7 @@ const createGraph = async () => {
                 if(labelVisibility === 'hideLabels') {
                     target.removeClass('showLabel')
                 }
+                cy.elements().removeClass('hover')
             })
         }
     })
@@ -238,10 +197,9 @@ const initGraph = async (version, pkg, cls) => {
     selectedVersion = version
     selectedPackage = pkg
     selectedClass = cls
-    resetTools()
     if(pkg === '' && cls === '') {
         level = 'system'
-        setVisible('#info .class-id', false)
+        setVisible('#info .class-id', false, false)
         document.querySelector('#info .package').textContent = ''
         document.querySelector('#info .class').textContent = ''
         addToHistory({ version: selectedVersion, package: '', class: '' })
@@ -250,7 +208,7 @@ const initGraph = async (version, pkg, cls) => {
         level = 'package'
         document.querySelector('#info .package').textContent = selectedPackage
         document.querySelector('#info .class').textContent = ''
-        setVisible('#info .class-id', true, 'flex')
+        setVisible('#info .class-id', true, false)
         addToHistory({ version: selectedVersion, package: selectedPackage, class: '' })
         createTimeline(selectedPackage)
     } else {
@@ -260,19 +218,17 @@ const initGraph = async (version, pkg, cls) => {
         let className = selectedClass.slice(index + 1)
         document.querySelector('#info .package').textContent = target._private.data.parent
         document.querySelector('#info .class').textContent = className
-        setVisible('#info .class-id', true, 'flex')
+        setVisible('#info .class-id', true, false)
         addToHistory({ version: selectedVersion, package: target._private.data.parent, class: className })
         createTimeline(selectedClass)
         if(document.querySelector('#sourceCode').style.display === 'flex') {
             showSourceCode()
-            // cy.panBy({
-            //     x: -200,
-            //     y: 0 
-            // })
+            moveGraph()
         }
     }
     createInfo()
     updateGraph()
+    resetTools()
 }
 
 const updateGraph = () => {
@@ -290,6 +246,8 @@ const updateGraph = () => {
 }
 
 const updateClassGraph = (dependencyLevel, edgeType, created, labelVisibility) => {
+    document.querySelector('.dep-level .selected-option').classList.remove('selected-option')
+    document.querySelector(`[data-option="${dependencyLevel}"]`).classList.add('selected-option')
     document.querySelector(`[data-option="${labelVisibility}"]`).classList.add('selected-option')
     if(labelVisibility === 'showLabels') {
         document.querySelector('[data-option="hideLabels"]').className = ''

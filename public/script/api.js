@@ -64,25 +64,25 @@ const getClassRoleList = async (id) => {
   }
 }
 
-const getSystemChangesList = async (v) => {
+const getSystemChangesList = async (current, compare) => {
   try {
-    return await axios.get(`/api/data/changes/system/${selectedVersion}/${v}`)
+    return await axios.get(`/api/data/changes/system/${current}/${compare}`)
   } catch (e) {
     console.error(e)
   }
 }
 
-const getPackageChangesList = async (v) => {
+const getPackageChangesList = async (current, compare) => {
   try {
-    return await axios.get(`/api/data/changes/package/${selectedVersion}/${v}/${selectedPackage}`)
+    return await axios.get(`/api/data/changes/package/${current}/${compare}/${selectedPackage}`)
   } catch (e) {
     console.error(e)
   }
 }
 
-const getClassChangesList = async (v) => {
+const getClassChangesList = async (current, compare) => {
   try {
-    return await axios.get(`/api/data/changes/class/${selectedVersion}/${v}/${selectedClass}`)
+    return await axios.get(`/api/data/changes/class/${current}/${compare}/${selectedClass}`)
   } catch (e) {
     console.error(e)
   }
