@@ -2,9 +2,11 @@
 
 let patternLevel = 1
 let patternOptions = [ [...roleMap.keys()] ]
+
 const showPatternDialog = async () => {
   setVisible('#pattern', true, false)
   setVisible('.close', true, false)
+  checkButton()
 }
 
 const changePatternLevel = (num) => {
@@ -13,12 +15,10 @@ const changePatternLevel = (num) => {
   } else if(num > 0) {
     addOneLevel()
   }
+  checkButton()
 }
 
 const togglePatternRole = (patternLevel, role) => {
-  if(patternOptions[patternLevel - 1] === undefined) {
-    patternOptions[patternLevel - 1] = [...roleMap.keys()]
-  }
   if(_.includes(patternOptions[patternLevel - 1], role)) {
     _.remove(patternOptions[patternLevel - 1], r => r === role)
   } else {
@@ -37,43 +37,57 @@ const removeOneLevel = () => {
   patternCountDiv.removeChild(patternCountDiv.lastElementChild)
   let patternSelectDiv = document.querySelector('.pattern-select')
   patternSelectDiv.removeChild(patternSelectDiv.lastElementChild)
-  if(patternOptions[patternLevel - 1] !== undefined) {
-    delete patternOptions[patternLevel - 1]
-  }
+  delete patternOptions[patternLevel - 1]
   patternLevel--
 }
 
-const addOneLevel = () => {
-  let patternCountDiv = document.querySelector('.pattern-count')
-  let group = document.createElement('div')
-  group.className = 'pointer-group'
-  let divider = document.createElement('div')
-  divider.className = 'divider'
-  let arrow = document.createElement('div')
-  arrow.className = 'arrow'
-  let pointer = document.createElement('div')
-  pointer.className = 'pointer'
-  pointer.textContent = ++patternLevel
-  group.appendChild(divider)
-  group.appendChild(arrow)
-  group.appendChild(pointer)
-  patternCountDiv.appendChild(group)
-
-  let patternSelectDiv = document.querySelector('.pattern-select')
-  let patternRoleDiv = document.createElement('div')
-  patternRoleDiv.className = 'pattern-role'
-  patternRoleDiv.setAttribute('data-pattern-level', patternLevel)
-
-  for (let role of roleMap.keys()) {
-    let roleDiv = document.createElement('div')
-    roleDiv.className = 'pattern-role-option'
-    roleDiv.setAttribute('data-role', role)
-    roleDiv.addEventListener('click', () => {
-      togglePatternRole(patternRoleDiv.getAttribute('data-pattern-level'), role)
-    })
-    patternRoleDiv.appendChild(roleDiv)
+const checkButton = () => {
+  if(patternLevel === 1) {
+    setVisible('.pattern-buttons .remove', false, false)
+  } else {
+    setVisible('.pattern-buttons .remove', true, false)
   }
-  patternSelectDiv.appendChild(patternRoleDiv)
+  if(patternLevel === 3) {
+    setVisible('.pattern-buttons .add', false, false)
+  } else {
+    setVisible('.pattern-buttons .add', true, false)
+  }
+}
+
+const addOneLevel = () => {
+  if(patternLevel < 3) {
+    patternOptions[++patternLevel - 1] = [...roleMap.keys()]
+    let patternCountDiv = document.querySelector('.pattern-count')
+    let group = document.createElement('div')
+    group.className = 'pointer-group'
+    let divider = document.createElement('div')
+    divider.className = 'divider'
+    let arrow = document.createElement('div')
+    arrow.className = 'arrow'
+    let pointer = document.createElement('div')
+    pointer.className = 'pointer'
+    pointer.textContent = patternLevel
+    group.appendChild(divider)
+    group.appendChild(arrow)
+    group.appendChild(pointer)
+    patternCountDiv.appendChild(group)
+
+    let patternSelectDiv = document.querySelector('.pattern-select')
+    let patternRoleDiv = document.createElement('div')
+    patternRoleDiv.className = 'pattern-role'
+    patternRoleDiv.setAttribute('data-pattern-level', patternLevel)
+
+    for (let role of roleMap.keys()) {
+      let roleDiv = document.createElement('div')
+      roleDiv.className = 'pattern-role-option'
+      roleDiv.setAttribute('data-role', role)
+      roleDiv.addEventListener('click', () => {
+        togglePatternRole(patternRoleDiv.getAttribute('data-pattern-level'), role)
+      })
+      patternRoleDiv.appendChild(roleDiv)
+    }
+    patternSelectDiv.appendChild(patternRoleDiv)
+  }
 }
 
 const applyPattern = async() => {
@@ -86,6 +100,19 @@ const applyPattern = async() => {
       eles = _.filter(elements.data.nodes, n => n.data.version === v && _.includes(patternOptions[0], n.data.role))
     } else if(patternLevel === 2) {
       eles = _.filter(elements.data.edges, n => n.data.version === v && _.includes(patternOptions[0], n.data.sourceRole) && _.includes(patternOptions[1], n.data.targetRole))
+    } else if(patternLevel === 3) {
+      let edges = _.filter(elements.data.edges, n => n.data.version === v && _.includes(patternOptions[0], n.data.sourceRole) && _.includes(patternOptions[1], n.data.targetRole))
+      if(edges.length > 0) {
+        _.forEach(edges, edge => {
+          let secondEdges = _.filter(elements.data.edges, n => n.data.version === v && edge.data.target === n.data.source && _.includes(patternOptions[2], n.data.targetRole))
+          if(secondEdges.length === 0) {
+            edges = _.filter(edges, ele => ele !== edge)
+          } else {
+            eles = _.union(eles, secondEdges)
+          }
+        })
+        eles = _.union(eles, edges)
+      }
     }
     let found = {
       version: v,
@@ -94,7 +121,7 @@ const applyPattern = async() => {
     }
     results.push(found)
   })
-  applyPatternToGraph(patternLevel, results)
+  applyPatternToGraph(patternLevel)
   createChart(results)
 }
 
@@ -105,32 +132,32 @@ const removePattern = () => {
   cy.layout(currentLayoutOptions).run()
 }
 
-const applyPatternToGraph = (patternLevel, result) => {
-  // cy.startBatch()
-  // cy.elements().removeClass('hide')
-  // if(patternLevel === 1) {
-  //   var pattern = _.map(patternOptions[0], n => `[role = "${n}"]`)
-  //   var nodes = cy.nodes().filter(`${pattern}`)
-  //   var edges = nodes.connectedEdges()
-  // } else if(patternLevel > 2) {
-  //   var edges = cy.edges().filter(edge => _.includes(patternOptions[0], edge.data('sourceRole')) && _.includes(patternOptions[1], edge.data('targetRole')))
-  //   var nodes = edges.connectedNodes()
-
-  // } else if(patternLevel === 3) {
-  //   // var pattern = _.map(patternOptions[3], n => `[targetRole = "${n}"]`)
-  //   // var secondLevelEdges = edges.targets().connectedEdges(`${pattern}`)
-  //   // // nodes = nodes.union(edges.targets().connectedEdges(`${pattern}`).targets())
-  //   // // var edges = cy.edges().filter(edge => _.includes(patternOptions[0], edge.data('sourceRole')) && _.includes(patternOptions[1], edge.data('targetRole')))
-  //   // // var firstLevelNodes = edges.connectedNodes()
-  //   // // var nodes = edges.targets()
-
-  //   // // var parents = nodes.ancestors()
-  //   // // cy.elements().not(nodes).not(edges).not(parents).addClass('hide')
-  // }
-  // var parents = (nodes !== undefined) ? nodes.ancestors() : []
-  // cy.elements().not(nodes).not(edges).not(parents).addClass('hide')
-  // cy.endBatch()
-  // cy.layout(currentLayoutOptions).run()
+const applyPatternToGraph = (patternLevel) => {
+  cy.startBatch()
+  cy.elements().removeClass('hide')
+  if(patternLevel === 1) {
+    var pattern = _.map(patternOptions[0], n => `[role = "${n}"]`)
+    var nodes = cy.nodes().filter(`${pattern}`)
+    var edges = nodes.connectedEdges()
+  } else if(patternLevel === 2) {
+    var edges = cy.edges().filter(edge => _.includes(patternOptions[0], edge.data('sourceRole')) && _.includes(patternOptions[1], edge.data('targetRole')))
+    var nodes = edges.connectedNodes()
+  } else if(patternLevel === 3) {
+    var edges = cy.edges().filter(edge => _.includes(patternOptions[0], edge.data('sourceRole')) && _.includes(patternOptions[1], edge.data('targetRole')))
+    _.forEach(edges, edge => {
+      var secondEdges = cy.edges().filter(ele => (ele.data('source') === edge.data('target')) && _.includes(patternOptions[2], ele.data('targetRole')))
+      if(secondEdges.length === 0) {
+        edges = edges.filter(ele => ele !== edge)
+      } else {
+        edges = secondEdges.union(edges)
+      }
+    })
+    nodes = edges.connectedNodes()
+  }
+  var parents = (nodes !== undefined) ? nodes.ancestors() : []
+  cy.elements().not(nodes).not(edges).not(parents).addClass('hide')
+  cy.endBatch()
+  cy.layout(currentLayoutOptions).run()
 }
 
 const createChart = async (results) => {
@@ -159,19 +186,4 @@ const createChart = async (results) => {
     ]
   }
   new Chartist.Line('.chart-div', data, options)
-  
-  
-  // new Chartist.Bar('.chart-div', {
-  //   labels: _.map(results, 'version'),
-  //   series: [
-  //     _.map(results, 'count')
-  //   ]
-  // }, {
-  //   seriesBarDistance: 10,
-  //   reverseData: true,
-  //   horizontalBars: true,
-  //   axisY: {
-  //     offset: 70
-  //   }
-  // })
 }

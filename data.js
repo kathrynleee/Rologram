@@ -16,17 +16,17 @@ const paths = readTextFile(sourceCodePathFile)
 const elements = JSON.parse(fs.readFileSync(dataFile))
 
 // return elements of all versions
-router.get('/elements', async function (req, res) {
+router.get('/elements', (req, res) => {
   res.json(elements)
 })
 
 // return list of versions
-router.get('/versions', function (req, res) {
+router.get('/versions', (req, res) => {
   res.json(versions)
 })
 
 // return list of paths
-router.get('/paths', function (req, res) {
+router.get('/paths', (req, res) => {
   res.json(paths)
 })
 
@@ -37,37 +37,44 @@ router.get('/styles', (req, res) => {
 })
 
 // return data of specific version
-router.get('/elements/:version', async function (req, res) {
+router.get('/elements/:version', (req, res) => {
   const version = req.params.version
   res.json(getDataByVersion(version))
 })
 
+// return data of specific pattern
+// router.get('/pattern', (req, res) => {
+//   const level = req.params.level
+//   const options = req.params.options
+//   res.json(getPattern(level, options))
+// })
+
 // return list of dominant role in each version
-router.get('/roles/versions', async function (req, res) {
+router.get('/roles/versions', (req, res) => {
   res.json(getVersionDominantRoleList())
 })
 
 // return list of dominant role changes in specific package
-router.get('/roles/package/:id', async function (req, res) {
+router.get('/roles/package/:id', (req, res) => {
   const id = req.params.id
   res.json(getPackageDominantRoleList(id))
 })
 
 // return role list of specific class
-router.get('/roles/:id', async function (req, res) {
+router.get('/roles/:id', (req, res) => {
   const id = req.params.id
   res.json(getClassRoleList(id))
 })
 
 // return list of system level changes compared to given version
-router.get('/changes/system/:version/:comparedVersion', async function (req, res) {
+router.get('/changes/system/:version/:comparedVersion', (req, res) => {
   const version = req.params.version
   const comparedVersion = req.params.comparedVersion
   res.json(getSystemLevelChanges(version, comparedVersion))
 })
 
 // return list of package level changes compared to given version
-router.get('/changes/package/:version/:comparedVersion/:package', async function (req, res) {
+router.get('/changes/package/:version/:comparedVersion/:package', (req, res) => {
   const version = req.params.version
   const comparedVersion = req.params.comparedVersion
   const package = req.params.package
@@ -75,7 +82,7 @@ router.get('/changes/package/:version/:comparedVersion/:package', async function
 })
 
 // return list of class level changes compared to given version
-router.get('/changes/class/:version/:comparedVersion/:selectedClass', async function (req, res) {
+router.get('/changes/class/:version/:comparedVersion/:selectedClass', (req, res) => {
   const version = req.params.version
   const comparedVersion = req.params.comparedVersion
   const selectedClass = req.params.selectedClass
@@ -85,12 +92,12 @@ router.get('/changes/class/:version/:comparedVersion/:selectedClass', async func
 // get data for given version
 const getDataByVersion = (version) => {
   const data = { nodes: [], edges: [] }
-  _.forEach(elements.nodes, function (d) {
+  _.forEach(elements.nodes, (d) => {
     if (d.data.version === version) {
       data.nodes.push(d)
     }
   })
-  _.forEach(elements.edges, function (d) {
+  _.forEach(elements.edges, (d) => {
     if (d.data.version === version) {
       data.edges.push(d)
     }
@@ -453,7 +460,7 @@ const getClassLevelChanges = (currentVersion, versionToBeCompared, selectedClass
 
   // list of nodes with data of two roles
   let roleChangedNodeList = []
-  roleChangedNodes.forEach( node => {
+  roleChangedNodes.forEach(node => {
     const found = comparedNodes.find( n => n.data.id === node.data.id)
     let roleChangedNode = {}
     roleChangedNode.id = node.data.id
@@ -477,6 +484,38 @@ const getClassLevelChanges = (currentVersion, versionToBeCompared, selectedClass
 const getParentPackageName = (id) => {
   const index = id.lastIndexOf('.')
   return (index != -1) ? id.substring(0, index) : ''
+}
+
+const getPattern = (level, options) => {
+  let results = []
+  versions.forEach(v => {
+    let eles = []
+    if(level === 1) {
+      eles = _.filter(elements.nodes, n => n.data.version === v && _.includes(options[0], n.data.role))
+    } else if(level === 2) {
+      eles = _.filter(elements.edges, n => n.data.version === v && _.includes(options[0], n.data.sourceRole) && _.includes(options[1], n.data.targetRole))
+    } else if(level === 3) {
+      let edges = _.filter(elements.edges, n => n.data.version === v && _.includes(options[0], n.data.sourceRole) && _.includes(options[1], n.data.targetRole))
+      if(edges.length > 0) {
+        _.forEach(edges, edge => {
+          let secondEdges = _.filter(elements.edges, n => n.data.version === v && edge.data.target === n.data.source && _.includes(options[2], n.data.targetRole))
+          if(secondEdges.length === 0) {
+            edges = _.filter(edges, ele => ele !== edge)
+          } else {
+            eles = _.union(eles, secondEdges)
+          }
+        })
+        eles = _.union(eles, edges)
+      }
+    }
+    let found = {
+      version: v,
+      eles: eles,
+      count: eles.length
+    }
+    results.push(found)
+  })
+  return results
 }
 
 module.exports = router
