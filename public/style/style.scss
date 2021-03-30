@@ -16,6 +16,14 @@ $structurer-color: #E6A1B2;
   }
 }
 
+%flex-column {
+  display: flex;
+  flex-direction: column;
+  &.hide {
+    display: none;
+  }
+}
+
 %center {
   display: flex;
   align-items: center;
@@ -51,8 +59,8 @@ body {
 
 #cy {
   margin: 10px;
-  height: calc(100vh - 120px);
-  width: calc(100vw - 30px);
+  height: calc(100vh - 150px);
+  width: calc(100vw - 70px);
   border: 5px solid $black;
   background-color: $bg-color;
 }
@@ -82,21 +90,15 @@ body {
 }
 
 .header {
-  min-height: 60px;
-  height: 60px;
-  @extend %flex-row;
-  justify-content: space-between;
+  height: 90px;
 }
 
 #info {
-  padding: 10px;
-  padding-left: 15px;
-  min-width: 400px;
+  padding: 10px 15px 0px 10px;
   .system {
     font-weight: bold;
-    font-size: 20px;
+    font-size: 25px;
     text-transform: uppercase;
-    // padding-bottom: 5px;
   }
   .commit {
     padding: 5px 0px 5px 10px;
@@ -126,7 +128,8 @@ body {
     }
   }
   .class-id {
-    display: flex;
+    visibility: hidden;
+    @extend %flex-row;
     .package {
       padding: 2px;
       width: fit-content;
@@ -136,102 +139,102 @@ body {
       padding: 2px;
       padding-left: 10px;
     }
+    &.show {
+      visibility: visible;
+    }
   }
 }
 
+.menu {
+  position: fixed;
+  top: 100px;
+  right: 0;
+  height: calc(100vh - 140px);
+}
+
 .icons {
-  @extend %flex-row;
-  margin: 10px;
-  min-width: 350px;
-  margin-top: 20px;
+  min-width: 40px;
+  @extend %center;
+  @extend %flex-column;
   .icon {
-    padding: 10px;
+    @extend %flex-column;
+    @extend %center;
+    padding: 10px 8px;
     cursor: pointer;
     &:hover {
       opacity: 0.6;
     }
-    &:before {
-      font-size: 12px;
-      text-align: left;
-      width: 50px;
-      color: $black;
-      content: attr(data-text);
-      opacity: 0;
-      position: absolute;
-      top: 15px;
-    }
-    &:hover:before {
-      opacity: 1;
-    }
-    &.selected-icon {
-      border-top: 5px solid $bg-color-dark;
+    .icon-text {
+      font-size: 8px;
     }
   }
 }
 
 .timeline {
   margin: 0 10px;
-  width: calc(100vw - 800px);
-  height: 100px;
+  width: calc(100vw - 60px);
+  height: 80px;
   overflow-x: scroll;
   overflow-y: hidden;
-}
-
-#roles {
-  display: flex;
-  flex-direction: row;
-  // min-height: 75px;
-  padding-left: 2px;
-  padding-top: 20px;
-  .role {
-    margin-top: 20px;
-    min-width: 16px;
-    height: 16px;
-    border-radius: 8px;
-    margin-right: 2px;
-    font-size: 12px;
-    font-weight: bold;
-    color: white;
-    text-align: center;
-    .selected:before {
+  #roles {
+    display: flex;
+    flex-direction: row;
+    padding-left: 2px;
+    .role {
+      margin-top: 20px;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 8px;
+      margin-right: 2px;
       font-size: 12px;
-      width: 100px;
       font-weight: bold;
-      color: $black;
-      content: attr(data-text);
-      opacity: 1;
-      position: absolute;
-      left: -24px;
-      top: -15px;
-    }
-    &.hover-no-effect:hover {
-      transform: none;
-    }
-    &:hover {
-      transform: translateY(-3px);
-    }
-    &.selected-version {
-      min-width: 80px;
-    }
-    .date {
-      &:before {
+      color: white;
+      text-align: center;
+      cursor: pointer;
+      .selected:before {
         font-size: 12px;
         width: 100px;
-        height: 50px;
+        font-weight: bold;
         color: $black;
-        content: attr(data-date);
-        opacity: 0;
-        position: absolute;
-        bottom: -25px;
-        left: -10px;
-        text-align: left;
-      }
-      &:hover:before {
+        content: attr(data-text);
         opacity: 1;
+        position: absolute;
+        left: -24px;
+        top: -13px;
       }
-    }
-    .tooltip {
-      position: relative;
+      &.hover-no-effect:hover {
+        cursor: default;
+        transform: none;
+        .date:hover:before {
+          transform: translateY(-3px);
+        }
+      }
+      &:hover {
+        transform: translateY(-3px);
+      }
+      &.selected-version {
+        min-width: 80px;
+      }
+      .date {
+        &:before {
+          font-size: 10px;
+          width: 60px;
+          height: 50px;
+          color: $black;
+          content: attr(data-date);
+          opacity: 0;
+          position: absolute;
+          bottom: -32px;
+          left: -10px;
+          text-align: left;
+        }
+        &:hover:before {
+          opacity: 1;
+        }
+      }
+      .tooltip {
+        position: relative;
+      }
     }
   }
 }
@@ -239,24 +242,38 @@ body {
 .close {
   position: fixed;
   cursor: pointer;
-  top: 80px;
-  right: 30px;
+  top: 20px;
+  right: 20px;
   z-index: 9999;
   &:hover {
     opacity: 0.6;
   }
+  // @media screen and (max-width: 600px) {
+  //   top: 90px;
+  //   right: 20px;
+  // }
 }
 
 .dialog {
   background-color: white;
   z-index: 999;
   position: absolute;
-  top: 60px;
-  right: 10px;
+  top: 0;
+  right: 0;
   width: 30vw;
   border: 5px solid $bg-color;
-  height: calc(100vh - 120px);
+  height: 100vh;
   overflow: scroll;
+  .message {
+    padding: 10px;
+  }
+  @media screen and (max-width: 600px) {
+    right: 0;
+    width: 50vw;
+    .message {
+      font-size: 12px;
+    }
+  }
 }
 
 #sourceCode {
@@ -268,6 +285,15 @@ body {
     .CodeMirror {
       height: 100%;
       font-size: 16px;
+    }
+  }
+  @media screen and (max-width: 600px) {
+    border: 0;
+    width: 100vw;
+    .code {
+      .CodeMirror {
+        font-size: 12px;
+      }
     }
   }
 }
@@ -324,12 +350,14 @@ body {
 }
 
 #tools {
-  // width: 560px;
+  padding: 20px;
+  min-width: 300px;
+  width: 300px;
   .tool-row {
-    padding: 10px 10px 20px 10px;
+    padding-bottom: 20px;
     .tool-title {
       text-transform: uppercase;
-      font-size: 10px;
+      font-size: 12px;
       margin-bottom: 2px;
     }
     &.class-level.disabled {
@@ -386,9 +414,10 @@ body {
             background-color: $structurer-color;
           }
           &.filtered {
+            // background-color: $bg-color-dark;
             opacity: 0.2;
             &:hover {
-              opacity: 0.2;
+              opacity: 0.8;
             }
           }
           &:before {
@@ -419,13 +448,26 @@ body {
   margin-left: 15px;
   .legendCircle {
     min-width: 16px;
+    width: 16px;
     min-height: 16px;
+    height: 16px;
     border-radius: 8px;
     margin-right: 5px;
   }
   .legendRole {
     @extend %flex-row;
     margin-right: 20px;
+  }
+  @media screen and (max-width: 600px) {
+    font-size: 10px;
+    .legendCircle {
+      min-width: 12px;
+      width: 12px;
+      min-height: 12px;
+      height: 12px;
+      border-radius: 24px;
+      margin-right: 5px;
+    }
   }
 }
 
@@ -436,10 +478,6 @@ body {
     height: 5px;
     background-color: $bg-color-dark;
   }
-}
-
-.message {
-  padding: 10px;
 }
 
 .chart-container {
@@ -466,33 +504,54 @@ body {
 #compare {
   min-width: 500px;
   overflow-x: hidden;
-  padding: 10px;
+  padding: 20px;
+  font-size: 16px;
+  @media screen and (max-width: 600px) {
+    min-width: 0;
+    width: calc(50vw);
+    font-size: 12px;
+    padding: 20px;
+  }
   #version-select {
     width: 300px;
+    @media screen and (max-width: 600px) {
+      width: 250px;
+    }
     .version-select-div {
       cursor: pointer;
       padding: 10px;
       @extend %flex-row;
+      @extend %center;
       justify-content: space-between;
       .version-selected {
         .version-option-div {
           padding: 0 10px;
           background-color: transparent;
           transform: scale(1.2);
+          @media screen and (max-width: 600px) {
+            transform: none;
+          }
         }
       }
     }
     .version-select-icon {
       padding-left: 20px;
-      transform: translateY(-3px);
     }
     .version-options-list {
       position: fixed;
-      top: 50px;
+      top: 60px;
       width: 300px;
       background-color: white;
       max-height: calc(50vh);
       overflow: scroll;
+      @media screen and (max-width: 600px) {
+        transform: none;
+      }
+      .version-option {
+        @media screen and (max-width: 600px) {
+          width: 250px;
+        }
+      }
     }
     .version-option-div {
       cursor: pointer;
@@ -505,7 +564,6 @@ body {
         width: 14px;
         opacity: 0.7;
         padding-right: 5px;
-        transform: translateY(2px);
       }
       .commit-id {
         font-weight: bold;
@@ -524,6 +582,7 @@ body {
     @extend %flex-row;
     justify-content: space-between;
     border-bottom: 2px solid $bg-color;
+    overflow-x: scroll;
     .list-view {
       cursor: pointer;
       min-width: 90px;
@@ -557,6 +616,7 @@ body {
       padding: 10px;
       background-color: $bg-color;
       justify-content: space-between;
+      align-items: center;
       cursor: pointer;
     }
     .change-list {
@@ -578,7 +638,6 @@ body {
           background-color: $black;
           min-width: 20px;
           min-height: 20px;
-          margin-right: 5px;
         }
         .list-item-text {
           padding-left: 10px;
@@ -591,6 +650,14 @@ body {
           }
           .list-item-class-text {
             font-size: 14px;
+          }
+          @media screen and (max-width: 600px) {
+            .list-item-package-text {
+              font-size: 10px;
+            }
+            .list-item-class-text {
+              font-size: 12px;
+            }
           }
         }
       }

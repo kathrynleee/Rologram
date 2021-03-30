@@ -199,7 +199,7 @@ const initGraph = async (version, pkg, cls) => {
     selectedClass = cls
     if(pkg === '' && cls === '') {
         level = 'system'
-        setVisible('#info .class-id', false, false)
+        document.querySelector('#info .class-id').classList.remove('show')
         document.querySelector('#info .package').textContent = ''
         document.querySelector('#info .class').textContent = ''
         addToHistory({ version: selectedVersion, package: '', class: '' })
@@ -208,7 +208,7 @@ const initGraph = async (version, pkg, cls) => {
         level = 'package'
         document.querySelector('#info .package').textContent = selectedPackage
         document.querySelector('#info .class').textContent = ''
-        setVisible('#info .class-id', true, false)
+        document.querySelector('#info .class-id').classList.add('show')
         addToHistory({ version: selectedVersion, package: selectedPackage, class: '' })
         createTimeline(selectedPackage)
     } else {
@@ -218,17 +218,16 @@ const initGraph = async (version, pkg, cls) => {
         let className = selectedClass.slice(index + 1)
         document.querySelector('#info .package').textContent = target._private.data.parent
         document.querySelector('#info .class').textContent = className
-        setVisible('#info .class-id', true, false)
+        document.querySelector('#info .class-id').classList.add('show')
         addToHistory({ version: selectedVersion, package: target._private.data.parent, class: className })
         createTimeline(selectedClass)
-        if(document.querySelector('#sourceCode').style.display === 'flex') {
-            showSourceCode()
-            moveGraph()
-        }
+    }
+    if(!document.querySelector('#sourceCode').classList.contains('hide')) {
+        showSourceCode()
     }
     createInfo()
-    updateGraph()
     resetTools()
+    updateGraph()
 }
 
 const updateGraph = () => {
@@ -248,12 +247,9 @@ const updateGraph = () => {
 const updateClassGraph = (dependencyLevel, edgeType, created, labelVisibility) => {
     document.querySelector('.dep-level .selected-option').classList.remove('selected-option')
     document.querySelector(`[data-option="${dependencyLevel}"]`).classList.add('selected-option')
+    document.querySelector('[data-option="hideLabels"]').className = ''
+    document.querySelector('[data-option="showLabels"]').className = ''
     document.querySelector(`[data-option="${labelVisibility}"]`).classList.add('selected-option')
-    if(labelVisibility === 'showLabels') {
-        document.querySelector('[data-option="hideLabels"]').className = ''
-    } else {
-        document.querySelector('[data-option="showLabels"]').className = ''
-    }
     const target = cy.$id(selectedClass).addClass('selected')
     cy.startBatch()
     cy.elements().removeClass(['hide', 'showLabel'])

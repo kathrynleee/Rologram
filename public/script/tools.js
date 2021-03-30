@@ -12,11 +12,11 @@ const showSourceCode = async () => {
   setVisible('.close', true, false)
   setVisible('#sourceCode', true, false)
   setVisible('#sourceCode .code', false, false)
-  setVisible('#sourceCode .not-found', false, false)
   if(level !== 'class') {
     setVisible('#sourceCode .not-found', true, false)
     document.querySelector('#sourceCode .not-found').textContent = 'Source code only available for classes.'
   } else {
+    setVisible('#sourceCode .not-found', false, false)
     const code = await displaySourceCode()
     if(code !== undefined) {
       setVisible('#sourceCode .code', true, false)
@@ -71,6 +71,7 @@ const showTools = () => {
 const closeOpenedDialog = () => {
   setVisible('.dialog', false, true)
   setVisible('.close', false, false)
+  cy.fit()
 }
 
 const exportHistory = async () => {
@@ -282,7 +283,7 @@ const resizeNodes = (option) => {
 
 const filterRole = (role) => {
   cy.startBatch()
-  cy.nodes().removeClass('hide')
+  cy.nodes(':parent').removeClass('hide')
   if(document.querySelector(`[data-role="${role}"]`).classList.contains('filtered')) {
     document.querySelector(`[data-role="${role}"]`).classList.remove('filtered')
     cy.nodes(`[role="${role}"]`).removeClass('filter')
@@ -290,8 +291,9 @@ const filterRole = (role) => {
     document.querySelector(`[data-role="${role}"]`).classList.add('filtered')
     cy.nodes(`[role="${role}"]`).addClass('filter')
   }
-  const parents = cy.nodes().not('.filter').not('.hide').ancestors()
-  cy.nodes(':compound').not(parents).addClass('hide')
+  // const parents = cy.nodes().not('.filter').not('.hide').ancestors()
+  const parents = cy.nodes().not('.filter').ancestors()
+  cy.nodes(':parent').not(parents).addClass('hide')
   cy.endBatch()
   cy.layout(currentLayoutOptions).run()
   moveGraph()
