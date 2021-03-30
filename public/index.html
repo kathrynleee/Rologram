@@ -11,11 +11,11 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <!-- js -->
         <script src="../script/api.js"></script>
+        <script src="../script/script.js"></script>
         <script src="../script/tools.js"></script>
         <script src="../script/compare.js"></script>
         <script src="../script/pattern.js"></script>
         <script src="../script/animation.js"></script>
-        <script src="../script/script.js"></script>
         <!-- style -->
         <link rel="stylesheet" href="../style/style.css"/>
         <!-- animate -->
@@ -38,6 +38,9 @@
         <script src="../lib/chartist/chartist.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chartist-plugin-pointlabels@0.0.6/dist/chartist-plugin-pointlabels.min.js"></script>
         <link href="../lib/chartist/chartist.min.css" rel="stylesheet">
+        <!-- splide -->
+        <!-- <script src="../lib/splide/splide.min.js"></script>
+        <link href="../lib/splide/splide.min.css" rel="stylesheet"> -->
     </head>
     <body>
         <div class="header">
@@ -171,7 +174,7 @@
                     <div class="version-selected"></div>
                     <div class="version-select-icon material-icons">keyboard_arrow_down</div>
                 </div>
-                <div class="version-options-list closed"></div>
+                <div class="hide version-options-list closed"></div>
             </div>
             <div class="hide list-view-options">
                 <div class="list-view selected-view all" onclick="switchChangeListView('all')">
@@ -216,17 +219,65 @@
             </div>
         </div>
         <div id="animation" class="hide dialog animate__animated animate__slideInRight">
-            <div class="animation-options">
+            <div class="splide">
+                <div class="splide__slider">
+                    <div class="splide__track">
+                        <ul class="splide__list">
+                            <li class="splide__slide">01</li>
+                            <li class="splide__slide">02</li>
+                            <li class="splide__slide">03</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="splide__progress">
+                    <div class="splide__progress__bar">
+                    </div>
+                </div>
+                <div class="splide__autoplay">
+                    <button class="splide__play"><div class="material-icons">play_arrow</div></button>
+                    <button class="splide__pause"><div class="material-icons" onclick="">pause</div></button>
+                </div>
+            </div>
+            <!-- <div class="animation-options">
                 <div class="material-icons" onclick="startAnimation()">play_arrow</div>
                 <div class="material-icons" onclick="">pause</div>
                 <div class="material-icons" onclick="stopAnimation()">stop</div>
                 <div id="progressBar"></div>
-            </div>
+            </div> -->
             <div class="message">Not available for the first commit version.</div>
         </div>
         <div id="pattern" class="hide dialog animate__animated animate__slideInRight">
-            <div class="chart-container">
-                <div class="chart-div"></div>
+            <div class="pattern-div">
+                <div class="pattern-group">
+                    <div class="pattern-count">
+                        <div class="pointer">1</div>
+                    </div>
+                    <div class="pattern-select">
+                        <div class="pattern-role" data-pattern-level="1">
+                            <div data-role="Controller" class="pattern-role-option" onclick="togglePatternRole(1, 'Controller')"></div>
+                            <div data-role="Coordinator" class="pattern-role-option" onclick="togglePatternRole(1, 'Coordinator')"></div>
+                            <div data-role="Information Holder" class="pattern-role-option" onclick="togglePatternRole(1, 'Information Holder')"></div>
+                            <div data-role="Interfacer" class="pattern-role-option" onclick="togglePatternRole(1, 'Interfacer')"></div>
+                            <div data-role="Service Provider" class="pattern-role-option" onclick="togglePatternRole(1, 'Service Provider')"></div>
+                            <div data-role="Structurer" class="pattern-role-option" onclick="togglePatternRole(1, 'Structurer')"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pattern-buttons">
+                    <div class="add-remove">
+                        <div class="icon material-icons" onclick="changePatternLevel(1)">add</div>
+                        <div class="icon material-icons" onclick="changePatternLevel(-1)">remove</div>
+                    </div>
+                    <div class="apply-cancel">
+                        <div class="cancel" onclick="removePattern()">Cancel</div>
+                        <div class="button" onclick="applyPattern()">Apply Pattern</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="chart-container">
+                        <div class="chart-div"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </body>

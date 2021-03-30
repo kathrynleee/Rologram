@@ -55,12 +55,22 @@ body {
   margin: 0;
   padding: 0;
   color: $black;
+  ::-webkit-scrollbar {
+    width: 3px;
+  }
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    border: 2px solid $black;
+  }
 }
 
 #cy {
   margin: 10px;
+  z-index: 99;
   height: calc(100vh - 150px);
-  width: calc(100vw - 70px);
+  width: calc(100vw - 75px);
   border: 5px solid $black;
   background-color: $bg-color;
 }
@@ -150,10 +160,12 @@ body {
   top: 100px;
   right: 0;
   height: calc(100vh - 140px);
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 .icons {
-  min-width: 40px;
+  // min-width: 40px;
   @extend %center;
   @extend %flex-column;
   .icon {
@@ -172,7 +184,7 @@ body {
 
 .timeline {
   margin: 0 10px;
-  width: calc(100vw - 60px);
+  width: calc(100vw - 65px);
   height: 80px;
   overflow-x: scroll;
   overflow-y: hidden;
@@ -248,10 +260,6 @@ body {
   &:hover {
     opacity: 0.6;
   }
-  // @media screen and (max-width: 600px) {
-  //   top: 90px;
-  //   right: 20px;
-  // }
 }
 
 .dialog {
@@ -262,8 +270,8 @@ body {
   right: 0;
   width: 30vw;
   border: 5px solid $bg-color;
-  height: 100vh;
-  overflow: scroll;
+  height: 90vh;
+  overflow-y: scroll;
   .message {
     padding: 10px;
   }
@@ -394,7 +402,7 @@ body {
         .tool-role {
           width: 16px;
           height: 16px;
-          border-radius: 32px;
+          border-radius: 50%;
           &[data-role='Controller'] {
             background-color: $controller-color;
           }
@@ -446,7 +454,7 @@ body {
   font-size: 12px;
   margin: 5px 10px;
   margin-left: 15px;
-  .legendCircle {
+  .legend-circle {
     min-width: 16px;
     width: 16px;
     min-height: 16px;
@@ -454,13 +462,13 @@ body {
     border-radius: 8px;
     margin-right: 5px;
   }
-  .legendRole {
+  .legend-role {
     @extend %flex-row;
     margin-right: 20px;
   }
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 798px) {
     font-size: 10px;
-    .legendCircle {
+    .legend-circle {
       min-width: 12px;
       width: 12px;
       min-height: 12px;
@@ -468,34 +476,45 @@ body {
       border-radius: 24px;
       margin-right: 5px;
     }
+    .legend-role {
+      @extend %flex-row;
+      margin-right: 10px;
+    }
   }
 }
 
 #animation {
   @extend %center;
-  #progressBar {
-    width: 1%;
-    height: 5px;
-    background-color: $bg-color-dark;
-  }
+  // #progressBar {
+  //   width: 1%;
+  //   height: 5px;
+  //   background-color: $bg-color-dark;
+  // }
 }
 
 .chart-container {
   .chart-div {
-    width: 200px;
-    height: 100px;
+    // width: 100%;
     .ct-series-a {
       .ct-line {
-        stroke: $service-provider-color;
-        stroke-width: 5px;
+        stroke: $black;
+        stroke-width: 2px;
       }
       .ct-point {
-        stroke: $service-provider-color;
+        stroke-width: 5px;
+        stroke: $black;
       }
       .ct-label {
+        padding: 5px;
+        padding-bottom: 15px;
+        font-size: 14px;
         fill: $black;
         color: $black;
-        opacity: 0.6;
+        opacity: 0;
+        &:hover {
+          opacity: 1;
+          cursor: pointer;
+        }
       }
     }
   }
@@ -582,7 +601,13 @@ body {
     @extend %flex-row;
     justify-content: space-between;
     border-bottom: 2px solid $bg-color;
-    overflow-x: scroll;
+    @media screen and (max-width: 600px) {
+      overflow-y: hidden;
+      overflow-x: scroll;
+      .list-view {
+        padding: 5px;
+      }
+    }
     .list-view {
       cursor: pointer;
       min-width: 90px;
@@ -659,6 +684,139 @@ body {
               font-size: 12px;
             }
           }
+        }
+      }
+    }
+  }
+}
+
+#pattern {
+  padding: 20px;
+  .pattern-group {
+    @extend %flex-row;
+  }
+  .pattern-count {
+    @extend %flex-column;
+    @extend %center;
+    cursor: default;
+    .pointer {
+      @extend %center;
+      border-radius: 50%;
+      background-color: $bg-color-dark;
+      height: 20px;
+      width: 20px;
+    }
+    .divider {
+      height: 50px;
+      width: 5px;
+      background-color: $bg-color-dark;
+    }
+    .arrow {
+      width: 0; 
+      height: 0; 
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid $bg-color-dark;
+    }
+    .pointer-group {
+      @extend %flex-column;
+      @extend %center;
+    }
+  }
+  .pattern-role {
+    padding: 20px;
+    @extend %flex-row;
+    justify-content: space-between;
+  }
+  .pattern-role-option {
+    cursor: pointer;
+    margin-right: 5px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    @media screen and (max-width: 798px) {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+    }
+    &[data-role='Controller'] {
+      background-color: $controller-color;
+    }
+    &[data-role='Coordinator'] {
+      background-color: $coordinator-color;
+    }
+    &[data-role='Information Holder'] {
+      background-color: $information-holder-color;
+    }
+    &[data-role='Interfacer'] {
+      background-color: $interfacer-color;
+    }
+    &[data-role='Service Provider'] {
+      background-color: $service-provider-color;
+    }
+    &[data-role='Structurer'] {
+      background-color: $structurer-color;
+    }
+    &.removed {
+      opacity: 0.2;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+    &:before {
+      font-size: 10px;
+      color: $black;
+      content: attr(data-role);
+      position: relative;
+      opacity: 0;
+      top: 40px;
+      @media screen and (max-width: 798px) {
+        top: 30px;
+      }
+    }
+    &:hover:before {
+      opacity: 1;
+    }
+    &:hover {
+      opacity: 1;
+    }
+  }
+  .pattern-buttons {
+    margin-top: 50px;
+    @extend %flex-row;
+    justify-content: space-between;
+    .add-remove {
+      @extend %center;
+      .icon:first-child {
+        margin-right: 20px;
+      }
+      .icon:hover {
+        opacity: 0.6;
+      }
+    }
+    .apply-cancel {
+      @extend %flex-row;
+      @extend %center;
+      .cancel {
+        font-size: 12px;
+        text-decoration: underline;
+        cursor: pointer;
+        padding: 10px;
+        margin-right: 10px;
+        &:hover {
+          text-decoration: none;
+          opacity: 0.6;
+        }
+      }
+      .button {
+        padding: 10px;
+        width: fit-content;
+        cursor: pointer;
+        font-size: 12px;
+        border: 2px solid $black;
+        box-shadow: 2px 2px;
+        &:hover {
+          opacity: 0.6;
         }
       }
     }

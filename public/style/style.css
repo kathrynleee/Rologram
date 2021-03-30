@@ -1,25 +1,25 @@
-#compare .change-list-div .change-list .change-list-row, #compare .change-list-div .change-list-group, #compare .list-view-options .list-view, #compare .list-view-options, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #legend .legendRole, #legend, #tools .tool-row .tool-row-items, #history .history-row .history-commit, #info .class-id, #info .commit, .flex-row {
+#pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons, #pattern .pattern-role, #pattern .pattern-group, #compare .change-list-div .change-list .change-list-row, #compare .change-list-div .change-list-group, #compare .list-view-options .list-view, #compare .list-view-options, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #legend .legend-role, #legend, #tools .tool-row .tool-row-items, #history .history-row .history-commit, #info .class-id, #info .commit, .flex-row {
   display: flex;
   flex-direction: row;
 }
-#compare .change-list-div .change-list .hide.change-list-row, #compare .change-list-div .hide.change-list-group, #compare .list-view-options .hide.list-view, #compare .hide.list-view-options, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, #legend .hide.legendRole, .hide#legend, #tools .tool-row .hide.tool-row-items, #history .history-row .hide.history-commit, #info .hide.class-id, #info .hide.commit, .hide.flex-row {
+#pattern .pattern-buttons .hide.apply-cancel, #pattern .hide.pattern-buttons, #pattern .hide.pattern-role, #pattern .hide.pattern-group, #compare .change-list-div .change-list .hide.change-list-row, #compare .change-list-div .hide.change-list-group, #compare .list-view-options .hide.list-view, #compare .hide.list-view-options, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, #legend .hide.legend-role, .hide#legend, #tools .tool-row .hide.tool-row-items, #history .history-row .hide.history-commit, #info .hide.class-id, #info .hide.commit, .hide.flex-row {
   display: none;
 }
 
-.icons .icon, .icons {
+#pattern .pattern-count .pointer-group, #pattern .pattern-count, .icons .icon, .icons {
   display: flex;
   flex-direction: column;
 }
-.icons .hide.icon, .hide.icons {
+#pattern .pattern-count .hide.pointer-group, #pattern .hide.pattern-count, .icons .hide.icon, .hide.icons {
   display: none;
 }
 
-#compare .list-view-options .list-view, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #animation, #sourceCode, .icons .icon, .icons {
+#pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons .add-remove, #pattern .pattern-count .pointer-group, #pattern .pattern-count .pointer, #pattern .pattern-count, #compare .list-view-options .list-view, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #animation, #sourceCode, .icons .icon, .icons {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-#compare .list-view-options .hide.list-view, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, .hide#animation, .hide#sourceCode, .icons .hide.icon, .hide.icons {
+#pattern .pattern-buttons .hide.apply-cancel, #pattern .pattern-buttons .hide.add-remove, #pattern .pattern-count .hide.pointer-group, #pattern .pattern-count .hide.pointer, #pattern .hide.pattern-count, #compare .list-view-options .hide.list-view, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, .hide#animation, .hide#sourceCode, .icons .hide.icon, .hide.icons {
   display: none;
 }
 
@@ -42,11 +42,21 @@ body {
   padding: 0;
   color: #465054;
 }
+body ::-webkit-scrollbar {
+  width: 3px;
+}
+body ::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+body ::-webkit-scrollbar-thumb {
+  border: 2px solid #465054;
+}
 
 #cy {
   margin: 10px;
+  z-index: 99;
   height: calc(100vh - 150px);
-  width: calc(100vw - 70px);
+  width: calc(100vw - 75px);
   border: 5px solid #465054;
   background-color: #f6f7f8;
 }
@@ -141,11 +151,10 @@ body {
   top: 100px;
   right: 0;
   height: calc(100vh - 140px);
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
-.icons {
-  min-width: 40px;
-}
 .icons .icon {
   padding: 10px 8px;
   cursor: pointer;
@@ -159,7 +168,7 @@ body {
 
 .timeline {
   margin: 0 10px;
-  width: calc(100vw - 60px);
+  width: calc(100vw - 65px);
   height: 80px;
   overflow-x: scroll;
   overflow-y: hidden;
@@ -243,8 +252,8 @@ body {
   right: 0;
   width: 30vw;
   border: 5px solid #f6f7f8;
-  height: 100vh;
-  overflow: scroll;
+  height: 90vh;
+  overflow-y: scroll;
 }
 .dialog .message {
   padding: 10px;
@@ -368,7 +377,7 @@ body {
 #tools .tool-row .tool-row-items.roles-filter .tool-role {
   width: 16px;
   height: 16px;
-  border-radius: 32px;
+  border-radius: 50%;
 }
 #tools .tool-row .tool-row-items.roles-filter .tool-role[data-role=Controller] {
   background-color: #755194;
@@ -415,7 +424,7 @@ body {
   margin: 5px 10px;
   margin-left: 15px;
 }
-#legend .legendCircle {
+#legend .legend-circle {
   min-width: 16px;
   width: 16px;
   min-height: 16px;
@@ -423,14 +432,14 @@ body {
   border-radius: 8px;
   margin-right: 5px;
 }
-#legend .legendRole {
+#legend .legend-role {
   margin-right: 20px;
 }
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 798px) {
   #legend {
     font-size: 10px;
   }
-  #legend .legendCircle {
+  #legend .legend-circle {
     min-width: 12px;
     width: 12px;
     min-height: 12px;
@@ -438,29 +447,30 @@ body {
     border-radius: 24px;
     margin-right: 5px;
   }
+  #legend .legend-role {
+    margin-right: 10px;
+  }
 }
 
-#animation #progressBar {
-  width: 1%;
-  height: 5px;
-  background-color: #ECECEA;
-}
-
-.chart-container .chart-div {
-  width: 200px;
-  height: 100px;
-}
 .chart-container .chart-div .ct-series-a .ct-line {
-  stroke: #4D82B0;
-  stroke-width: 5px;
+  stroke: #465054;
+  stroke-width: 2px;
 }
 .chart-container .chart-div .ct-series-a .ct-point {
-  stroke: #4D82B0;
+  stroke-width: 5px;
+  stroke: #465054;
 }
 .chart-container .chart-div .ct-series-a .ct-label {
+  padding: 5px;
+  padding-bottom: 15px;
+  font-size: 14px;
   fill: #465054;
   color: #465054;
-  opacity: 0.6;
+  opacity: 0;
+}
+.chart-container .chart-div .ct-series-a .ct-label:hover {
+  opacity: 1;
+  cursor: pointer;
 }
 
 #compare {
@@ -546,7 +556,15 @@ body {
 #compare .list-view-options {
   justify-content: space-between;
   border-bottom: 2px solid #f6f7f8;
-  overflow-x: scroll;
+}
+@media screen and (max-width: 600px) {
+  #compare .list-view-options {
+    overflow-y: hidden;
+    overflow-x: scroll;
+  }
+  #compare .list-view-options .list-view {
+    padding: 5px;
+  }
 }
 #compare .list-view-options .list-view {
   cursor: pointer;
@@ -618,6 +636,124 @@ body {
   #compare .change-list-div .change-list .change-list-row .list-item-text .list-item-class-text {
     font-size: 12px;
   }
+}
+
+#pattern {
+  padding: 20px;
+}
+#pattern .pattern-count {
+  cursor: default;
+}
+#pattern .pattern-count .pointer {
+  border-radius: 50%;
+  background-color: #ECECEA;
+  height: 20px;
+  width: 20px;
+}
+#pattern .pattern-count .divider {
+  height: 50px;
+  width: 5px;
+  background-color: #ECECEA;
+}
+#pattern .pattern-count .arrow {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #ECECEA;
+}
+#pattern .pattern-role {
+  padding: 20px;
+  justify-content: space-between;
+}
+#pattern .pattern-role-option {
+  cursor: pointer;
+  margin-right: 5px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+@media screen and (max-width: 798px) {
+  #pattern .pattern-role-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+  }
+}
+#pattern .pattern-role-option[data-role=Controller] {
+  background-color: #755194;
+}
+#pattern .pattern-role-option[data-role=Coordinator] {
+  background-color: #539967;
+}
+#pattern .pattern-role-option[data-role="Information Holder"] {
+  background-color: #BF3F6A;
+}
+#pattern .pattern-role-option[data-role=Interfacer] {
+  background-color: #E9AB45;
+}
+#pattern .pattern-role-option[data-role="Service Provider"] {
+  background-color: #4D82B0;
+}
+#pattern .pattern-role-option[data-role=Structurer] {
+  background-color: #E6A1B2;
+}
+#pattern .pattern-role-option.removed {
+  opacity: 0.2;
+}
+#pattern .pattern-role-option.removed:hover {
+  opacity: 0.8;
+}
+#pattern .pattern-role-option:before {
+  font-size: 10px;
+  color: #465054;
+  content: attr(data-role);
+  position: relative;
+  opacity: 0;
+  top: 40px;
+}
+@media screen and (max-width: 798px) {
+  #pattern .pattern-role-option:before {
+    top: 30px;
+  }
+}
+#pattern .pattern-role-option:hover:before {
+  opacity: 1;
+}
+#pattern .pattern-role-option:hover {
+  opacity: 1;
+}
+#pattern .pattern-buttons {
+  margin-top: 50px;
+  justify-content: space-between;
+}
+#pattern .pattern-buttons .add-remove .icon:first-child {
+  margin-right: 20px;
+}
+#pattern .pattern-buttons .add-remove .icon:hover {
+  opacity: 0.6;
+}
+#pattern .pattern-buttons .apply-cancel .cancel {
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 10px;
+  margin-right: 10px;
+}
+#pattern .pattern-buttons .apply-cancel .cancel:hover {
+  text-decoration: none;
+  opacity: 0.6;
+}
+#pattern .pattern-buttons .apply-cancel .button {
+  padding: 10px;
+  width: fit-content;
+  cursor: pointer;
+  font-size: 12px;
+  border: 2px solid #465054;
+  box-shadow: 2px 2px;
+}
+#pattern .pattern-buttons .apply-cancel .button:hover {
+  opacity: 0.6;
 }
 
 /*# sourceMappingURL=style.css.map */

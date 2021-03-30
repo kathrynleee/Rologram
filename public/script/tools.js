@@ -137,9 +137,9 @@ const createLegend = () => {
   let element, sub, text
   for (let role of roleMap.keys()) {
     element = document.createElement('div')
-    element.className = 'legendRole'
+    element.className = 'legend-role'
     sub = document.createElement('div')
-    sub.className = 'legendCircle'
+    sub.className = 'legend-circle'
     sub.addEventListener('mouseover', () => {
       hoverLegend(role)
     })
@@ -149,7 +149,7 @@ const createLegend = () => {
     sub.style['background-color'] = roleMap.get(role)
     element.appendChild(sub)
     text = document.createElement('div')
-    text.className = 'legendText'
+    text.className = 'legend-text'
     text.innerHTML = role
     element.appendChild(text)
     document.getElementById('legend').appendChild(element)
@@ -291,8 +291,7 @@ const filterRole = (role) => {
     document.querySelector(`[data-role="${role}"]`).classList.add('filtered')
     cy.nodes(`[role="${role}"]`).addClass('filter')
   }
-  // const parents = cy.nodes().not('.filter').not('.hide').ancestors()
-  const parents = cy.nodes().not('.filter').ancestors()
+  const parents = cy.nodes().not(':parent, .filter').ancestors()
   cy.nodes(':parent').not(parents).addClass('hide')
   cy.endBatch()
   cy.layout(currentLayoutOptions).run()

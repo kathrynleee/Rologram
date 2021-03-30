@@ -1,17 +1,29 @@
 'use strict'
 
 let animationCurrentVersion, animationCompareVersion
-let duration = 10 * 1000, times
+// let duration = 10 * 1000, times
+
 const showAnimationDialog = async () => {
   const versions = await getVersions()
   let currentIndex = _.indexOf(versions.data, selectedVersion)
-  times = currentIndex - 1
-  setVisible('#animation', true, true)
-  setVisible('.close', true)
-  setVisible('#animation .animation-options', (currentIndex !== 0))
+  // times = currentIndex - 1
+  setVisible('#animation', true, false)
+  setVisible('.close', true, false)
+  // setVisible('#animation .animation-options', (currentIndex !== 0))
   setVisible('#animation .message', (currentIndex === 0))
-  animationCurrentVersion = versions.data[0]
-  animationCompareVersion = versions.data[1]
+  // animationCurrentVersion = versions.data[0]
+  // animationCompareVersion = versions.data[1]
+
+//   var splide = new Splide('.splide', {
+//     type        : 'slide',
+//     perPage     : 1,
+//     autoplay    : true,
+//     pauseOnHover: false,
+//     pagination: false,
+//     interval: 10000,
+//     resetProgress: false
+// }).mount()
+// splide.destroy()
 }
 
 const startAnimation = async () => {
