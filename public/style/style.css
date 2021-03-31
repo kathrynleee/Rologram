@@ -44,12 +44,14 @@ body {
 }
 body ::-webkit-scrollbar {
   width: 2px;
+  height: 2px;
 }
 body ::-webkit-scrollbar-track {
   background-color: transparent;
 }
 body ::-webkit-scrollbar-thumb {
   border: 1px solid #465054;
+  background-color: #465054;
 }
 
 #cy {
@@ -424,6 +426,7 @@ body ::-webkit-scrollbar-thumb {
 }
 
 #legend {
+  overflow-x: scroll;
   font-size: 12px;
   margin: 5px 10px;
   margin-left: 15px;
