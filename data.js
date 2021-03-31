@@ -136,7 +136,7 @@ const getVersionDominantRoleList = () => {
 const getPackageDominantRoleList = (id) => {
   let roleList = []
   _.forEach(versions, v => {
-    const nodes = _.filter(elements.nodes, n => n.data.parent.search(id) === 0 && n.data.version === v && n.data.role !== undefined)
+    const nodes = _.filter(elements.nodes, n => n.data.parent.indexOf(id + '.') === 0 && n.data.version === v && n.data.role !== undefined)
     let count = _.countBy(nodes, 'data.role')
     let max = 0, maxArray = []
     Object.keys(count).forEach(attr => {
@@ -249,23 +249,23 @@ const getSystemLevelChanges = (currentVersion, versionToBeCompared) => {
 }
 
 const getPackageLevelChanges = (currentVersion, versionToBeCompared, package) => {
-  let packages = elements.nodes.filter(n => n.data.parent === package && n.data.role === undefined && n.data.version === currentVersion)
+  let packages = elements.nodes.filter(n => n.data.parent === package && n.data.role === undefined && (n.data.version === currentVersion || n.data.version === versionToBeCompared))
   packages = _.map(packages, 'data.id')
   let packageList = []
   packageList.push(package)
   packageList = _.union(packageList, packages)
   // search subpackages of subpackages
   while(packages.length !== 0) {
-    let subPackages = elements.nodes.filter(n => _.includes(packages, n.data.parent) && n.data.role === undefined && n.data.version === currentVersion)
+    let subPackages = elements.nodes.filter(n => _.includes(packages, n.data.parent) && n.data.role === undefined && (n.data.version === currentVersion || n.data.version === versionToBeCompared))
     packageList = _.union(packageList, _.map(subPackages, 'data.id'))
     packages = _.map(subPackages, 'data.id')
   }
 
   const currentNodes = elements.nodes.filter(n => _.includes(packageList, n.data.parent) && n.data.role !== undefined && n.data.version === currentVersion)
-  const currentEdges = elements.edges.filter(n => (n.data.source.search(package) == 0 && n.data.target.search(package) == 0) && n.data.version === currentVersion)
+  const currentEdges = elements.edges.filter(n => (n.data.source.indexOf(package + '.') == 0 && n.data.target.indexOf(package + '.') == 0) && n.data.version === currentVersion)
 
   const comparedNodes = elements.nodes.filter(n => _.includes(packageList, n.data.parent) && n.data.role !== undefined && n.data.version === versionToBeCompared)
-  const comparedEdges = elements.edges.filter(n => (n.data.source.search(package) == 0 && n.data.target.search(package) == 0) && n.data.version === versionToBeCompared)
+  const comparedEdges = elements.edges.filter(n => (n.data.source.indexOf(package + '.') == 0 && n.data.target.indexOf(package + '.') == 0) && n.data.version === versionToBeCompared)
 
   // nodes
   // in both sets of nodes, included nodes for packages
