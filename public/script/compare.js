@@ -366,8 +366,8 @@ const showChanges = async (currentVersion, versionToCompare) => {
     updateClassGraph(3, 'all', false, 'hideLabels')
   }
   moveGraph()
-  createChangeList(changes.data, versionToCompare, isComparingToLaterVersion)
   createIndicators(versionToCompare)
+  createChangeList(changes.data, versionToCompare, isComparingToLaterVersion)
   setVisible('.change-lists', true, false)
   setVisible('.change-lists .change-list-group', true, true)
   setVisible('.change-lists .change-list', false, true)
@@ -376,34 +376,34 @@ const showChanges = async (currentVersion, versionToCompare) => {
 const createIndicators = (version) => {
   let selectedElements = document.getElementsByClassName('selected-version')
   while(selectedElements.length > 0){
-      selectedElements[0].classList.remove('selected-version')
+    selectedElements[0].classList.remove('selected-version')
   }
   selectedElements = document.getElementsByClassName('selected')
   while(selectedElements.length > 0){
-      selectedElements[0].textContent = ''
-      let text = document.createElement('span')
-      let date = selectedElements[0].getAttribute('data-text').slice(0, 10)
-      text.setAttribute('data-date', date)
-      text.className = 'date'
-      selectedElements[0].appendChild(text)
-      selectedElements[0].classList.remove('selected')
+    selectedElements[0].textContent = ''
+    let text = document.createElement('span')
+    let date = selectedElements[0].getAttribute('data-text').slice(0, 10)
+    text.setAttribute('data-date', date)
+    text.className = 'date'
+    selectedElements[0].appendChild(text)
+    selectedElements[0].classList.remove('selected')
   }
   const indicators = document.getElementsByClassName('indicator')
   while(indicators.length > 0){
-      indicators[0].parentNode.removeChild(indicators[0])
+    indicators[0].parentNode.removeChild(indicators[0])
   }
   if(version !== selectedVersion) {
-      // comparing version indicator
-      let date = version.slice(0, 10)
-      let eles = document.querySelectorAll(`[data-text='${date}']`)[0]
-      eles.className = 'tooltip selected'
-      eles.textContent = 'COMPARE'
-      eles.parentNode.classList.add('selected-version')
-      // current version indicator
-      let currentEles = document.querySelectorAll(`[data-text='${selectedVersion.slice(0, 10)}']`)[0]
-      currentEles.className = 'tooltip selected'
-      currentEles.textContent = 'CURRENT'
-      currentEles.parentNode.classList.add('selected-version')
+    // comparing version indicator
+    let date = version.slice(0, 10)
+    let eles = document.querySelectorAll(`[data-text='${date}']`)[0]
+    eles.className = 'tooltip selected'
+    eles.textContent = 'COMPARE'
+    eles.parentNode.classList.add('selected-version')
+    // current version indicator
+    let currentEles = document.querySelectorAll(`[data-text='${selectedVersion.slice(0, 10)}']`)[0]
+    currentEles.className = 'tooltip selected'
+    currentEles.textContent = 'CURRENT'
+    currentEles.parentNode.classList.add('selected-version')
   }
 }
 

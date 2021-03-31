@@ -1,8 +1,8 @@
-#pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons, #pattern .pattern-role, #pattern .pattern-group, #compare .change-list-div .change-list .change-list-row, #compare .change-list-div .change-list-group, #compare .list-view-options .list-view, #compare .list-view-options, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #legend .legend-role, #legend, #tools .tool-row .tool-row-items, #history .history-row .history-commit, #info .class-id, #info .commit, .flex-row {
+#animation .slide .version, #animation .animation-controls, #pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons, #pattern .pattern-role, #pattern .pattern-group, #compare .change-list-div .change-list .change-list-row, #compare .change-list-div .change-list-group, #compare .list-view-options .list-view, #compare .list-view-options, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #legend .legend-role, #legend, #tools .tool-row .tool-row-items, #history .history-row .history-commit, #info .class-id, #info .commit, .flex-row {
   display: flex;
   flex-direction: row;
 }
-#pattern .pattern-buttons .hide.apply-cancel, #pattern .hide.pattern-buttons, #pattern .hide.pattern-role, #pattern .hide.pattern-group, #compare .change-list-div .change-list .hide.change-list-row, #compare .change-list-div .hide.change-list-group, #compare .list-view-options .hide.list-view, #compare .hide.list-view-options, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, #legend .hide.legend-role, .hide#legend, #tools .tool-row .hide.tool-row-items, #history .history-row .hide.history-commit, #info .hide.class-id, #info .hide.commit, .hide.flex-row {
+#animation .slide .hide.version, #animation .hide.animation-controls, #pattern .pattern-buttons .hide.apply-cancel, #pattern .hide.pattern-buttons, #pattern .hide.pattern-role, #pattern .hide.pattern-group, #compare .change-list-div .change-list .hide.change-list-row, #compare .change-list-div .hide.change-list-group, #compare .list-view-options .hide.list-view, #compare .hide.list-view-options, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, #legend .hide.legend-role, .hide#legend, #tools .tool-row .hide.tool-row-items, #history .history-row .hide.history-commit, #info .hide.class-id, #info .hide.commit, .hide.flex-row {
   display: none;
 }
 
@@ -14,12 +14,12 @@
   display: none;
 }
 
-#pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons .add-remove, #pattern .pattern-count .pointer-group, #pattern .pattern-count .pointer, #pattern .pattern-count, #compare .list-view-options .list-view, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #animation, #sourceCode, .icons .icon, .icons {
+#animation .animation-controls, #animation, #pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons .add-remove, #pattern .pattern-count .pointer-group, #pattern .pattern-count .pointer, #pattern .pattern-count, #compare .list-view-options .list-view, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #sourceCode, .icons .icon, .icons {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-#pattern .pattern-buttons .hide.apply-cancel, #pattern .pattern-buttons .hide.add-remove, #pattern .pattern-count .hide.pointer-group, #pattern .pattern-count .hide.pointer, #pattern .hide.pattern-count, #compare .list-view-options .hide.list-view, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, .hide#animation, .hide#sourceCode, .icons .hide.icon, .hide.icons {
+#animation .hide.animation-controls, .hide#animation, #pattern .pattern-buttons .hide.apply-cancel, #pattern .pattern-buttons .hide.add-remove, #pattern .pattern-count .hide.pointer-group, #pattern .pattern-count .hide.pointer, #pattern .hide.pattern-count, #compare .list-view-options .hide.list-view, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, .hide#sourceCode, .icons .hide.icon, .hide.icons {
   display: none;
 }
 
@@ -43,13 +43,13 @@ body {
   color: #465054;
 }
 body ::-webkit-scrollbar {
-  width: 3px;
+  width: 2px;
 }
 body ::-webkit-scrollbar-track {
   background-color: transparent;
 }
 body ::-webkit-scrollbar-thumb {
-  border: 2px solid #465054;
+  border: 1px solid #465054;
 }
 
 #cy {
@@ -253,18 +253,22 @@ body ::-webkit-scrollbar-thumb {
   width: 30vw;
   border: 5px solid #f6f7f8;
   height: 90vh;
-  overflow-y: scroll;
 }
 .dialog .message {
   padding: 10px;
 }
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 768px) {
   .dialog {
     right: 0;
     width: 50vw;
   }
   .dialog .message {
     font-size: 12px;
+  }
+}
+@media screen and (max-width: 998px) {
+  .dialog {
+    width: 40vw;
   }
 }
 
@@ -754,6 +758,46 @@ body ::-webkit-scrollbar-thumb {
 }
 #pattern .pattern-buttons .apply-cancel .button:hover {
   opacity: 0.6;
+}
+
+#animation {
+  overflow: hidden;
+  height: 130px;
+}
+#animation .splide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 200px;
+}
+#animation .splide .splide__slide {
+  width: 400px;
+  height: auto;
+  padding: 20px;
+}
+#animation .splide__progress {
+  padding: 10px 20px;
+}
+#animation .animation-controls div {
+  cursor: pointer;
+  margin-right: 20px;
+}
+#animation .animation-controls div:last-child {
+  margin-right: 0;
+}
+#animation .animation-controls div:hover {
+  opacity: 0.6;
+}
+#animation .slide .version .commit-icon img {
+  width: 20px;
+  opacity: 0.7;
+  padding-right: 5px;
+}
+#animation .slide .version .commit-date {
+  padding-left: 8px;
+  padding-top: 3px;
+  font-size: 14px;
 }
 
 /*# sourceMappingURL=style.css.map */

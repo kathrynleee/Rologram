@@ -71,6 +71,7 @@ const showTools = () => {
 const closeOpenedDialog = () => {
   setVisible('.dialog', false, true)
   setVisible('.close', false, false)
+  pause()
   cy.fit()
 }
 
@@ -312,6 +313,7 @@ const toggleLabelVisibility = (option) => {
 }
 
 const resetTools = () => {
+  closeOpenedDialog()
   // tool dialog
   let classLevelElements = document.querySelectorAll('.class-level')
   for(var i = 0; i < classLevelElements.length; i++) {
@@ -352,6 +354,11 @@ const resetTools = () => {
   resetListCount()
   resetListIcon()
   clearChangeLists()
+  
+  // animation dialog
+  isStarted = false
+  pause()
+  document.querySelector('.splide__list').innerHTML = ''
 }
 
 const updateDependencyLevel = (dependencyLevel) => {

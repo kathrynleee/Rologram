@@ -56,13 +56,13 @@ body {
   padding: 0;
   color: $black;
   ::-webkit-scrollbar {
-    width: 3px;
+    width: 2px;
   }
   ::-webkit-scrollbar-track {
     background-color: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    border: 2px solid $black;
+    border: 1px solid $black;
   }
 }
 
@@ -271,16 +271,18 @@ body {
   width: 30vw;
   border: 5px solid $bg-color;
   height: 90vh;
-  overflow-y: scroll;
   .message {
     padding: 10px;
   }
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 768px) {
     right: 0;
     width: 50vw;
     .message {
       font-size: 12px;
     }
+  }
+  @media screen and (max-width: 998px) {
+    width: 40vw;
   }
 }
 
@@ -481,15 +483,6 @@ body {
       margin-right: 10px;
     }
   }
-}
-
-#animation {
-  @extend %center;
-  // #progressBar {
-  //   width: 1%;
-  //   height: 5px;
-  //   background-color: $bg-color-dark;
-  // }
 }
 
 .chart-container {
@@ -818,6 +811,56 @@ body {
         &:hover {
           opacity: 0.6;
         }
+      }
+    }
+  }
+}
+
+#animation {
+  @extend %center;
+  overflow: hidden;
+  height: 130px;
+  .splide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 200px;
+    .splide__slide {
+      width: 400px;
+      height: auto;
+      padding: 20px;
+    }
+  }
+  .splide__progress {
+    padding: 10px 20px;
+  }
+  .animation-controls {
+    @extend %flex-row;
+    @extend %center;
+    div {
+      cursor: pointer;
+      margin-right: 20px;
+      &:last-child {
+        margin-right: 0;
+      }
+      &:hover {
+        opacity: 0.6;
+      }
+    }
+  }
+  .slide {
+    .version {
+      @extend %flex-row;
+      .commit-icon img {
+        width: 20px;
+        opacity: 0.7;
+        padding-right: 5px;
+      }
+      .commit-date {
+        padding-left: 8px;
+        padding-top: 3px;
+        font-size: 14px;
       }
     }
   }
