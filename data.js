@@ -133,10 +133,23 @@ const getVersionDominantRoleList = () => {
   return roleList
 }
 
-const getPackageDominantRoleList = (id) => {
+const getPackageDominantRoleList = (package) => {
   let roleList = []
   _.forEach(versions, v => {
-    const nodes = _.filter(elements.nodes, n => n.data.parent.indexOf(id + '.') === 0 && n.data.version === v && n.data.role !== undefined)
+    // find all subpackage names
+    let packages = elements.nodes.filter(n => n.data.version === v && n.data.parent === package && n.data.role === undefined)
+    packages = _.map(packages, 'data.id')
+    let packageList = []
+    packageList.push(package)
+    packageList = _.union(packageList, packages)
+    // search subpackages of subpackages
+    while(packages.length !== 0) {
+      let subPackages = elements.nodes.filter(n => n.data.version === v && _.includes(packages, n.data.parent) && n.data.role === undefined)
+      packageList = _.union(packageList, _.map(subPackages, 'data.id'))
+      packages = _.map(subPackages, 'data.id')
+    }
+    // search for nodes in the package and subpackages
+    const nodes = _.filter(elements.nodes, n => n.data.version === v && _.includes(packageList, n.data.parent) && n.data.role !== undefined)
     let count = _.countBy(nodes, 'data.role')
     let max = 0, maxArray = []
     Object.keys(count).forEach(attr => {
