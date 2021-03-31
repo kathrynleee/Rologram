@@ -171,7 +171,7 @@ body ::-webkit-scrollbar-thumb {
 .timeline {
   margin: 0 10px;
   width: calc(100vw - 65px);
-  height: 80px;
+  height: 59px;
   overflow-x: scroll;
   overflow-y: hidden;
 }
@@ -247,6 +247,7 @@ body ::-webkit-scrollbar-thumb {
 }
 
 .dialog {
+  overflow-y: scroll;
   background-color: white;
   z-index: 999;
   position: absolute;
@@ -426,6 +427,7 @@ body ::-webkit-scrollbar-thumb {
 }
 
 #legend {
+  width: calc(100vw - 75px);
   overflow-x: scroll;
   font-size: 12px;
   margin: 5px 10px;
@@ -765,7 +767,8 @@ body ::-webkit-scrollbar-thumb {
 
 #animation {
   overflow: hidden;
-  height: 130px;
+  height: 50px;
+  width: 150px;
 }
 #animation .splide {
   position: absolute;
@@ -777,10 +780,9 @@ body ::-webkit-scrollbar-thumb {
 #animation .splide .splide__slide {
   width: 400px;
   height: auto;
-  padding: 20px;
 }
 #animation .splide__progress {
-  padding: 10px 20px;
+  padding: 10px;
 }
 #animation .animation-controls div {
   cursor: pointer;
@@ -792,10 +794,16 @@ body ::-webkit-scrollbar-thumb {
 #animation .animation-controls div:hover {
   opacity: 0.6;
 }
+#animation .slide {
+  display: none;
+}
 #animation .slide .version .commit-icon img {
   width: 20px;
   opacity: 0.7;
   padding-right: 5px;
+}
+#animation .slide .version .commit-id {
+  font-weight: bold;
 }
 #animation .slide .version .commit-date {
   padding-left: 8px;

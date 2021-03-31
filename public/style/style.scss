@@ -187,7 +187,7 @@ body {
 .timeline {
   margin: 0 10px;
   width: calc(100vw - 65px);
-  height: 80px;
+  height: 59px;
   overflow-x: scroll;
   overflow-y: hidden;
   #roles {
@@ -265,6 +265,7 @@ body {
 }
 
 .dialog {
+  overflow-y: scroll;
   background-color: white;
   z-index: 999;
   position: absolute;
@@ -454,6 +455,7 @@ body {
 }
 
 #legend {
+  width: calc(100vw - 75px);
   overflow-x: scroll;
   @extend %flex-row;
   font-size: 12px;
@@ -822,7 +824,10 @@ body {
 #animation {
   @extend %center;
   overflow: hidden;
-  height: 130px;
+  height: 50px;
+  width: 150px;
+  // position: absolute;
+  // right: 55px;
   .splide {
     position: absolute;
     top: 0;
@@ -832,11 +837,12 @@ body {
     .splide__slide {
       width: 400px;
       height: auto;
-      padding: 20px;
+      // padding: 20px;
     }
   }
   .splide__progress {
-    padding: 10px 20px;
+    padding: 10px;
+    // padding: 10px 20px;
   }
   .animation-controls {
     @extend %flex-row;
@@ -853,12 +859,16 @@ body {
     }
   }
   .slide {
+    display: none;
     .version {
       @extend %flex-row;
       .commit-icon img {
         width: 20px;
         opacity: 0.7;
         padding-right: 5px;
+      }
+      .commit-id {
+        font-weight: bold;
       }
       .commit-date {
         padding-left: 8px;

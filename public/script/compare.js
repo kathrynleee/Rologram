@@ -141,14 +141,6 @@ const createRoleChangedListItem = (data, versionToCompare, isComparingToLaterVer
 }
 
 const createChangeList = (data, versionToCompare, isComparingToLaterVersion) => {
-  // clear list
-  const removedListElement = document.querySelector('#compare .removed-list')
-  const addedListElement = document.querySelector('#compare .added-list')
-  const roleChangedListElement = document.querySelector('#compare .role-changed-list')
-  removedListElement.innerHTML = ''
-  addedListElement.innerHTML = ''
-  roleChangedListElement.innerHTML = ''
-
   // update list count
   let status, addedCount = 0, removedCount = 0, changedCount = 0
   if(data.nodes.inCurrent.length > 0) {
@@ -295,7 +287,7 @@ const showChanges = async (currentVersion, versionToCompare) => {
       changes = await getClassChangesList(currentVersion, versionToCompare)
       break
   }
-  const currentIndex = _.indexOf(versions.data, selectedVersion)
+  const currentIndex = _.indexOf(versions.data, currentVersion)
   const targetIndex = _.indexOf(versions.data, versionToCompare)
   let isComparingToLaterVersion = false
   if(currentIndex < targetIndex) {
@@ -366,14 +358,19 @@ const showChanges = async (currentVersion, versionToCompare) => {
     updateClassGraph(3, 'all', false, 'hideLabels')
   }
   moveGraph()
-  createIndicators(versionToCompare)
+  // if(!isStarted) { // not updating change list when calling this function for animation
+  clearChangeLists()
+  createIndicators(versionToCompare, 'COMPARE')
   createChangeList(changes.data, versionToCompare, isComparingToLaterVersion)
   setVisible('.change-lists', true, false)
   setVisible('.change-lists .change-list-group', true, true)
   setVisible('.change-lists .change-list', false, true)
+  // } else {
+  //   createIndicators(versionToCompare, 'SHOWING')
+  // }
 }
 
-const createIndicators = (version) => {
+const removeIndicator = () => {
   let selectedElements = document.getElementsByClassName('selected-version')
   while(selectedElements.length > 0){
     selectedElements[0].classList.remove('selected-version')
@@ -392,19 +389,21 @@ const createIndicators = (version) => {
   while(indicators.length > 0){
     indicators[0].parentNode.removeChild(indicators[0])
   }
-  if(version !== selectedVersion) {
-    // comparing version indicator
-    let date = version.slice(0, 10)
-    let eles = document.querySelectorAll(`[data-text='${date}']`)[0]
-    eles.className = 'tooltip selected'
-    eles.textContent = 'COMPARE'
-    eles.parentNode.classList.add('selected-version')
-    // current version indicator
-    let currentEles = document.querySelectorAll(`[data-text='${selectedVersion.slice(0, 10)}']`)[0]
-    currentEles.className = 'tooltip selected'
-    currentEles.textContent = 'CURRENT'
-    currentEles.parentNode.classList.add('selected-version')
-  }
+  // add current 
+  let currentEles = document.querySelectorAll(`[data-text='${selectedVersion.slice(0, 10)}']`)[0]
+  currentEles.className = 'tooltip selected'
+  currentEles.textContent = 'CURRENT'
+  currentEles.parentNode.classList.add('selected-version')
+}
+
+const createIndicators = (version, text) => {
+  removeIndicator()
+  // comparing version indicator
+  let date = version.slice(0, 10)
+  let eles = document.querySelectorAll(`[data-text='${date}']`)[0]
+  eles.className = 'tooltip selected'
+  eles.textContent = text
+  eles.parentNode.classList.add('selected-version')
 }
 
 const clearChangeLists = () => {

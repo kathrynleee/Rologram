@@ -7,6 +7,7 @@ const showPatternDialog = async () => {
   setVisible('#pattern', true, false)
   setVisible('.close', true, false)
   checkButton()
+  moveGraph()
 }
 
 const changePatternLevel = (num) => {
@@ -95,11 +96,13 @@ const applyPattern = async() => {
   const versions = await getVersions()
   let results = []
   versions.data.forEach(v => {
-    let eles = []
+    let eles = [], count = 0
     if(patternLevel === 1) {
       eles = _.filter(elements.data.nodes, n => n.data.version === v && _.includes(patternOptions[0], n.data.role))
+      count = eles.length
     } else if(patternLevel === 2) {
       eles = _.filter(elements.data.edges, n => n.data.version === v && _.includes(patternOptions[0], n.data.sourceRole) && _.includes(patternOptions[1], n.data.targetRole))
+      count = eles.length
     } else if(patternLevel === 3) {
       let edges = _.filter(elements.data.edges, n => n.data.version === v && _.includes(patternOptions[0], n.data.sourceRole) && _.includes(patternOptions[1], n.data.targetRole))
       if(edges.length > 0) {
@@ -108,6 +111,7 @@ const applyPattern = async() => {
           if(secondEdges.length === 0) {
             edges = _.filter(edges, ele => ele !== edge)
           } else {
+            count += secondEdges.length
             eles = _.union(eles, secondEdges)
           }
         })
@@ -117,7 +121,7 @@ const applyPattern = async() => {
     let found = {
       version: v,
       eles: eles,
-      count: eles.length
+      count: count
     }
     results.push(found)
   })

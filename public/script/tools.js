@@ -71,7 +71,6 @@ const showTools = () => {
 const closeOpenedDialog = () => {
   setVisible('.dialog', false, true)
   setVisible('.close', false, false)
-  pause()
   cy.fit()
 }
 
@@ -343,6 +342,18 @@ const resetTools = () => {
   currentLayoutOptions = options
 
   // compare dialog
+  emptyCompareList()
+  
+  // animation dialog
+  // isStarted = false
+  // pause()
+  // document.querySelector('.splide__list').innerHTML = ''
+  
+  // pattern dialog
+  document.querySelector('.chart-div').innerHTML = ''
+}
+
+const emptyCompareList = () => {
   document.querySelector('#compare .version-selected').innerHTML = ''
   document.querySelector('#compare .version-options-list').innerHTML = ''
   document.querySelector('#compare .version-options-list').className = 'version-options-list'
@@ -354,11 +365,6 @@ const resetTools = () => {
   resetListCount()
   resetListIcon()
   clearChangeLists()
-  
-  // animation dialog
-  isStarted = false
-  pause()
-  document.querySelector('.splide__list').innerHTML = ''
 }
 
 const updateDependencyLevel = (dependencyLevel) => {

@@ -254,9 +254,11 @@ const getPackageLevelChanges = (currentVersion, versionToBeCompared, package) =>
   let packageList = []
   packageList.push(package)
   packageList = _.union(packageList, packages)
+  // search subpackages of subpackages
   while(packages.length !== 0) {
-    packages = elements.nodes.filter(n => _.includes(packages, n.data.parent) && n.data.role === undefined && n.data.version === currentVersion)
-    packageList = _.union(packageList, _.map(packages, 'data.id'))
+    let subPackages = elements.nodes.filter(n => _.includes(packages, n.data.parent) && n.data.role === undefined && n.data.version === currentVersion)
+    packageList = _.union(packageList, _.map(subPackages, 'data.id'))
+    packages = _.map(subPackages, 'data.id')
   }
 
   const currentNodes = elements.nodes.filter(n => _.includes(packageList, n.data.parent) && n.data.role !== undefined && n.data.version === currentVersion)
