@@ -64,7 +64,7 @@ const clickChangeListItem = (id) => {
   cy.$id(id).addClass('showLabel')
   moveGraph()
   // cy.zoom({
-  //   level: 1.2,
+  //   level: .7,
   //   position: cy.$id(id).position()
   // })
   // cy.center(cy.$id(id))

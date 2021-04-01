@@ -148,7 +148,7 @@ const createGraph = async () => {
         elements: elements.data,
         ready: function() {
             addToHistory({ version: selectedVersion, package: '', class: '' })
-            this.on('click', async (e)  => {
+            this.on('tap', async (e)  => {
                 const target = e.target
                 if (target === cy) {
                     initGraph(selectedVersion, '', '')
@@ -165,7 +165,7 @@ const createGraph = async () => {
                     initGraph(selectedVersion, '', id)
                 }
             })
-            this.on('mouseover', 'node', (e) => {
+            this.on('tapdragover', 'node', (e) => {
                 const target = e.target
                 const labelVisibility = document.querySelector('.label-visibility .selected-option').getAttribute('data-option')
                 if(!cy.nodes().hasClass('showLabel') || labelVisibility === 'hideLabels') {
@@ -177,7 +177,7 @@ const createGraph = async () => {
                     cy.elements().not(nodes).not(parents).addClass('hover')
                 }
             })
-            this.on('mouseout', 'node', (e) => {
+            this.on('tapdragout', 'node', (e) => {
                 const target = e.target
                 const labelVisibility = document.querySelector('.label-visibility .selected-option').getAttribute('data-option')
                 if(labelVisibility === 'hideLabels') {
