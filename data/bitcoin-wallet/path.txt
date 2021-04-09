@@ -1,4 +1,0 @@
-bitcoin-wallet
-wallet/src/de/schildbach
-sample-integration-android/src/de/schildbach
-integration-android/src/de/schildbach

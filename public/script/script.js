@@ -10,6 +10,33 @@ let roleMap = new Map([
     ['Service Provider', '#4D82B0'], ['Structurer', '#E6A1b2']
 ])
 
+// const options = {
+//     name: 'elk',
+//     nodeDimensionsIncludeLabels: true,
+//     fit: true,
+//     elk: {
+//         'algorithm': 'mrtree',
+//         'layered.mergeEdges': 'false',
+//         'layered.mergeHierarchyEdges': 'false',
+//         // 'crossingMinimization.semiInteractive': true,
+//         'nodePlacement.strategy': 'NETWORK_SIMPLEX',
+//         // 'layered.wrapping.additionalEdgeSpacing': 50,
+//         'spacing.nodeNode': 20,
+//         'spacing.nodeNodeBetweenLayers': 25,
+//         'spacing.edgeNode': 25,
+//         'spacing.edgeNodeBetweenLayers': 20,
+//         'spacing.edgeEdge': 20,
+//         'spacing.edgeEdgeBetweenLayers': 15,
+//         // All options are available at http://www.eclipse.org/elk/reference.html
+//         // 'org.eclipse.elk.' can be dropped from the Identifier
+//         // Or look at demo-demo.js for an example.
+//         // Enums use the name of the enum e.g.
+//         // 'searchOrder': 'DFS'
+//         //
+//         // The main field to set is `algorithm`, which controls which particular
+//         // layout algorithm is used.
+//     },
+// }
 const options = {
     name: 'klay',
     nodeDimensionsIncludeLabels: true, 
@@ -45,8 +72,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 })
 
 const createInfo = async () => {
-    const paths = await getPaths()
-    let ownerName = paths.data[0]
+    const userName = await getUsername()
+    let username = userName.data
     let index = selectedVersion.lastIndexOf('-')
     let systemName = selectedVersion.slice(11, index)
     let fullCommitId = selectedVersion.slice(index + 1)
@@ -55,7 +82,7 @@ const createInfo = async () => {
     document.querySelector('#info .system').textContent = systemName
     document.querySelector('#info .commit-date').textContent = 'on ' + commitDate
     let link = document.createElement('a')
-    link.href = `https://github.com/${ownerName}/${systemName}/tree/${fullCommitId}`
+    link.href = `https://github.com/${username}/${systemName}/tree/${fullCommitId}`
     link.textContent = commitId
     link.target = '_blank'
     document.querySelector('#info .commit-id').innerHTML = ''

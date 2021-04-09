@@ -2,18 +2,52 @@ const express = require('express')
 const _ = require('lodash')
 const fs = require('fs')
 const router = express.Router()
+router.use(express.json())
+router.use(express.urlencoded({
+  extended: true
+}))
+const csv = require('csvtojson')
 
-const dataFile = __dirname + '/data/data.json'
+let packageCsvFile = __dirname + '/data/packages.csv'
+let classCsvFile = __dirname + '/data/classes.csv'
+let dependencyCsvFile = __dirname + '/data/dependencies.csv'
+let pathCsvFile = __dirname + '/data/path.csv'
+
+let paths = []
+// input data from csv
+let elements = { nodes: [], edges: [] }
+csv()
+  .fromFile(packageCsvFile)
+  .then((jsonObj) => {
+    _.forEach(jsonObj, (o) => {
+      elements.nodes.push({ data: o })
+    })
+  })
+csv()
+  .fromFile(classCsvFile)
+  .then((jsonObj) => {
+    _.forEach(jsonObj, (o) => {
+      elements.nodes.push({ data: o })
+    })
+  })
+csv()
+  .fromFile(dependencyCsvFile)
+  .then((jsonObj) => {
+    _.forEach(jsonObj, (o) => {
+      elements.edges.push({ data: o })
+    })
+  })
+csv()
+  .fromFile(pathCsvFile)
+  .then((jsonObj) => {
+    paths = jsonObj
+  })
+
 const versionFile = __dirname + '/data/version.txt'
-const sourceCodePathFile = __dirname + '/data/path.txt'
 const styleFile = __dirname + '/data/style.cycss'
 
-// read text file
+// read version text file
 const versions = readTextFile(versionFile)
-const paths = readTextFile(sourceCodePathFile)
-
-// read data json file
-const elements = JSON.parse(fs.readFileSync(dataFile))
 
 // return elements of all versions
 router.get('/elements', (req, res) => {
@@ -25,29 +59,37 @@ router.get('/versions', (req, res) => {
   res.json(versions)
 })
 
-// return list of paths
-router.get('/paths', (req, res) => {
-  res.json(paths)
+// return username
+router.get('/username', (req, res) => {
+  res.json(paths[0].username)
+})
+
+// return path for given class
+router.get('/path/:version/:id', (req, res) => {
+  var id = req.params.id
+  var version = req.params.version
+  var path = findPath(id, version)
+  res.json(path)
 })
 
 // return styles for cytoscape
 router.get('/styles', (req, res) => {
-  const styles = JSON.parse(fs.readFileSync(styleFile))
+  var styles = JSON.parse(fs.readFileSync(styleFile))
   res.json(styles)
 })
 
 // return data of specific version
 router.get('/elements/:version', (req, res) => {
-  const version = req.params.version
+  var version = req.params.version
   res.json(getDataByVersion(version))
 })
 
 // return data of specific pattern
-// router.get('/pattern', (req, res) => {
-//   const level = req.params.level
-//   const options = req.params.options
-//   res.json(getPattern(level, options))
-// })
+router.post('/pattern', (req, res) => {
+  var level = req.body.level
+  var options = req.body.options
+  res.json(getPattern(level, options))
+})
 
 // return list of dominant role in each version
 router.get('/roles/versions', (req, res) => {
@@ -56,7 +98,7 @@ router.get('/roles/versions', (req, res) => {
 
 // return list of dominant role changes in specific package
 router.get('/roles/package/:id', (req, res) => {
-  const id = req.params.id
+  var id = req.params.id
   res.json(getPackageDominantRoleList(id))
 })
 
@@ -105,10 +147,20 @@ const getDataByVersion = (version) => {
   return data
 }
 
-// get list of versions in order
+// read text file
 function readTextFile(file) {
   const array = fs.readFileSync(file, 'utf8').toString().split('\n')
   return array
+}
+
+function findPath(id, version) {
+  var index = id.lastIndexOf('.')
+  var package = id.slice(0, index)
+  var found = paths.find(p => p.version === version && p.package === package)
+  if(found === undefined) {
+    found = paths.find(p => p.package === package)
+  }
+  return found
 }
 
 const getVersionDominantRoleList = () => {
@@ -504,19 +556,22 @@ const getParentPackageName = (id) => {
 const getPattern = (level, options) => {
   let results = []
   versions.forEach(v => {
-    let eles = []
+    let eles = [], count = 0
     if(level === 1) {
       eles = _.filter(elements.nodes, n => n.data.version === v && _.includes(options[0], n.data.role))
+      count = eles.length
     } else if(level === 2) {
-      eles = _.filter(elements.edges, n => n.data.version === v && _.includes(options[0], n.data.sourceRole) && _.includes(options[1], n.data.targetRole))
+      eles = _.filter(elements.edges, edge => edge.data.version === v && _.includes(options[0], edge.data.fromRole) && _.includes(options[1], edge.data.toRole))
+      count = eles.length
     } else if(level === 3) {
-      let edges = _.filter(elements.edges, n => n.data.version === v && _.includes(options[0], n.data.sourceRole) && _.includes(options[1], n.data.targetRole))
+      let edges = _.filter(elements.edges, edge => edge.data.version === v && _.includes(options[0], edge.data.fromRole) && _.includes(options[1], edge.data.toRole))
       if(edges.length > 0) {
         _.forEach(edges, edge => {
-          let secondEdges = _.filter(elements.edges, n => n.data.version === v && edge.data.target === n.data.source && _.includes(options[2], n.data.targetRole))
+          let secondEdges = _.filter(elements.edges, n => n.data.version === v && edge.data.target === n.data.source && _.includes(options[2], n.data.toRole))
           if(secondEdges.length === 0) {
             edges = _.filter(edges, ele => ele !== edge)
           } else {
+            count += secondEdges.length
             eles = _.union(eles, secondEdges)
           }
         })
@@ -525,8 +580,7 @@ const getPattern = (level, options) => {
     }
     let found = {
       version: v,
-      eles: eles,
-      count: eles.length
+      count: count
     }
     results.push(found)
   })

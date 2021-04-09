@@ -38,7 +38,7 @@ const removeOneLevel = () => {
   patternCountDiv.removeChild(patternCountDiv.lastElementChild)
   let patternSelectDiv = document.querySelector('.pattern-select')
   patternSelectDiv.removeChild(patternSelectDiv.lastElementChild)
-  delete patternOptions[patternLevel - 1]
+  patternOptions.splice(-1)
   patternLevel--
 }
 
@@ -92,41 +92,11 @@ const addOneLevel = () => {
 }
 
 const applyPattern = async() => {
-  const elements = await getAllElements()
-  const versions = await getVersions()
-  let results = []
-  versions.data.forEach(v => {
-    let eles = [], count = 0
-    if(patternLevel === 1) {
-      eles = _.filter(elements.data.nodes, n => n.data.version === v && _.includes(patternOptions[0], n.data.role))
-      count = eles.length
-    } else if(patternLevel === 2) {
-      eles = _.filter(elements.data.edges, n => n.data.version === v && _.includes(patternOptions[0], n.data.sourceRole) && _.includes(patternOptions[1], n.data.targetRole))
-      count = eles.length
-    } else if(patternLevel === 3) {
-      let edges = _.filter(elements.data.edges, n => n.data.version === v && _.includes(patternOptions[0], n.data.sourceRole) && _.includes(patternOptions[1], n.data.targetRole))
-      if(edges.length > 0) {
-        _.forEach(edges, edge => {
-          let secondEdges = _.filter(elements.data.edges, n => n.data.version === v && edge.data.target === n.data.source && _.includes(patternOptions[2], n.data.targetRole))
-          if(secondEdges.length === 0) {
-            edges = _.filter(edges, ele => ele !== edge)
-          } else {
-            count += secondEdges.length
-            eles = _.union(eles, secondEdges)
-          }
-        })
-        eles = _.union(eles, edges)
-      }
-    }
-    let found = {
-      version: v,
-      eles: eles,
-      count: count
-    }
-    results.push(found)
-  })
+  axios.post('/api/data/pattern', { level: patternLevel, options: patternOptions })
+    .then((res) => {
+      createChart(res.data)
+    })
   applyPatternToGraph(patternLevel)
-  createChart(results)
 }
 
 const removePattern = () => {
@@ -144,12 +114,12 @@ const applyPatternToGraph = (patternLevel) => {
     var nodes = cy.nodes().filter(`${pattern}`)
     var edges = nodes.connectedEdges()
   } else if(patternLevel === 2) {
-    var edges = cy.edges().filter(edge => _.includes(patternOptions[0], edge.data('sourceRole')) && _.includes(patternOptions[1], edge.data('targetRole')))
+    var edges = cy.edges().filter(edge => _.includes(patternOptions[0], edge.data('fromRole')) && _.includes(patternOptions[1], edge.data('toRole')))
     var nodes = edges.connectedNodes()
   } else if(patternLevel === 3) {
-    var edges = cy.edges().filter(edge => _.includes(patternOptions[0], edge.data('sourceRole')) && _.includes(patternOptions[1], edge.data('targetRole')))
+    var edges = cy.edges().filter(edge => _.includes(patternOptions[0], edge.data('fromRole')) && _.includes(patternOptions[1], edge.data('toRole')))
     _.forEach(edges, edge => {
-      var secondEdges = cy.edges().filter(ele => (ele.data('source') === edge.data('target')) && _.includes(patternOptions[2], ele.data('targetRole')))
+      var secondEdges = cy.edges().filter(ele => (ele.data('source') === edge.data('target')) && _.includes(patternOptions[2], ele.data('toRole')))
       if(secondEdges.length === 0) {
         edges = edges.filter(ele => ele !== edge)
       } else {

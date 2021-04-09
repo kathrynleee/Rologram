@@ -8,13 +8,15 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "cors": "^2.8.5",
+    "csvtojson": "^2.0.10",
     "cytoscape": "^3.18.0",
     "cytoscape-klay": "^3.1.4",
     "express": "^4.17.1",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "neo4j-driver": "^4.2.3",
+    "parse-neo4j": "^0.6.11"
   },
   "main": ".eslintrc.js",
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kathrynleee/vis.git"

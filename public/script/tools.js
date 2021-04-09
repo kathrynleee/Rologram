@@ -49,16 +49,11 @@ const displaySourceCode = async () => {
     className = className.slice(0, selectedClass.indexOf('$'))
   }
   const filePath = className.split('.').join('/') + '.java'
-  const paths = await getPaths()
-  // try main path
-  const ownerName = paths.data[0]
-  let i = 0, path, url, code
-  do {
-    i = i + 1
-    path = paths.data[i]
-    url = `https://raw.githubusercontent.com/${ownerName}/${systemName}/${commitId}/${path}/${filePath}`
-    code = await getSourceCode(url)
-  } while (code === undefined && i < paths.data.length)
+  const path = await getPath(selectedVersion, selectedClass)
+  var packagePath = path.data.path
+  var username = path.data.username
+  var url = `https://raw.githubusercontent.com/${username}/${systemName}/${commitId}/${packagePath}/${filePath}`
+  var code = await getSourceCode(url)
   return code
 }
 

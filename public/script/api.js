@@ -8,9 +8,17 @@ const getVersions = async () => {
   }
 }
 
-const getPaths = async () => {
+const getUsername = async () => {
   try {
-      return await axios.get( '/api/data/paths')
+      return await axios.get('/api/data/username')
+  } catch (e) {
+      console.error(e)
+  }
+}
+
+const getPath = async (version, id) => {
+  try {
+      return await axios.get(`/api/data/path/${version}/${id}`)
   } catch (e) {
       console.error(e)
   }
