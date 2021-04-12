@@ -183,7 +183,7 @@ body ::-webkit-scrollbar-thumb {
 .timeline #roles .role {
   margin-top: 20px;
   min-width: 16px;
-  height: 16px;
+  min-height: 16px;
   border-radius: 8px;
   margin-right: 2px;
   font-size: 12px;
@@ -191,6 +191,15 @@ body ::-webkit-scrollbar-thumb {
   color: white;
   text-align: center;
   cursor: pointer;
+}
+.timeline #roles .role.role-package {
+  border-radius: 0;
+}
+.timeline #roles .role.role-version {
+  border-radius: 0;
+  border: 2px solid #ECECEA;
+  min-width: 14px;
+  min-height: 14px;
 }
 .timeline #roles .role .selected:before {
   font-size: 12px;
@@ -461,6 +470,9 @@ body ::-webkit-scrollbar-thumb {
   }
 }
 
+.chart-container .chart-div {
+  width: 100%;
+}
 .chart-container .chart-div .ct-series-a .ct-line {
   stroke: #465054;
   stroke-width: 2px;

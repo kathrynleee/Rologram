@@ -60,6 +60,8 @@ const options = {
 let currentLayoutOptions = options
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // const graph = new Graph()
+    // graph.test()
     axios.baseURL = 'localhost:3000'
     // axios.baseURL = 'https://visdemo.herokuapp.com'
     const versions = await getVersions()
@@ -143,6 +145,11 @@ const createTimeline = async (selected) => {
                 span.addEventListener('click', () => {
                     initGraph(v, selectedPackage, selectedClass)
                 })
+            }
+            if(level === 'package') {
+                element.classList.add('role-package')
+            } else if(level === 'system') {
+                element.classList.add('role-version')
             }
         }
         span.setAttribute('data-text', v.slice(0, 10))

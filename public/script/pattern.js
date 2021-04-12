@@ -21,7 +21,7 @@ const changePatternLevel = (num) => {
 
 const togglePatternRole = (patternLevel, role) => {
   if(_.includes(patternOptions[patternLevel - 1], role)) {
-    _.remove(patternOptions[patternLevel - 1], r => r === role)
+    _.remove(patternOptions[patternLevel - 1], r => r == role)
   } else {
     patternOptions[patternLevel - 1].push(role)
   }
@@ -43,12 +43,12 @@ const removeOneLevel = () => {
 }
 
 const checkButton = () => {
-  if(patternLevel === 1) {
+  if(patternLevel == 1) {
     setVisible('.pattern-buttons .remove', false, false)
   } else {
     setVisible('.pattern-buttons .remove', true, false)
   }
-  if(patternLevel === 3) {
+  if(patternLevel == 3) {
     setVisible('.pattern-buttons .add', false, false)
   } else {
     setVisible('.pattern-buttons .add', true, false)
@@ -109,26 +109,26 @@ const removePattern = () => {
 const applyPatternToGraph = (patternLevel) => {
   cy.startBatch()
   cy.elements().removeClass('hide')
-  if(patternLevel === 1) {
+  if(patternLevel == 1) {
     var pattern = _.map(patternOptions[0], n => `[role = "${n}"]`)
     var nodes = cy.nodes().filter(`${pattern}`)
     var edges = nodes.connectedEdges()
-  } else if(patternLevel === 2) {
+  } else if(patternLevel == 2) {
     var edges = cy.edges().filter(edge => _.includes(patternOptions[0], edge.data('fromRole')) && _.includes(patternOptions[1], edge.data('toRole')))
     var nodes = edges.connectedNodes()
-  } else if(patternLevel === 3) {
+  } else if(patternLevel == 3) {
     var edges = cy.edges().filter(edge => _.includes(patternOptions[0], edge.data('fromRole')) && _.includes(patternOptions[1], edge.data('toRole')))
     _.forEach(edges, edge => {
-      var secondEdges = cy.edges().filter(ele => (ele.data('source') === edge.data('target')) && _.includes(patternOptions[2], ele.data('toRole')))
-      if(secondEdges.length === 0) {
-        edges = edges.filter(ele => ele !== edge)
+      var secondEdges = cy.edges().filter(ele => (ele.data('source') == edge.data('target')) && _.includes(patternOptions[2], ele.data('toRole')))
+      if(secondEdges.length == 0) {
+        edges = edges.filter(ele => ele != edge)
       } else {
         edges = secondEdges.union(edges)
       }
     })
     nodes = edges.connectedNodes()
   }
-  var parents = (nodes !== undefined) ? nodes.ancestors() : []
+  var parents = (nodes != undefined) ? nodes.ancestors() : []
   cy.elements().not(nodes).not(edges).not(parents).addClass('hide')
   cy.endBatch()
   cy.layout(currentLayoutOptions).run()
@@ -143,7 +143,7 @@ const createChart = async (results) => {
     ]
   }
   let options = {
-    fullWidth: true,
+    // fullWidth: true,
     height: '250px',
     axisX: { showGrid: false, showLabel: false },
     axisY: { showGrid: true, showLabel: true },
@@ -155,7 +155,7 @@ const createChart = async (results) => {
     plugins: [ 
       Chartist.plugins.ctPointLabels({ 
         textAnchor: 'middle', 
-        labelInterpolationFnc: (value) => (typeof value === "undefined") ? "0" : value
+        labelInterpolationFnc: (value) => (typeof value == "undefined") ? "0" : value
       })
     ]
   }

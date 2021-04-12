@@ -197,7 +197,7 @@ body {
     .role {
       margin-top: 20px;
       min-width: 16px;
-      height: 16px;
+      min-height: 16px;
       border-radius: 8px;
       margin-right: 2px;
       font-size: 12px;
@@ -205,6 +205,15 @@ body {
       color: white;
       text-align: center;
       cursor: pointer;
+      &.role-package {
+        border-radius: 0;
+      }
+      &.role-version {
+        border-radius: 0;
+        border: 2px solid $bg-color-dark;
+        min-width: 14px;
+        min-height: 14px;
+      }
       .selected:before {
         font-size: 12px;
         width: 100px;
@@ -492,7 +501,7 @@ body {
 
 .chart-container {
   .chart-div {
-    // width: 100%;
+    width: 100%;
     .ct-series-a {
       .ct-line {
         stroke: $black;

@@ -172,7 +172,7 @@
             }
         },
         {
-            "selector": ".hide, .filter, .removed.hide",
+            "selector": ".hide, .removed.hide",
             "style": {
                 "display": "none"
             }
@@ -210,13 +210,19 @@
             }
         },
         {
+            "selector": "node.filter",
+            "style": {
+                "opacity": "0.1"
+            }
+        },
+        {
             "selector": ".hover",
             "style": {
                 "opacity": "0.1"
             }
         },
         {
-            "selector": "edge.hover",
+            "selector": "edge.hover, edge.filter",
             "style": {
                 "opacity": "0"
             }

@@ -239,8 +239,26 @@ const changeLayout = (option) => {
     currentLayoutOptions = options
   } else {
     document.querySelector('[data-option="klay"]').className = ''
-    const hierarchyOptions = _.cloneDeep(options)
-    hierarchyOptions.klay.layoutHierarchy = true
+    // const hierarchyOptions = _.cloneDeep(options)
+    // hierarchyOptions.klay.layoutHierarchy = true
+    const hierarchyOptions = {
+      name: 'klay',
+      nodeDimensionsIncludeLabels: true, 
+      fit: true,
+      animate: 'end',
+      animationDuration: 500,
+      animationEasing: 'spring(500, 50)',
+      klay: {
+        borderSpacing: 20, // spacing between compound nodes
+        spacing: 15, // spacing between nodes
+        compactComponents: true,
+        nodePlacement:'SIMPLE',
+        direction: 'DOWN', // UP, DOWN, LEFT, RIGHT
+        edgeRouting: 'POLYLINE',
+        edgeSpacingFactor: 0.1,
+        layoutHierarchy: true
+      }
+    }
     currentLayoutOptions = hierarchyOptions
   }
   cy.layout(currentLayoutOptions).run()
@@ -276,18 +294,30 @@ const resizeNodes = (option) => {
   moveGraph()
 }
 
+let filterRoleList = ['Controller', 'Coordinator', 'Information Holder', 'Interfacer', 'Service Provider', 'Structurer']
 const filterRole = (role) => {
-  cy.startBatch()
-  cy.nodes(':parent').removeClass('hide')
   if(document.querySelector(`[data-role="${role}"]`).classList.contains('filtered')) {
+    filterRoleList.push(role)
     document.querySelector(`[data-role="${role}"]`).classList.remove('filtered')
-    cy.nodes(`[role="${role}"]`).removeClass('filter')
   } else {
+    _.remove(filterRoleList, ele => ele == role )
     document.querySelector(`[data-role="${role}"]`).classList.add('filtered')
-    cy.nodes(`[role="${role}"]`).addClass('filter')
   }
-  const parents = cy.nodes().not(':parent, .filter').ancestors()
-  cy.nodes(':parent').not(parents).addClass('hide')
+  cy.startBatch()
+  cy.elements().removeClass('filter')
+  if(filterRoleList.length != 6) {
+    let nodeSelector = ''
+    filterRoleList.forEach(ele => {
+      if(nodeSelector == '') {
+        nodeSelector += `[role="${ele}"]`
+      } else {
+        nodeSelector += `,[role="${ele}"]`
+      }
+    })
+    let filteredNodes = cy.nodes().not(nodeSelector).not(':parent')
+    filteredNodes.addClass('filter')
+    filteredNodes.connectedEdges().addClass('filter')
+  }
   cy.endBatch()
   cy.layout(currentLayoutOptions).run()
   moveGraph()
@@ -335,15 +365,11 @@ const resetTools = () => {
     document.querySelector(`[data-role="${role}"]`).classList.add('selected-option')
   }
   currentLayoutOptions = options
-
+  filterRoleList = ['Controller', 'Coordinator', 'Information Holder', 'Interfacer', 'Service Provider', 'Structurer']
+  
   // compare dialog
   emptyCompareList()
-  
-  // animation dialog
-  // isStarted = false
-  // pause()
-  // document.querySelector('.splide__list').innerHTML = ''
-  
+
   // pattern dialog
   document.querySelector('.chart-div').innerHTML = ''
 }
