@@ -137,7 +137,7 @@ const applyPatternToGraph = (patternLevel) => {
 const createChart = async (results) => {
   document.querySelector('.chart-div').innerHTML = ''
   let data = {
-    labels: _.map(results, 'version'),
+    labels: _.map(results, 'label'),
     series: [
       _.map(results, 'count')
     ]

@@ -38,7 +38,16 @@
             }
         },
         {
-            "selector": "node:parent, node:parent.added, node:parent.faded",
+            "selector": "node.highlight",
+            "style": {
+                "border-style": "dotted",
+                "border-color": "#465054",
+                "border-width": "8",
+                "border-opacity" : "0.7"
+            }
+        },
+        {
+            "selector": "node:parent, node:parent.added, node:parent.faded, node:parent.highlight",
             "style": {
                 "label": "data(name)",
                 "font-size": "30",
@@ -48,7 +57,9 @@
                 "background-color": "white",
                 "color": "#465054",
                 "border-color": "#a9b6c2",
+                "border-style": "solid",
                 "border-width": "2",
+                "border-opacity" : "1",
                 "shape": "rectangle"
             }
         },

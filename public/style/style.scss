@@ -78,6 +78,7 @@ body {
 }
 
 .loader {
+  z-index: 999;
   border: 5px solid #F3F3F3;
   border-radius: 50%;
   border-top: 5px solid $black;
@@ -269,7 +270,8 @@ body {
   right: 20px;
   z-index: 9999;
   &:hover {
-    opacity: 0.6;
+    // opacity: 0.6;
+    background-color: white;
   }
 }
 
@@ -324,7 +326,7 @@ body {
   width: fit-content;
   .history-header {
     padding: 10px;
-    background-color: $bg-color;
+    // background-color: $bg-color;
     .history-export {
       width: fit-content;
       padding: 10px;
@@ -338,13 +340,14 @@ body {
   }
   .history-row {
     padding: 20px;
-    border: solid $bg-color;
-    border-width: 5px 0;
-    border-bottom-width: 0;
+    // border: solid $bg-color;
+    // border-width: 5px 0;
+    // border-bottom-width: 0;
+    border-bottom: 3px solid $bg-color;
     font-size: 16px;
-    &:last-child {
-      border-bottom-width: 5px;
-    }
+    // &:last-child {
+    //   border-bottom-width: 5px;
+    // }
     .history-commit {
       @extend %flex-row;
     }

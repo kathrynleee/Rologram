@@ -10,34 +10,11 @@ let roleMap = new Map([
     ['Service Provider', '#4D82B0'], ['Structurer', '#E6A1b2']
 ])
 
-// const options = {
-//     name: 'elk',
-//     nodeDimensionsIncludeLabels: true,
-//     fit: true,
-//     elk: {
-//         'algorithm': 'mrtree',
-//         'layered.mergeEdges': 'false',
-//         'layered.mergeHierarchyEdges': 'false',
-//         // 'crossingMinimization.semiInteractive': true,
-//         'nodePlacement.strategy': 'NETWORK_SIMPLEX',
-//         // 'layered.wrapping.additionalEdgeSpacing': 50,
-//         'spacing.nodeNode': 20,
-//         'spacing.nodeNodeBetweenLayers': 25,
-//         'spacing.edgeNode': 25,
-//         'spacing.edgeNodeBetweenLayers': 20,
-//         'spacing.edgeEdge': 20,
-//         'spacing.edgeEdgeBetweenLayers': 15,
-//         // All options are available at http://www.eclipse.org/elk/reference.html
-//         // 'org.eclipse.elk.' can be dropped from the Identifier
-//         // Or look at demo-demo.js for an example.
-//         // Enums use the name of the enum e.g.
-//         // 'searchOrder': 'DFS'
-//         //
-//         // The main field to set is `algorithm`, which controls which particular
-//         // layout algorithm is used.
-//     },
-// }
-const options = {
+let currentLayoutName = 'klay'
+let currentLabelVisibility = 'showLabel'
+let currentMetric = 'rolesOnly'
+
+const klay = {
     name: 'klay',
     nodeDimensionsIncludeLabels: true, 
     fit: true,
@@ -57,7 +34,28 @@ const options = {
     start: () => setVisible('.loader', true, false),
     stop: () => setVisible('.loader', false, false)
 }
-let currentLayoutOptions = options
+
+const hierarchy = {
+    name: 'klay',
+    nodeDimensionsIncludeLabels: true, 
+    fit: true,
+    animate: 'end',
+    animationDuration: 500,
+    animationEasing: 'spring(500, 50)',
+    klay: {
+      borderSpacing: 20, // spacing between compound nodes
+      spacing: 15, // spacing between nodes
+      compactComponents: true,
+      nodePlacement:'SIMPLE',
+      direction: 'DOWN', // UP, DOWN, LEFT, RIGHT
+      edgeRouting: 'POLYLINE',
+      edgeSpacingFactor: 0.1,
+      layoutHierarchy: true
+    },
+    start: () => setVisible('.loader', true, false),
+    stop: () => setVisible('.loader', false, false)
+}
+let currentLayoutOptions = klay
 
 document.addEventListener('DOMContentLoaded', async () => {
     // const graph = new Graph()
@@ -173,7 +171,7 @@ const createGraph = async () => {
     versionElements = elements.data
     cy = cytoscape({
         container: document.getElementById('cy'),
-        layout: options,
+        layout: currentLayoutOptions,
         minZoom: 0.1,
         hideEdgesOnViewport: true,
         motionBlur: true,
@@ -201,8 +199,7 @@ const createGraph = async () => {
             })
             this.on('tapdragover', 'node', (e) => {
                 const target = e.target
-                const labelVisibility = document.querySelector('.label-visibility .selected-option').getAttribute('data-option')
-                if(!cy.nodes().hasClass('showLabel') || labelVisibility === 'hideLabels') {
+                if(!cy.nodes().hasClass('showLabel') || currentLabelVisibility === 'hideLabels') {
                     target.addClass('showLabel')
                 }
                 if(!target.isParent()) {
@@ -213,8 +210,7 @@ const createGraph = async () => {
             })
             this.on('tapdragout', 'node', (e) => {
                 const target = e.target
-                const labelVisibility = document.querySelector('.label-visibility .selected-option').getAttribute('data-option')
-                if(labelVisibility === 'hideLabels') {
+                if(currentLabelVisibility === 'hideLabels') {
                     target.removeClass('showLabel')
                 }
                 cy.elements().removeClass('hover')

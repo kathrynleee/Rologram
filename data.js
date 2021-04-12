@@ -91,6 +91,12 @@ router.get('/elements/:version', (req, res) => {
   res.json(getDataByVersion(version))
 })
 
+// return list of role changed classes for specific version
+router.get('/roleChanged/:version', (req, res) => {
+  var version = req.params.version
+  res.json(getRoleChangedClasses(version))
+})
+
 // return data of specific pattern
 router.post('/pattern', (req, res) => {
   var level = req.body.level
@@ -575,6 +581,7 @@ const getPattern = (level, options) => {
     }
     let found = {
       version: v,
+      label: v.slice(0,10),
       // edges: eles,
       count: count
     }
@@ -643,5 +650,18 @@ const getPatternRanking = (level, version) => {
 //     console.log('Pattern data is saved to file.')
 //   })
 // }
+
+const getRoleChangedClasses = (version) => {
+  let list = []
+  const nodes = elements.nodes.filter(n => n.data.version == version && n.data.role != undefined)
+  nodes.forEach(n => {
+    let roleList = getClassRoleList(n.data.id)
+    let found = roleList.filter(ele => ele.role == n.data.role)
+    if(found.length != roleList.length) {
+      list.push(n.data.id)
+    }
+  })
+  return list
+}
 
 module.exports = router

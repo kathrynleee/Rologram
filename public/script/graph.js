@@ -2,7 +2,7 @@
 
 class Graph {
   cy
-  currentLayoutOptions = 'klay'
+  currentLayoutOptions = klay
 
   klay = {
     name: 'klay',
@@ -156,7 +156,7 @@ class Graph {
         updatePackageGraph()
         break
       case 'class':
-        updateClassGraph(1, 'all', false, 'showLabels')
+        updateClassGraph(1, 'all', false, currentLabelVisibility)
         break
     }
   }
@@ -165,12 +165,15 @@ class Graph {
     switch(level) {
       case 'system':
         cy.layout(currentLayoutOptions).run()
+        resizeNodes(currentMetric)
         break
       case 'package':
         updatePackageGraph()
+        resizeNodes(currentMetric)
         break
       case 'class':
-        updateClassGraph(1, 'all', false, 'showLabels')
+        updateClassGraph(1, 'all', false, currentLabelVisibility)
+        resizeNodes(currentMetric)
         break
     }
   }

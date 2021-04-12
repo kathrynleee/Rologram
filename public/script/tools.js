@@ -233,39 +233,23 @@ const showHistory = () => {
 }
 
 const changeLayout = (option) => {
-  document.querySelector(`[data-option="${option}"]`).classList.add('selected-option')
+  setVisible('.loader', true, false)
+  currentLayoutName = option
   if(option === 'klay') {
     document.querySelector('[data-option="hierarchy"]').className = ''
-    currentLayoutOptions = options
+    currentLayoutOptions = klay
   } else {
     document.querySelector('[data-option="klay"]').className = ''
-    // const hierarchyOptions = _.cloneDeep(options)
-    // hierarchyOptions.klay.layoutHierarchy = true
-    const hierarchyOptions = {
-      name: 'klay',
-      nodeDimensionsIncludeLabels: true, 
-      fit: true,
-      animate: 'end',
-      animationDuration: 500,
-      animationEasing: 'spring(500, 50)',
-      klay: {
-        borderSpacing: 20, // spacing between compound nodes
-        spacing: 15, // spacing between nodes
-        compactComponents: true,
-        nodePlacement:'SIMPLE',
-        direction: 'DOWN', // UP, DOWN, LEFT, RIGHT
-        edgeRouting: 'POLYLINE',
-        edgeSpacingFactor: 0.1,
-        layoutHierarchy: true
-      }
-    }
-    currentLayoutOptions = hierarchyOptions
+    currentLayoutOptions = hierarchy
   }
+  document.querySelector(`[data-option="${option}"]`).classList.add('selected-option')
   cy.layout(currentLayoutOptions).run()
   moveGraph()
 }
 
 const resizeNodes = (option) => {
+  setVisible('.loader', true, false)
+  currentMetric = option
   cy.startBatch()
   document.querySelector(`[data-option="${option}"]`).classList.add('selected-option')
   if(option === 'rolesOnly') {
@@ -324,7 +308,7 @@ const filterRole = (role) => {
 }
 
 const toggleLabelVisibility = (option) => {
-  document.querySelector(`[data-option="${option}"]`).classList.add('selected-option')
+  setVisible('.loader', true, false)
   if(option === 'hideLabels') {
     document.querySelector('[data-option="showLabels"]').className = ''
     cy.nodes().removeClass('showLabel')
@@ -332,10 +316,28 @@ const toggleLabelVisibility = (option) => {
     document.querySelector('[data-option="hideLabels"]').className = ''
     cy.nodes().addClass('showLabel')
   }
+  currentLabelVisibility = option
+  document.querySelector(`[data-option="${option}"]`).classList.add('selected-option')
   cy.layout(currentLayoutOptions).run()
   moveGraph()
 }
 
+const toggleChangedClassHightlight = (option) => {
+  document.querySelector('[data-option="highlightOn"]').className = ''
+  document.querySelector('[data-option="highlightOff"]').className = ''
+  document.querySelector(`[data-option="${option}"]`).classList.add('selected-option')
+  if(option ==='highlightOn') {
+    axios.get(`/api/data/roleChanged/${selectedVersion}`)
+    .then((res) => {
+      let list = res.data
+      list.forEach(ele => {
+        cy.$id(ele).addClass('highlight')
+      })
+    })
+  } else {
+    cy.nodes().removeClass('highlight')
+  }
+}
 const resetTools = () => {
   closeOpenedDialog()
   // tool dialog
@@ -355,18 +357,20 @@ const resetTools = () => {
   while(selectedOptions.length > 0){
     selectedOptions[0].classList.remove('filtered')
   }
-  document.querySelector('[data-option="klay"]').classList.add('selected-option')
-  document.querySelector('[data-option="hideLabels"]').classList.add('selected-option')
-  document.querySelector('[data-option="rolesOnly"]').classList.add('selected-option')
+  currentLabelVisibility = 'hideLabels'
+  currentMetric = 'rolesOnly'
+  document.querySelector(`[data-option="${currentLayoutName}"]`).classList.add('selected-option')
+  document.querySelector(`[data-option="${currentLabelVisibility}"]`).classList.add('selected-option')
+  document.querySelector(`[data-option="${currentMetric}"]`).classList.add('selected-option')
+  document.querySelector('[data-option="highlightOff"]').classList.add('selected-option')
   document.querySelector('[data-option="1"]').classList.add('selected-option')
-  document.querySelector('[data-option="all"]').classList.add('selected-option')
   document.querySelector('[data-option="all"]').classList.add('selected-option')
   for (let role of roleMap.keys()) {
     document.querySelector(`[data-role="${role}"]`).classList.add('selected-option')
   }
-  currentLayoutOptions = options
+
   filterRoleList = ['Controller', 'Coordinator', 'Information Holder', 'Interfacer', 'Service Provider', 'Structurer']
-  
+
   // compare dialog
   emptyCompareList()
 
@@ -390,8 +394,8 @@ const emptyCompareList = () => {
 
 const updateDependencyLevel = (dependencyLevel) => {
   if(level === 'class') {
-    const labelVisibility = document.querySelector('.label-visibility .selected-option').getAttribute('data-option')
-    const type = document.querySelector('.dep-type .selected-option').getAttribute('data-option')
+    let labelVisibility = document.querySelector('.label-visibility .selected-option').getAttribute('data-option')
+    let type = document.querySelector('.dep-type .selected-option').getAttribute('data-option')
     updateClassGraph(dependencyLevel, type, true, labelVisibility)
     document.querySelector('.dep-level .selected-option').className = ''
     document.querySelector(`[data-option="${dependencyLevel}"]`).classList.add('selected-option')
@@ -400,8 +404,8 @@ const updateDependencyLevel = (dependencyLevel) => {
 
 const updateDependencyType = (type) => {
   if(level === 'class') {
-    const labelVisibility = document.querySelector('.label-visibility .selected-option').getAttribute('data-option')
-    const dependencyLevel = document.querySelector('.dep-level .selected-option').getAttribute('data-option')
+    let labelVisibility = document.querySelector('.label-visibility .selected-option').getAttribute('data-option')
+    let dependencyLevel = document.querySelector('.dep-level .selected-option').getAttribute('data-option')
     updateClassGraph(dependencyLevel, type, true, labelVisibility)
     document.querySelector('.dep-type .selected-option').className = ''
     document.querySelector(`[data-option="${type}"]`).classList.add('selected-option')
