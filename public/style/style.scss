@@ -936,3 +936,38 @@ body {
     width: 15px;
   }
 }
+
+#guide {
+  width: 100vw;
+  height: 100vh;
+  border: 0;
+  overflow: hidden;
+  background-color: white;
+  @extend %center;
+  .swiper-container {
+    width: 90vw;
+    height: 90vh;
+    .swiper-slide {
+      display: flex;
+      align-content: center;
+      .guide-img {
+        padding: 0 40px 20px 40px;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+      }
+    }
+    .swiper-button-prev, .swiper-button-next {
+      color: $black;
+    }
+    .swiper-pagination.swiper-pagination-progressbar {
+      bottom: 0;
+      top: auto;
+      .swiper-pagination-progressbar-fill {
+        background-color: $black;
+      }
+    }
+  }
+}

@@ -41,6 +41,9 @@
         <link href="../lib/chartist/chartist.min.css" rel="stylesheet">
         <!-- micromodal -->
         <!-- <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script> -->
+        <!-- swiper -->
+        <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+        <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     </head>
     <body>
         <div class="header">
@@ -292,6 +295,19 @@
                     <div data-role="Coordinator" class="pattern-role-option" onclick=""></div>
                     <div data-role="Information Holder" class="pattern-role-option" onclick=""></div>    
                 </div>
+            </div>
+        </div>
+
+        <div id="guide" class="hide dialog animate__animated animate__slideInRight">
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                  <div class="swiper-slide"><div class="guide-img"><img src="../image/guide/1.png"></div></div>
+                  <div class="swiper-slide">Slide 2</div>
+                  <div class="swiper-slide">Slide 3</div>
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
             </div>
         </div>
     </body>

@@ -14,12 +14,12 @@
   display: none;
 }
 
-#pattern .ranking-pattern-div .ranking-pattern-row .ranking-pattern, #pattern .ranking-pattern-div .ranking-pattern-row, #pattern .ranking-pattern-div .ranking-level-toggle, #pattern .common-pattern-div .common-pattern-row, #pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons .add-remove, #pattern .pattern-count .pointer-group, #pattern .pattern-count .pointer, #pattern .pattern-count, #pattern .pattern-group, #pattern .pattern-tabs, #compare .list-view-options .list-view, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #sourceCode, .icons .icon, .icons {
+#guide, #pattern .ranking-pattern-div .ranking-pattern-row .ranking-pattern, #pattern .ranking-pattern-div .ranking-pattern-row, #pattern .ranking-pattern-div .ranking-level-toggle, #pattern .common-pattern-div .common-pattern-row, #pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons .add-remove, #pattern .pattern-count .pointer-group, #pattern .pattern-count .pointer, #pattern .pattern-count, #pattern .pattern-group, #pattern .pattern-tabs, #compare .list-view-options .list-view, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #sourceCode, .icons .icon, .icons {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-#pattern .ranking-pattern-div .ranking-pattern-row .hide.ranking-pattern, #pattern .ranking-pattern-div .hide.ranking-pattern-row, #pattern .ranking-pattern-div .hide.ranking-level-toggle, #pattern .common-pattern-div .hide.common-pattern-row, #pattern .pattern-buttons .hide.apply-cancel, #pattern .pattern-buttons .hide.add-remove, #pattern .pattern-count .hide.pointer-group, #pattern .pattern-count .hide.pointer, #pattern .hide.pattern-count, #pattern .hide.pattern-group, #pattern .hide.pattern-tabs, #compare .list-view-options .hide.list-view, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, .hide#sourceCode, .icons .hide.icon, .hide.icons {
+.hide#guide, #pattern .ranking-pattern-div .ranking-pattern-row .hide.ranking-pattern, #pattern .ranking-pattern-div .hide.ranking-pattern-row, #pattern .ranking-pattern-div .hide.ranking-level-toggle, #pattern .common-pattern-div .hide.common-pattern-row, #pattern .pattern-buttons .hide.apply-cancel, #pattern .pattern-buttons .hide.add-remove, #pattern .pattern-count .hide.pointer-group, #pattern .pattern-count .hide.pointer, #pattern .hide.pattern-count, #pattern .hide.pattern-group, #pattern .hide.pattern-tabs, #compare .list-view-options .hide.list-view, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, .hide#sourceCode, .icons .hide.icon, .hide.icons {
   display: none;
 }
 
@@ -859,6 +859,40 @@ body ::-webkit-scrollbar-thumb {
   background-color: #ECECEA;
   height: 5px;
   width: 15px;
+}
+
+#guide {
+  width: 100vw;
+  height: 100vh;
+  border: 0;
+  overflow: hidden;
+  background-color: white;
+}
+#guide .swiper-container {
+  width: 90vw;
+  height: 90vh;
+}
+#guide .swiper-container .swiper-slide {
+  display: flex;
+  align-content: center;
+}
+#guide .swiper-container .swiper-slide .guide-img {
+  padding: 0 40px 20px 40px;
+}
+#guide .swiper-container .swiper-slide .guide-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+#guide .swiper-container .swiper-button-prev, #guide .swiper-container .swiper-button-next {
+  color: #465054;
+}
+#guide .swiper-container .swiper-pagination.swiper-pagination-progressbar {
+  bottom: 0;
+  top: auto;
+}
+#guide .swiper-container .swiper-pagination.swiper-pagination-progressbar .swiper-pagination-progressbar-fill {
+  background-color: #465054;
 }
 
 /*# sourceMappingURL=style.css.map */
