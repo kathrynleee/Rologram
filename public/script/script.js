@@ -89,7 +89,11 @@ const createInfo = async () => {
 }
 
 const createTimeline = async (selected) => {
-    document.getElementById('roles').innerHTML = ''
+    // remove existing timeline
+    let timeline = document.querySelector('.roles')
+    if(timeline != null) {
+        timeline.parentNode.removeChild(timeline)
+    }
     const versions = await getVersions()
     let roleList = []
     if(level === 'system') {
@@ -100,6 +104,8 @@ const createTimeline = async (selected) => {
         roleList = await getClassRoleList(selected)
     }
     let element, span, text
+    let lastDiv = document.createElement('div')
+    lastDiv.className = 'roles'
     _.forEach(versions.data, v => {
         element = document.createElement('div')
         element.className = 'role'
@@ -154,8 +160,9 @@ const createTimeline = async (selected) => {
         text.setAttribute('data-date', v.slice(0, 10))
         text.className = 'date'
         span.appendChild(text)
-        document.getElementById('roles').appendChild(element)
+        lastDiv.appendChild(element)
     })
+    document.querySelector('.timeline').appendChild(lastDiv)
     // current version indicator
     let currentEles = document.querySelectorAll(`[data-text='${selectedVersion.slice(0, 10)}']`)[0]
     currentEles.className = 'tooltip selected'
@@ -304,11 +311,14 @@ const updateClassGraph = (dependencyLevel, edgeType, created, labelVisibility) =
     cy.elements().not(firstLvlEdges).not(firstLvlNodes).not(firstLvlNodes.ancestors()).addClass('hide')
     if(dependencyLevel > 1) {
         firstLvlEdges.addClass('first')
+        firstLvlEdges.lock()
         secondLvlNodes.ancestors().removeClass('hide')
         secondLvlNodes.removeClass('hide')
         secondLvlEdges.removeClass('hide')
     }
     if(dependencyLevel === 3) {
+        firstLvlEdges.lock()
+        secondLvlNodes.lock()
         thirdLvlNodes.ancestors().removeClass('hide')
         thirdLvlNodes.removeClass('hide')
         thirdLvlEdges.removeClass('hide')
@@ -327,6 +337,7 @@ const updateClassGraph = (dependencyLevel, edgeType, created, labelVisibility) =
     }
     cy.endBatch()
     cy.layout(currentLayoutOptions).run()
+    cy.nodes().unlock()
 }
 
 const updatePackageGraph = () => {

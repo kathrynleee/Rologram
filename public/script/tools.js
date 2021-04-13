@@ -169,6 +169,9 @@ const addToHistory = (data) => {
     let list = document.getElementById('history-list')
     list.insertBefore(element, list.firstChild)
   }
+  // if(historyList.length > 1) {
+  //   document.querySelector('.undo').classList.remove('hide')
+  // }
 }
 
 const createHistoryRowElement = (data) => {
@@ -220,6 +223,12 @@ const createHistoryRowElement = (data) => {
     }
   })
   return element
+}
+
+const empty = (elements) => {
+  elements.forEach(ele => {
+    document.querySelector(ele).innerHTML = ''
+  })
 }
 
 const showHistory = () => {
@@ -339,7 +348,7 @@ const toggleChangedClassHightlight = (option) => {
   }
 }
 const resetTools = () => {
-  closeOpenedDialog()
+  // closeOpenedDialog()
   // tool dialog
   let classLevelElements = document.querySelectorAll('.class-level')
   for(var i = 0; i < classLevelElements.length; i++) {
@@ -372,10 +381,11 @@ const resetTools = () => {
   filterRoleList = ['Controller', 'Coordinator', 'Information Holder', 'Interfacer', 'Service Provider', 'Structurer']
 
   // compare dialog
-  emptyCompareList()
+  // emptyCompareList()
 
   // pattern dialog
   document.querySelector('.chart-div').innerHTML = ''
+
 }
 
 const emptyCompareList = () => {
@@ -411,3 +421,12 @@ const updateDependencyType = (type) => {
     document.querySelector(`[data-option="${type}"]`).classList.add('selected-option')
   }
 }
+
+// let currentHistoryIndex = 0
+// const undo = () => {
+
+// }
+
+// const redo = () => {
+  
+// }

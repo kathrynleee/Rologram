@@ -61,7 +61,7 @@
                 </div>
             </div>
             <div class="timeline">
-                <div id="roles"></div>
+                <div class="roles"></div>
             </div>
             <div class="menu">
                 <div class="icons animate__animated animate__slideInRight">
@@ -93,10 +93,10 @@
                         <div class="material-icons">download</div>
                         <div class="icon-text">Download</div>
                     </div>
-                    <!-- <div class="icon" data-text="Guide">
+                    <div class="icon" data-text="Guide" onclick="closeOpenedDialog(); showGuide();">
                         <div class="material-icons">info</div>
                         <div class="icon-text">Guide</div>
-                    </div> -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -170,6 +170,10 @@
         <div id="history" class="hide dialog animate__animated animate__slideInRight">
             <div class="history-header">
                 <div class="history-export" onclick="exportHistory()">Export History</div>
+                <!-- <div class="undo-redo">
+                    <div class="undo hide material-icons" onclick="undo()">undo</div>
+                    <div class="redo hide material-icons" onclick="redo()">redo</div>
+                </div> -->
             </div>
             <div id="history-list">
             </div>
@@ -240,7 +244,7 @@
             <div class="chart-container">
                 <div class="chart-div"></div>
             </div>
-            <div class="pattern-div">
+            <div class="define-pattern-div pattern-content-div">
                 <div class="pattern-group">
                     <div class="pattern-count">
                         <div class="pointer">1</div>
@@ -265,6 +269,28 @@
                         <div class="cancel" onclick="removePattern()">Cancel</div>
                         <div class="button apply" onclick="applyPattern()">Apply Pattern</div>
                     </div>
+                </div>
+            </div>
+            <div class="ranking-pattern-div hide pattern-content-div">
+                <div class="ranking-level level-one">
+                    <div class="ranking-level-toggle" onclick="togglePatternRanking('level-one')">
+                        <div class="">One Level</div>
+                        <div class="ranking-level-icon material-icons">keyboard_arrow_down</div>
+                    </div>
+                </div>
+                <div class="ranking-level level-two">
+                    <div class="ranking-level-toggle" onclick="togglePatternRanking('level-two')">
+                        <div class="">Two Levels</div>
+                        <div class="ranking-level-icon material-icons">keyboard_arrow_down</div>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="common-pattern-div hide pattern-content-div">
+                <div class="common-pattern-row">
+                    <div data-role="Controller" class="pattern-role-option" onclick=""></div>
+                    <div data-role="Coordinator" class="pattern-role-option" onclick=""></div>
+                    <div data-role="Information Holder" class="pattern-role-option" onclick=""></div>    
                 </div>
             </div>
         </div>

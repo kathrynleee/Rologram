@@ -108,7 +108,6 @@ body {
 
 #info {
   padding: 10px 15px 0px 10px;
-  overflow-x: auto;
   .system {
     font-weight: bold;
     font-size: 25px;
@@ -152,6 +151,9 @@ body {
     .class {
       padding: 2px;
       padding-left: 10px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
     }
     &.show {
       visibility: visible;
@@ -173,6 +175,7 @@ body {
   @extend %center;
   @extend %flex-column;
   .icon {
+    width: 30px;
     @extend %flex-column;
     @extend %center;
     padding: 10px 8px;
@@ -193,7 +196,7 @@ body {
   height: 59px;
   overflow-x: auto;
   overflow-y: hidden;
-  #roles {
+  .roles {
     display: flex;
     flex-direction: row;
     padding-left: 2px;
@@ -307,7 +310,7 @@ body {
     width: 100%;
     .CodeMirror {
       height: 100%;
-      font-size: 16px;
+      font-size: 14px;
       @media screen and (max-width: 600px) {
         font-size: 12px;
       }
@@ -316,10 +319,8 @@ body {
 }
 
 #history {
-  width: fit-content;
   .history-header {
     padding: 10px;
-    // background-color: $bg-color;
     .history-export {
       width: fit-content;
       padding: 10px;
@@ -330,17 +331,21 @@ body {
         text-decoration: none;
       }
     }
+    // .undo-redo {
+    //   padding: 10px;
+    // }
   }
   .history-row {
     padding: 20px;
+    overflow-x: hidden;
     // border: solid $bg-color;
     // border-width: 5px 0;
     // border-bottom-width: 0;
-    border-bottom: 3px solid $bg-color;
+    border-top: 3px solid $bg-color;
     font-size: 16px;
-    // &:last-child {
-    //   border-bottom-width: 5px;
-    // }
+    &:last-child {
+      border-bottom: 3px solid $bg-color;
+    }
     .history-commit {
       @extend %flex-row;
     }
@@ -349,6 +354,11 @@ body {
       font-size: 14px;
       width: fit-content;
       background-color: $bg-color-dark;
+    }
+    .class {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
     }
     .commit-date {
       padding-left: 8px;
@@ -721,7 +731,7 @@ body {
       }
     }
   }
-  .pattern-div {
+  .pattern-content-div {
     margin: 0 20px;
     padding-bottom: 20px;
   }
@@ -853,5 +863,76 @@ body {
         }
       }
     }
+  }
+  .common-pattern-div {
+    padding-top: 20px;
+    .pattern-role-option {
+      margin-right: 0px;
+    }
+    .common-pattern-row {
+      padding: 20px;
+      @extend %flex-row;
+      @extend %center;
+      &:hover {
+        cursor: pointer;
+        background-color: $bg-color;
+      }
+      &.selected-pattern {
+        background-color: $bg-color;
+      }
+    }
+  }
+  .ranking-pattern-div {
+    padding-top: 20px;
+    .pattern-role-option {
+      margin-right: 0px;
+    }
+    .ranking-level-toggle {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      @extend %flex-row;
+      @extend %center;
+      padding: 10px;
+      background-color: $bg-color;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .ranking-pattern-row {
+      padding: 20px;
+      @extend %flex-row;
+      @extend %center;
+      justify-content: space-between;
+      .ranking-pattern {
+        @extend %flex-row;
+        @extend %center;
+      }
+      .ranking-count {
+        font-size: 40px;
+        font-weight: bold;
+        @media screen and (max-width: 600px) {
+          font-size: 30px;
+        }
+      }
+      &:hover {
+        cursor: pointer;
+        background-color: $bg-color;
+      }
+      &.selected-pattern {
+        background-color: $bg-color;
+      }
+    }
+  }
+  .arrow-right {
+    width: 0; 
+    height: 0; 
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 8px solid $bg-color-dark;
+  }
+  .arrow-line {
+    background-color: $bg-color-dark;
+    height: 5px;
+    width: 15px;
   }
 }

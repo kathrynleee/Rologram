@@ -1,8 +1,8 @@
-#pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons, #pattern .pattern-role, #pattern .pattern-group, #pattern .pattern-tabs, #compare .change-list-div .change-list .change-list-row, #compare .change-list-div .change-list-group, #compare .list-view-options .list-view, #compare .list-view-options, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #legend .legend-role, #legend, #tools .tool-row .tool-row-items, #history .history-row .history-commit, #info .class-id, #info .commit, .flex-row {
+#pattern .ranking-pattern-div .ranking-pattern-row .ranking-pattern, #pattern .ranking-pattern-div .ranking-pattern-row, #pattern .ranking-pattern-div .ranking-level-toggle, #pattern .common-pattern-div .common-pattern-row, #pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons, #pattern .pattern-role, #pattern .pattern-group, #pattern .pattern-tabs, #compare .change-list-div .change-list .change-list-row, #compare .change-list-div .change-list-group, #compare .list-view-options .list-view, #compare .list-view-options, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #legend .legend-role, #legend, #tools .tool-row .tool-row-items, #history .history-row .history-commit, #info .class-id, #info .commit, .flex-row {
   display: flex;
   flex-direction: row;
 }
-#pattern .pattern-buttons .hide.apply-cancel, #pattern .hide.pattern-buttons, #pattern .hide.pattern-role, #pattern .hide.pattern-group, #pattern .hide.pattern-tabs, #compare .change-list-div .change-list .hide.change-list-row, #compare .change-list-div .hide.change-list-group, #compare .list-view-options .hide.list-view, #compare .hide.list-view-options, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, #legend .hide.legend-role, .hide#legend, #tools .tool-row .hide.tool-row-items, #history .history-row .hide.history-commit, #info .hide.class-id, #info .hide.commit, .hide.flex-row {
+#pattern .ranking-pattern-div .ranking-pattern-row .hide.ranking-pattern, #pattern .ranking-pattern-div .hide.ranking-pattern-row, #pattern .ranking-pattern-div .hide.ranking-level-toggle, #pattern .common-pattern-div .hide.common-pattern-row, #pattern .pattern-buttons .hide.apply-cancel, #pattern .hide.pattern-buttons, #pattern .hide.pattern-role, #pattern .hide.pattern-group, #pattern .hide.pattern-tabs, #compare .change-list-div .change-list .hide.change-list-row, #compare .change-list-div .hide.change-list-group, #compare .list-view-options .hide.list-view, #compare .hide.list-view-options, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, #legend .hide.legend-role, .hide#legend, #tools .tool-row .hide.tool-row-items, #history .history-row .hide.history-commit, #info .hide.class-id, #info .hide.commit, .hide.flex-row {
   display: none;
 }
 
@@ -14,12 +14,12 @@
   display: none;
 }
 
-#pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons .add-remove, #pattern .pattern-count .pointer-group, #pattern .pattern-count .pointer, #pattern .pattern-count, #pattern .pattern-group, #pattern .pattern-tabs, #compare .list-view-options .list-view, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #sourceCode, .icons .icon, .icons {
+#pattern .ranking-pattern-div .ranking-pattern-row .ranking-pattern, #pattern .ranking-pattern-div .ranking-pattern-row, #pattern .ranking-pattern-div .ranking-level-toggle, #pattern .common-pattern-div .common-pattern-row, #pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons .add-remove, #pattern .pattern-count .pointer-group, #pattern .pattern-count .pointer, #pattern .pattern-count, #pattern .pattern-group, #pattern .pattern-tabs, #compare .list-view-options .list-view, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #sourceCode, .icons .icon, .icons {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-#pattern .pattern-buttons .hide.apply-cancel, #pattern .pattern-buttons .hide.add-remove, #pattern .pattern-count .hide.pointer-group, #pattern .pattern-count .hide.pointer, #pattern .hide.pattern-count, #pattern .hide.pattern-group, #pattern .hide.pattern-tabs, #compare .list-view-options .hide.list-view, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, .hide#sourceCode, .icons .hide.icon, .hide.icons {
+#pattern .ranking-pattern-div .ranking-pattern-row .hide.ranking-pattern, #pattern .ranking-pattern-div .hide.ranking-pattern-row, #pattern .ranking-pattern-div .hide.ranking-level-toggle, #pattern .common-pattern-div .hide.common-pattern-row, #pattern .pattern-buttons .hide.apply-cancel, #pattern .pattern-buttons .hide.add-remove, #pattern .pattern-count .hide.pointer-group, #pattern .pattern-count .hide.pointer, #pattern .hide.pattern-count, #pattern .hide.pattern-group, #pattern .hide.pattern-tabs, #compare .list-view-options .hide.list-view, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, .hide#sourceCode, .icons .hide.icon, .hide.icons {
   display: none;
 }
 
@@ -101,7 +101,6 @@ body ::-webkit-scrollbar-thumb {
 
 #info {
   padding: 10px 15px 0px 10px;
-  overflow-x: auto;
 }
 #info .system {
   font-weight: bold;
@@ -145,6 +144,9 @@ body ::-webkit-scrollbar-thumb {
 #info .class-id .class {
   padding: 2px;
   padding-left: 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 #info .class-id.show {
   visibility: visible;
@@ -160,6 +162,7 @@ body ::-webkit-scrollbar-thumb {
 }
 
 .icons .icon {
+  width: 30px;
   padding: 10px 8px;
   cursor: pointer;
   border-right: 5px solid transparent;
@@ -178,12 +181,12 @@ body ::-webkit-scrollbar-thumb {
   overflow-x: auto;
   overflow-y: hidden;
 }
-.timeline #roles {
+.timeline .roles {
   display: flex;
   flex-direction: row;
   padding-left: 2px;
 }
-.timeline #roles .role {
+.timeline .roles .role {
   margin-top: 20px;
   min-width: 16px;
   min-height: 16px;
@@ -195,16 +198,16 @@ body ::-webkit-scrollbar-thumb {
   text-align: center;
   cursor: pointer;
 }
-.timeline #roles .role.role-package {
+.timeline .roles .role.role-package {
   border-radius: 0;
 }
-.timeline #roles .role.role-version {
+.timeline .roles .role.role-version {
   border-radius: 0;
   border: 2px solid #ECECEA;
   min-width: 14px;
   min-height: 14px;
 }
-.timeline #roles .role .selected:before {
+.timeline .roles .role .selected:before {
   font-size: 12px;
   width: 100px;
   font-weight: bold;
@@ -215,20 +218,20 @@ body ::-webkit-scrollbar-thumb {
   left: -24px;
   top: -13px;
 }
-.timeline #roles .role.hover-no-effect:hover {
+.timeline .roles .role.hover-no-effect:hover {
   cursor: default;
   transform: none;
 }
-.timeline #roles .role.hover-no-effect:hover .date:hover:before {
+.timeline .roles .role.hover-no-effect:hover .date:hover:before {
   transform: translateY(-3px);
 }
-.timeline #roles .role:hover {
+.timeline .roles .role:hover {
   transform: translateY(-3px);
 }
-.timeline #roles .role.selected-version {
+.timeline .roles .role.selected-version {
   min-width: 80px;
 }
-.timeline #roles .role .date:before {
+.timeline .roles .role .date:before {
   font-size: 10px;
   width: 60px;
   height: 50px;
@@ -240,10 +243,10 @@ body ::-webkit-scrollbar-thumb {
   left: -10px;
   text-align: left;
 }
-.timeline #roles .role .date:hover:before {
+.timeline .roles .role .date:hover:before {
   opacity: 1;
 }
-.timeline #roles .role .tooltip {
+.timeline .roles .role .tooltip {
   position: relative;
 }
 
@@ -289,7 +292,7 @@ body ::-webkit-scrollbar-thumb {
 }
 #sourceCode .code .CodeMirror {
   height: 100%;
-  font-size: 16px;
+  font-size: 14px;
 }
 @media screen and (max-width: 600px) {
   #sourceCode .code .CodeMirror {
@@ -297,9 +300,6 @@ body ::-webkit-scrollbar-thumb {
   }
 }
 
-#history {
-  width: fit-content;
-}
 #history .history-header {
   padding: 10px;
 }
@@ -315,14 +315,23 @@ body ::-webkit-scrollbar-thumb {
 }
 #history .history-row {
   padding: 20px;
-  border-bottom: 3px solid #f6f7f8;
+  overflow-x: hidden;
+  border-top: 3px solid #f6f7f8;
   font-size: 16px;
+}
+#history .history-row:last-child {
+  border-bottom: 3px solid #f6f7f8;
 }
 #history .history-row .package {
   padding: 2px;
   font-size: 14px;
   width: fit-content;
   background-color: #ECECEA;
+}
+#history .history-row .class {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 #history .history-row .commit-date {
   padding-left: 8px;
@@ -671,7 +680,7 @@ body ::-webkit-scrollbar-thumb {
   border-bottom: 6px solid #465054;
   margin-bottom: -4px;
 }
-#pattern .pattern-div {
+#pattern .pattern-content-div {
   margin: 0 20px;
   padding-bottom: 20px;
 }
@@ -787,6 +796,69 @@ body ::-webkit-scrollbar-thumb {
 }
 #pattern .pattern-buttons .apply-cancel .button:hover {
   background-color: #f6f7f8;
+}
+#pattern .common-pattern-div {
+  padding-top: 20px;
+}
+#pattern .common-pattern-div .pattern-role-option {
+  margin-right: 0px;
+}
+#pattern .common-pattern-div .common-pattern-row {
+  padding: 20px;
+}
+#pattern .common-pattern-div .common-pattern-row:hover {
+  cursor: pointer;
+  background-color: #f6f7f8;
+}
+#pattern .common-pattern-div .common-pattern-row.selected-pattern {
+  background-color: #f6f7f8;
+}
+#pattern .ranking-pattern-div {
+  padding-top: 20px;
+}
+#pattern .ranking-pattern-div .pattern-role-option {
+  margin-right: 0px;
+}
+#pattern .ranking-pattern-div .ranking-level-toggle {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #f6f7f8;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+#pattern .ranking-pattern-div .ranking-pattern-row {
+  padding: 20px;
+  justify-content: space-between;
+}
+#pattern .ranking-pattern-div .ranking-pattern-row .ranking-count {
+  font-size: 40px;
+  font-weight: bold;
+}
+@media screen and (max-width: 600px) {
+  #pattern .ranking-pattern-div .ranking-pattern-row .ranking-count {
+    font-size: 30px;
+  }
+}
+#pattern .ranking-pattern-div .ranking-pattern-row:hover {
+  cursor: pointer;
+  background-color: #f6f7f8;
+}
+#pattern .ranking-pattern-div .ranking-pattern-row.selected-pattern {
+  background-color: #f6f7f8;
+}
+#pattern .arrow-right {
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 8px solid #ECECEA;
+}
+#pattern .arrow-line {
+  background-color: #ECECEA;
+  height: 5px;
+  width: 15px;
 }
 
 /*# sourceMappingURL=style.css.map */
