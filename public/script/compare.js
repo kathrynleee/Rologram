@@ -62,12 +62,8 @@ const clickChangeListItem = (id) => {
   cy.fit()
   cy.nodes('.showLabel').removeClass('showLabel')
   cy.$id(id).addClass('showLabel')
-  moveGraph()
-  // cy.zoom({
-  //   level: .7,
-  //   position: cy.$id(id).position()
-  // })
-  // cy.center(cy.$id(id))
+  cy.center(cy.$id(id))
+  // moveGraph()
 }
 
 const createListItem = (data) => {

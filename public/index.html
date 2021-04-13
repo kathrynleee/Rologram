@@ -226,6 +226,20 @@
             </div>
         </div>
         <div id="pattern" class="hide dialog animate__animated animate__slideInRight">
+            <div class="pattern-tabs">
+                <div class="pattern-tab define selected-pattern-tab" onclick="switchPatternTab('define')">
+                    <div class="pattern-tab-text">Define Patterns</div>
+                </div>
+                <div class="pattern-tab ranking" onclick="switchPatternTab('ranking')">
+                    <div class="pattern-tab-text">Ranking</div>
+                </div>
+                <div class="pattern-tab common" onclick="switchPatternTab('common')">
+                    <div class="pattern-tab-text">Common Patterns</div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-div"></div>
+            </div>
             <div class="pattern-div">
                 <div class="pattern-group">
                     <div class="pattern-count">
@@ -250,11 +264,6 @@
                     <div class="apply-cancel">
                         <div class="cancel" onclick="removePattern()">Cancel</div>
                         <div class="button apply" onclick="applyPattern()">Apply Pattern</div>
-                    </div>
-                </div>
-                <div>
-                    <div class="chart-container">
-                        <div class="chart-div"></div>
                     </div>
                 </div>
             </div>

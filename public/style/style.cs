@@ -1,8 +1,8 @@
-#pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons, #pattern .pattern-role, #pattern .pattern-group, #pattern .pattern-tabs, #compare .change-list-div .change-list .change-list-row, #compare .change-list-div .change-list-group, #compare .list-view-options .list-view, #compare .list-view-options, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #legend .legend-role, #legend, #tools .tool-row .tool-row-items, #history .history-row .history-commit, #info .class-id, #info .commit, .flex-row {
+#animation .slide .version, #animation .animation-controls, #pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons, #pattern .pattern-role, #pattern .pattern-group, #pattern .pattern-tabs, #compare .change-list-div .change-list .change-list-row, #compare .change-list-div .change-list-group, #compare .list-view-options .list-view, #compare .list-view-options, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #legend .legend-role, #legend, #tools .tool-row .tool-row-items, #history .history-row .history-commit, #info .class-id, #info .commit, .flex-row {
   display: flex;
   flex-direction: row;
 }
-#pattern .pattern-buttons .hide.apply-cancel, #pattern .hide.pattern-buttons, #pattern .hide.pattern-role, #pattern .hide.pattern-group, #pattern .hide.pattern-tabs, #compare .change-list-div .change-list .hide.change-list-row, #compare .change-list-div .hide.change-list-group, #compare .list-view-options .hide.list-view, #compare .hide.list-view-options, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, #legend .hide.legend-role, .hide#legend, #tools .tool-row .hide.tool-row-items, #history .history-row .hide.history-commit, #info .hide.class-id, #info .hide.commit, .hide.flex-row {
+#animation .slide .hide.version, #animation .hide.animation-controls, #pattern .pattern-buttons .hide.apply-cancel, #pattern .hide.pattern-buttons, #pattern .hide.pattern-role, #pattern .hide.pattern-group, #pattern .hide.pattern-tabs, #compare .change-list-div .change-list .hide.change-list-row, #compare .change-list-div .hide.change-list-group, #compare .list-view-options .hide.list-view, #compare .hide.list-view-options, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, #legend .hide.legend-role, .hide#legend, #tools .tool-row .hide.tool-row-items, #history .history-row .hide.history-commit, #info .hide.class-id, #info .hide.commit, .hide.flex-row {
   display: none;
 }
 
@@ -14,12 +14,12 @@
   display: none;
 }
 
-#pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons .add-remove, #pattern .pattern-count .pointer-group, #pattern .pattern-count .pointer, #pattern .pattern-count, #pattern .pattern-group, #pattern .pattern-tabs, #compare .list-view-options .list-view, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #sourceCode, .icons .icon, .icons {
+#animation .animation-controls, #animation, #pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons .add-remove, #pattern .pattern-count .pointer-group, #pattern .pattern-count .pointer, #pattern .pattern-count, #compare .list-view-options .list-view, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #sourceCode, .icons .icon, .icons {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-#pattern .pattern-buttons .hide.apply-cancel, #pattern .pattern-buttons .hide.add-remove, #pattern .pattern-count .hide.pointer-group, #pattern .pattern-count .hide.pointer, #pattern .hide.pattern-count, #pattern .hide.pattern-group, #pattern .hide.pattern-tabs, #compare .list-view-options .hide.list-view, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, .hide#sourceCode, .icons .hide.icon, .hide.icons {
+#animation .hide.animation-controls, .hide#animation, #pattern .pattern-buttons .hide.apply-cancel, #pattern .pattern-buttons .hide.add-remove, #pattern .pattern-count .hide.pointer-group, #pattern .pattern-count .hide.pointer, #pattern .hide.pattern-count, #compare .list-view-options .hide.list-view, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, .hide#sourceCode, .icons .hide.icon, .hide.icons {
   display: none;
 }
 
@@ -101,7 +101,6 @@ body ::-webkit-scrollbar-thumb {
 
 #info {
   padding: 10px 15px 0px 10px;
-  overflow-x: auto;
 }
 #info .system {
   font-weight: bold;
@@ -124,11 +123,11 @@ body ::-webkit-scrollbar-thumb {
 }
 #info .commit div.commit-id {
   margin-right: 10px;
-  text-decoration: underline;
 }
 #info .commit div.commit-id:hover {
   cursor: pointer;
-  text-decoration: none;
+  text-decoration: underline;
+  opacity: 0.6;
 }
 #info .commit img {
   width: 16px;
@@ -162,10 +161,9 @@ body ::-webkit-scrollbar-thumb {
 .icons .icon {
   padding: 10px 8px;
   cursor: pointer;
-  border-right: 5px solid transparent;
 }
 .icons .icon:hover {
-  border-right: 5px solid #ECECEA;
+  opacity: 0.6;
 }
 .icons .icon .icon-text {
   font-size: 8px;
@@ -274,15 +272,22 @@ body ::-webkit-scrollbar-thumb {
 }
 @media screen and (max-width: 768px) {
   .dialog {
-    border: 0;
+    right: 0;
     width: 100vw;
-    height: 100vh;
   }
   .dialog .message {
     font-size: 12px;
   }
 }
+@media screen and (max-width: 998px) {
+  .dialog {
+    width: 40vw;
+  }
+}
 
+#sourceCode {
+  width: 40vw;
+}
 #sourceCode .code {
   height: 100%;
   width: 100%;
@@ -292,6 +297,10 @@ body ::-webkit-scrollbar-thumb {
   font-size: 16px;
 }
 @media screen and (max-width: 600px) {
+  #sourceCode {
+    border: 0;
+    width: 100vw;
+  }
   #sourceCode .code .CodeMirror {
     font-size: 12px;
   }
@@ -330,7 +339,7 @@ body ::-webkit-scrollbar-thumb {
   font-size: 14px;
 }
 #history .history-row:hover {
-  background-color: #f6f7f8;
+  opacity: 0.6;
   cursor: pointer;
 }
 #history img {
@@ -340,12 +349,12 @@ body ::-webkit-scrollbar-thumb {
 }
 
 #tools {
-  min-width: 320px;
-  min-height: 640px;
-  width: 320px;
+  padding: 20px;
+  min-width: 300px;
+  width: 300px;
 }
 #tools .tool-row {
-  padding: 20px;
+  padding-bottom: 20px;
 }
 #tools .tool-row .tool-title {
   text-transform: uppercase;
@@ -358,8 +367,6 @@ body ::-webkit-scrollbar-thumb {
 #tools .tool-row.class-level.disabled .tool-row-items div:hover {
   cursor: default;
   opacity: 1;
-  background-color: #f6f7f8;
-  color: #465054;
 }
 #tools .tool-row .tool-row-items {
   font-size: 16px;
@@ -376,8 +383,7 @@ body ::-webkit-scrollbar-thumb {
 }
 #tools .tool-row .tool-row-items div:hover {
   cursor: pointer;
-  background-color: #465054;
-  color: white;
+  opacity: 0.6;
 }
 #tools .tool-row .tool-row-items.roles-filter .tool-role {
   width: 16px;
@@ -459,9 +465,6 @@ body ::-webkit-scrollbar-thumb {
   }
 }
 
-.chart-container {
-  margin: 0 20px;
-}
 .chart-container .chart-div {
   width: 100%;
 }
@@ -487,18 +490,26 @@ body ::-webkit-scrollbar-thumb {
 }
 
 #compare {
-  overflow-x: hidden;
-  font-size: 16px;
   min-width: 500px;
+  overflow-x: hidden;
+  padding: 20px;
+  font-size: 16px;
 }
 @media screen and (max-width: 600px) {
   #compare {
+    min-width: 0;
+    width: calc(50vw);
     font-size: 12px;
+    padding: 20px;
   }
 }
 #compare #version-select {
-  padding: 20px;
-  width: fit-content;
+  width: 300px;
+}
+@media screen and (max-width: 600px) {
+  #compare #version-select {
+    width: 250px;
+  }
 }
 #compare #version-select .version-select-div {
   cursor: pointer;
@@ -521,22 +532,19 @@ body ::-webkit-scrollbar-thumb {
 #compare #version-select .version-options-list {
   position: fixed;
   top: 60px;
+  width: 300px;
   background-color: white;
   max-height: calc(50vh);
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: auto;
 }
 @media screen and (max-width: 600px) {
   #compare #version-select .version-options-list {
     transform: none;
   }
 }
-#compare #version-select .version-options-list .version-option {
-  width: 250px;
-}
 @media screen and (max-width: 600px) {
   #compare #version-select .version-options-list .version-option {
-    width: 200px;
+    width: 250px;
   }
 }
 #compare #version-select .version-option-div {
@@ -559,15 +567,16 @@ body ::-webkit-scrollbar-thumb {
   font-size: 12px;
 }
 #compare #version-select .version-option-div:hover {
-  background-color: white;
+  opacity: 0.6;
 }
 #compare .list-view-options {
-  padding: 0 20px;
   justify-content: space-between;
-  overflow-y: hidden;
-  overflow-x: auto;
 }
 @media screen and (max-width: 600px) {
+  #compare .list-view-options {
+    overflow-y: hidden;
+    overflow-x: auto;
+  }
   #compare .list-view-options .list-view {
     padding: 5px;
   }
@@ -583,7 +592,7 @@ body ::-webkit-scrollbar-thumb {
 }
 #compare .list-view-options .list-view.selected-view {
   font-weight: bold;
-  border-bottom: 6px solid #465054;
+  border-bottom: 6px solid #ECECEA;
   margin-bottom: -2px;
 }
 #compare .list-view-options .list-view .count {
@@ -597,9 +606,6 @@ body ::-webkit-scrollbar-thumb {
   text-align: center;
   white-space: nowrap;
   height: 12px;
-}
-#compare .change-lists {
-  padding: 0 20px 20px 20px;
 }
 #compare .change-list-div .change-list-group {
   margin-top: 10px;
@@ -651,29 +657,10 @@ body ::-webkit-scrollbar-thumb {
 }
 
 #pattern {
-  min-width: 400px;
+  padding: 20px;
 }
-#pattern .pattern-tabs {
-  margin: 0 20px;
-  padding-top: 20px;
-  justify-content: space-between;
-}
-#pattern .pattern-tabs .pattern-tab {
-  flex: 1 1 100%;
-  cursor: pointer;
-  padding: 10px;
-}
-#pattern .pattern-tabs .pattern-tab .pattern-tab-text {
-  text-align: center;
-}
-#pattern .pattern-tabs .pattern-tab.selected-pattern-tab {
-  font-weight: bold;
-  border-bottom: 6px solid #465054;
-  margin-bottom: -4px;
-}
-#pattern .pattern-div {
-  margin: 0 20px;
-  padding-bottom: 20px;
+#pattern.full {
+  width: 100vw;
 }
 #pattern .pattern-count {
   cursor: default;
@@ -765,7 +752,7 @@ body ::-webkit-scrollbar-thumb {
   margin-right: 20px;
 }
 #pattern .pattern-buttons .add-remove .icon:hover {
-  background-color: #f6f7f8;
+  opacity: 0.6;
 }
 #pattern .pattern-buttons .apply-cancel .cancel {
   font-size: 12px;
@@ -776,6 +763,7 @@ body ::-webkit-scrollbar-thumb {
 }
 #pattern .pattern-buttons .apply-cancel .cancel:hover {
   text-decoration: none;
+  opacity: 0.6;
 }
 #pattern .pattern-buttons .apply-cancel .button {
   padding: 10px;
@@ -786,7 +774,53 @@ body ::-webkit-scrollbar-thumb {
   box-shadow: 2px 2px;
 }
 #pattern .pattern-buttons .apply-cancel .button:hover {
-  background-color: #f6f7f8;
+  opacity: 0.6;
 }
 
-/*# sourceMappingURL=style.css.map */
+#animation {
+  overflow: hidden;
+  height: 50px;
+  width: 150px;
+}
+#animation .splide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 200px;
+}
+#animation .splide .splide__slide {
+  width: 400px;
+  height: auto;
+}
+#animation .splide__progress {
+  padding: 10px;
+}
+#animation .animation-controls div {
+  cursor: pointer;
+  margin-right: 20px;
+}
+#animation .animation-controls div:last-child {
+  margin-right: 0;
+}
+#animation .animation-controls div:hover {
+  opacity: 0.6;
+}
+#animation .slide {
+  display: none;
+}
+#animation .slide .version .commit-icon img {
+  width: 20px;
+  opacity: 0.7;
+  padding-right: 5px;
+}
+#animation .slide .version .commit-id {
+  font-weight: bold;
+}
+#animation .slide .version .commit-date {
+  padding-left: 8px;
+  padding-top: 3px;
+  font-size: 14px;
+}
+
+/*# sourceMappingURL=style.cs.map */

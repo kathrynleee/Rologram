@@ -154,10 +154,16 @@ const createChart = async (results) => {
     },
     plugins: [ 
       Chartist.plugins.ctPointLabels({ 
-        textAnchor: 'middle', 
+        textAnchor: 'middle',
         labelInterpolationFnc: (value) => (typeof value == "undefined") ? "0" : value
       })
     ]
   }
   new Chartist.Line('.chart-div', data, options)
+}
+
+const switchPatternTab = (option) => {
+  document.querySelector('.pattern-tabs .selected-pattern-tab').classList.remove('selected-pattern-tab')
+  document.querySelector(`.pattern-tabs .${option}`).classList.add('selected-pattern-tab')
+  // setVisible('.change-list.removed-list', true, false)
 }

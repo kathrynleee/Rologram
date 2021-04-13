@@ -58,8 +58,6 @@ const hierarchy = {
 let currentLayoutOptions = klay
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // const graph = new Graph()
-    // graph.test()
     axios.baseURL = 'localhost:3000'
     // axios.baseURL = 'https://visdemo.herokuapp.com'
     const versions = await getVersions()
@@ -199,7 +197,7 @@ const createGraph = async () => {
             })
             this.on('tapdragover', 'node', (e) => {
                 const target = e.target
-                if(!cy.nodes().hasClass('showLabel') || currentLabelVisibility === 'hideLabels') {
+                if(currentLabelVisibility === 'hideLabels' || !cy.nodes().hasClass('showLabel')) {
                     target.addClass('showLabel')
                 }
                 if(!target.isParent()) {
