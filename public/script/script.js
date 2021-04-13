@@ -11,7 +11,7 @@ let roleMap = new Map([
 ])
 
 let currentLayoutName = 'klay'
-let currentLabelVisibility = 'showLabel'
+let currentLabelVisibility = 'hideLabels'
 let currentMetric = 'rolesOnly'
 
 const klay = {
