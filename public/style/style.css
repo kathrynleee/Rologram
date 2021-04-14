@@ -421,6 +421,7 @@ body ::-webkit-scrollbar-thumb {
   font-size: 10px;
   color: #465054;
   content: attr(data-role);
+  white-space: nowrap;
   position: relative;
   opacity: 0;
   top: 30px;
@@ -751,6 +752,7 @@ body ::-webkit-scrollbar-thumb {
   font-size: 10px;
   color: #465054;
   content: attr(data-role);
+  white-space: nowrap;
   position: relative;
   opacity: 0;
   top: 40px;
@@ -803,8 +805,13 @@ body ::-webkit-scrollbar-thumb {
 #pattern .common-pattern-div .pattern-role-option {
   margin-right: 0px;
 }
+#pattern .common-pattern-div .pattern-role-option:before {
+  white-space: normal;
+  display: inline-block;
+  opacity: 1;
+}
 #pattern .common-pattern-div .common-pattern-row {
-  padding: 20px;
+  padding: 10px 20px 30px 20px;
 }
 #pattern .common-pattern-div .common-pattern-row:hover {
   cursor: pointer;
@@ -819,6 +826,11 @@ body ::-webkit-scrollbar-thumb {
 #pattern .ranking-pattern-div .pattern-role-option {
   margin-right: 0px;
 }
+#pattern .ranking-pattern-div .pattern-role-option:before {
+  white-space: normal;
+  display: inline-block;
+  opacity: 1;
+}
 #pattern .ranking-pattern-div .ranking-level-toggle {
   margin-top: 10px;
   margin-bottom: 10px;
@@ -829,7 +841,7 @@ body ::-webkit-scrollbar-thumb {
   cursor: pointer;
 }
 #pattern .ranking-pattern-div .ranking-pattern-row {
-  padding: 20px;
+  padding: 10px 10px 30px 10px;
   justify-content: space-between;
 }
 #pattern .ranking-pattern-div .ranking-pattern-row .ranking-count {
@@ -858,7 +870,7 @@ body ::-webkit-scrollbar-thumb {
 #pattern .arrow-line {
   background-color: #ECECEA;
   height: 5px;
-  width: 15px;
+  width: 20px;
 }
 
 #guide {

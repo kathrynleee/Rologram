@@ -455,6 +455,7 @@ body {
             font-size: 10px;
             color: $black;
             content: attr(data-role);
+            white-space: nowrap;
             position: relative;
             opacity: 0;
             top: 30px;
@@ -811,6 +812,7 @@ body {
       font-size: 10px;
       color: $black;
       content: attr(data-role);
+      white-space: nowrap;
       position: relative;
       opacity: 0;
       top: 40px;
@@ -868,9 +870,14 @@ body {
     padding-top: 20px;
     .pattern-role-option {
       margin-right: 0px;
+      &:before {
+        white-space: normal;
+        display: inline-block;
+        opacity: 1;
+      }
     }
     .common-pattern-row {
-      padding: 20px;
+      padding: 10px 20px 30px 20px;
       @extend %flex-row;
       @extend %center;
       &:hover {
@@ -886,6 +893,11 @@ body {
     padding-top: 20px;
     .pattern-role-option {
       margin-right: 0px;
+      &:before {
+        white-space: normal;
+        display: inline-block;
+        opacity: 1;
+      }
     }
     .ranking-level-toggle {
       margin-top: 10px;
@@ -899,11 +911,13 @@ body {
       cursor: pointer;
     }
     .ranking-pattern-row {
-      padding: 20px;
+      // padding: 10px;
+      padding: 10px 10px 30px 10px;
       @extend %flex-row;
       @extend %center;
       justify-content: space-between;
       .ranking-pattern {
+        // padding: 0px 10px 20px 10px;
         @extend %flex-row;
         @extend %center;
       }
@@ -933,7 +947,7 @@ body {
   .arrow-line {
     background-color: $bg-color-dark;
     height: 5px;
-    width: 15px;
+    width: 20px;
   }
 }
 
