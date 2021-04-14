@@ -178,7 +178,7 @@ function findPath(id, version) {
   var package = id.slice(0, index)
   var found = paths.find(p => p.version == version && p.package == package)
   if(found == undefined) {
-    found = paths.find(p => p.package == package)
+    found = paths.find(p => p.version == '' && p.package == package)
   }
   return found
 }
