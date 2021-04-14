@@ -204,7 +204,7 @@ const createGraph = async () => {
             })
             this.on('tapdragover', 'node', (e) => {
                 const target = e.target
-                if(currentLabelVisibility === 'hideLabels' || !cy.nodes().hasClass('showLabel')) {
+                if(currentLabelVisibility == 'hideLabels' || !cy.nodes().hasClass('showLabel')) {
                     target.addClass('showLabel')
                 }
                 if(!target.isParent()) {
@@ -215,7 +215,7 @@ const createGraph = async () => {
             })
             this.on('tapdragout', 'node', (e) => {
                 const target = e.target
-                if(currentLabelVisibility === 'hideLabels') {
+                if(currentLabelVisibility == 'hideLabels') {
                     target.removeClass('showLabel')
                 }
                 cy.elements().removeClass('hover')
@@ -324,6 +324,7 @@ const updateClassGraph = (dependencyLevel, edgeType, created, labelVisibility) =
         thirdLvlEdges.removeClass('hide')
     }
     // decide nodes label visibility
+    currentLabelVisibility = labelVisibility
     if(labelVisibility === 'showLabels') {
         cy.nodes().addClass('showLabel')
     } else {

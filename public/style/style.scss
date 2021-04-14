@@ -314,6 +314,9 @@ body {
       @media screen and (max-width: 600px) {
         font-size: 12px;
       }
+      .CodeMirror-cursor {
+        opacity: 0;
+      }
     }
   }
 }
@@ -947,7 +950,10 @@ body {
   .arrow-line {
     background-color: $bg-color-dark;
     height: 5px;
-    width: 20px;
+    width: 30px;
+    @media screen and (max-width: 600px) {
+      width: 40px;
+    }
   }
 }
 

@@ -29,7 +29,8 @@ const showSourceCode = async () => {
         theme: 'eclipse',
         lineNumbers: true,
         lineWrapping: true,
-        readOnly: 'nocursor'
+        readOnly: true
+        // readOnly: 'nocursor'
       })
       codeEditor.setValue(code.data)
     } else {
@@ -384,7 +385,7 @@ const resetTools = () => {
   // emptyCompareList()
 
   // pattern dialog
-  document.querySelector('.chart-div').innerHTML = ''
+  // document.querySelector('.chart-div').innerHTML = ''
 
 }
 
