@@ -423,15 +423,6 @@ const updateDependencyType = (type) => {
   }
 }
 
-// let currentHistoryIndex = 0
-// const undo = () => {
-
-// }
-
-// const redo = () => {
-  
-// }
-
 const showGuide = () => {
   setVisible('.close', true, false)
   setVisible('#guide', true, false)

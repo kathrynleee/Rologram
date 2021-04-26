@@ -14,6 +14,36 @@ let currentLayoutName = 'klay'
 let currentLabelVisibility = 'hideLabels'
 let currentMetric = 'rolesOnly'
 
+const elk = {
+     name: 'elk',
+     nodeDimensionsIncludeLabels: true,
+     fit: true,
+    //  ranker: 'longest-path',
+     elk: {
+         'algorithm': 'mrtree', // layered,  mrtree
+         'spacing.nodeNode': 50,
+        //  'layered.mergeEdges': 'false',
+        //  'layered.mergeHierarchyEdges': 'false',
+         // 'crossingMinimization.semiInteractive': true,
+         'nodePlacement.strategy': 'NETWORK_SIMPLEX',
+         // 'layered.wrapping.additionalEdgeSpacing': 50,
+        //  'spacing.nodeNode': 20,
+        //  'spacing.nodeNodeBetweenLayers': 25,
+        //  'spacing.edgeNode': 25,
+        //  'spacing.edgeNodeBetweenLayers': 20,
+        //  'spacing.edgeEdge': 20,
+        //  'spacing.edgeEdgeBetweenLayers': 15,
+         // All options are available at http://www.eclipse.org/elk/reference.html
+         // 'org.eclipse.elk.' can be dropped from the Identifier
+         // Or look at demo-demo.js for an example.
+         // Enums use the name of the enum e.g.
+        //  'searchOrder': 'DFS'
+         //
+         // The main field to set is `algorithm`, which controls which particular
+         // layout algorithm is used.
+     },
+ }
+
 const klay = {
     name: 'klay',
     nodeDimensionsIncludeLabels: true, 
@@ -23,9 +53,9 @@ const klay = {
     animationEasing: 'spring(500, 50)',
     klay: {
         borderSpacing: 20, // spacing between compound nodes
-        spacing: 15, // spacing between nodes
+        spacing: 20, // spacing between nodes
         compactComponents: true,
-        nodePlacement:'SIMPLE',
+        nodePlacement: 'SIMPLE',
         direction: 'DOWN',
         edgeRouting: 'POLYLINE',
         edgeSpacingFactor: 0.3,
@@ -46,7 +76,7 @@ const hierarchy = {
       borderSpacing: 20, // spacing between compound nodes
       spacing: 15, // spacing between nodes
       compactComponents: true,
-      nodePlacement:'SIMPLE',
+      nodePlacement: 'SIMPLE',
       direction: 'DOWN', // UP, DOWN, LEFT, RIGHT
       edgeRouting: 'POLYLINE',
       edgeSpacingFactor: 0.1,
@@ -181,6 +211,7 @@ const createGraph = async () => {
         hideEdgesOnViewport: true,
         motionBlur: true,
         boxSelectionEnabled: true,
+        wheelSensitivity: 0.3,
         style: styles.data.style,
         elements: elements.data,
         ready: function() {
@@ -204,11 +235,17 @@ const createGraph = async () => {
             })
             this.on('tapdragover', 'node', (e) => {
                 const target = e.target
-                if(currentLabelVisibility == 'hideLabels' || !cy.nodes().hasClass('showLabel')) {
+                if(currentLabelVisibility == 'hideLabels') {
                     target.addClass('showLabel')
                 }
+                // hover on class
                 if(!target.isParent()) {
                     let nodes = target.union(target.successors()).union(target.predecessors())
+                    let parents = nodes.ancestors()
+                    cy.elements().not(nodes).not(parents).addClass('hover')
+                } else {
+                    // hover on package
+                    let nodes = target.descendants().neighborhood().union(target.descendants())
                     let parents = nodes.ancestors()
                     cy.elements().not(nodes).not(parents).addClass('hover')
                 }
@@ -263,6 +300,24 @@ const initGraph = async (version, pkg, cls) => {
     createInfo()
     resetTools()
     updateGraph()
+}
+
+const runlayout = () => {
+    // cy.layout(elk).run()
+
+    // var parentNodes = cy.nodes(':parent')
+    // var layout = parentNodes.descendants().layout(elk)
+
+    // layout.promiseOn('layoutstop').then(e => {
+    //     var dagre_layout = parentNodes.layout({ 
+    //         name: 'grid',
+    //         nodeDimensionsIncludeLabels: true, 
+    //         sort: function(a, b){ return a.data('id') - b.data('id') },
+    //         avoidOverlap: true,
+    //         fit: true
+    //     })
+    //     dagre_layout.run()
+    // })
 }
 
 const updateGraph = () => {
@@ -332,9 +387,13 @@ const updateClassGraph = (dependencyLevel, edgeType, created, labelVisibility) =
     }
     // display elements according to edge type
     if(edgeType === 'in') {
-        cy.elements().not(target.predecessors()).not(target.predecessors().ancestors()).addClass('hide')
+        let nodes = target.union(target.predecessors())
+        let parents = nodes.ancestors()
+        cy.elements().not(nodes).not(parents).addClass('hide')
     } else if(edgeType === 'out') {
-        cy.elements().not(target.successors()).not(target.successors().ancestors()).addClass('hide')
+        let nodes = target.union(target.successors())
+        let parents = nodes.ancestors()
+        cy.elements().not(nodes).not(parents).addClass('hide')
     }
     cy.endBatch()
     cy.layout(currentLayoutOptions).run()
@@ -343,10 +402,10 @@ const updateClassGraph = (dependencyLevel, edgeType, created, labelVisibility) =
 
 const updatePackageGraph = () => {
     cy.startBatch()
-    const target = cy.$id(selectedPackage)
-    const nodes = target.union(target.descendants())
-    const parents = target.ancestors()
-    const edges = nodes.connectedEdges()
+    let target = cy.$id(selectedPackage)
+    let nodes = target.descendants().neighborhood().union(target.descendants())
+    let parents = nodes.ancestors()
+    let edges = nodes.connectedEdges()
     cy.remove(cy.elements().not(nodes).not(parents).not(edges))
     cy.endBatch()
     cy.layout(currentLayoutOptions).run()
