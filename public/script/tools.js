@@ -7,6 +7,7 @@ const moveGraph = () => {
   cy.panBy({ x: -200, y: 0 })
 }
 
+let codeViewingOption = 'single'
 const showSourceCode = async () => {
   moveGraph()
   setVisible('.close', true, false)
@@ -17,22 +18,16 @@ const showSourceCode = async () => {
     document.querySelector('#sourceCode .not-found').textContent = 'Source code only available for classes.'
   } else {
     setVisible('#sourceCode .not-found', false, false)
-    const code = await displaySourceCode()
+    const code = await displaySourceCode(selectedVersion)
     if(code !== undefined) {
-      setVisible('#sourceCode .code', true, false)
-      if(codeEditor !== undefined) {
-        codeEditor.getWrapperElement().remove()
-        codeEditor = undefined
+      if(codeViewingOption == 'compare') {
+        document.querySelector('#sourceCode').classList.add('view')
+        setVisible('#sourceCode #view', true, false)
+        setVisible('#sourceCode .code', false, false)
+      } else {
+        document.querySelector('#sourceCode').classList.remove('view')
+        showSingleCode(code.data)
       }
-      codeEditor = CodeMirror.fromTextArea(document.getElementById('editor'), {
-        mode: 'text/x-java',
-        theme: 'eclipse',
-        lineNumbers: true,
-        lineWrapping: true,
-        readOnly: true
-        // readOnly: 'nocursor'
-      })
-      codeEditor.setValue(code.data)
     } else {
       setVisible('#sourceCode .not-found', true, false)
       document.querySelector('#sourceCode .not-found').textContent = 'Not found.'
@@ -40,17 +35,59 @@ const showSourceCode = async () => {
   }
 }
 
-const displaySourceCode = async () => {
-  const index = selectedVersion.lastIndexOf('-')
-  const systemName = selectedVersion.slice(11, index)
-  const commitId = selectedVersion.slice(index + 1)
+const showSingleCode = async (code) => {
+  setVisible('#sourceCode #view', false, false)
+  setVisible('#sourceCode .code', true, false)
+  if(codeEditor !== undefined) {
+    codeEditor.getWrapperElement().remove()
+    codeEditor = undefined
+  }
+  codeEditor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+    mode: 'text/x-java',
+    theme: 'eclipse',
+    lineNumbers: true,
+    lineWrapping: true,
+    readOnly: true
+    // readOnly: 'nocursor'
+  })
+  codeEditor.setValue(code)
+}
+
+const updateCodeView = async (currentVersion, versionToCompare, isComparingToLaterVersion) => {
+  document.getElementById('view').innerHTML = ''
+  let currentCode = await displaySourceCode(currentVersion)
+  let comparedCode = await displaySourceCode(versionToCompare)
+  let left, right
+  if(isComparingToLaterVersion) {
+    // left : current, right: later
+    left = currentCode.data
+    right = comparedCode.data
+  } else {
+    right = currentCode.data
+    left = comparedCode.data
+  }
+  let mergeView = CodeMirror.MergeView(document.getElementById('view'), {
+    mode: 'text/x-java',
+    theme: 'eclipse',
+    value: right,
+    origLeft: left,
+    lineNumbers: true,
+    lineWrapping: true,
+    showDifferences: true
+  })
+}
+
+const displaySourceCode = async (version) => {
+  const index = version.lastIndexOf('-')
+  const systemName = version.slice(11, index)
+  const commitId = version.slice(index + 1)
   let className = selectedClass
   // handle inner class
   if(selectedClass.indexOf('$') !== -1) {
     className = className.slice(0, selectedClass.indexOf('$'))
   }
   const filePath = className.split('.').join('/') + '.java'
-  const path = await getPath(selectedVersion, selectedClass)
+  const path = await getPath(version, selectedClass)
   var packagePath = path.data.path
   var username = path.data.username
   var url = `https://raw.githubusercontent.com/${username}/${systemName}/${commitId}/${packagePath}/${filePath}`
@@ -381,12 +418,16 @@ const resetTools = () => {
 
   filterRoleList = ['Controller', 'Coordinator', 'Information Holder', 'Interfacer', 'Service Provider', 'Structurer']
 
+  // code dialog
+  document.querySelector('#sourceCode').classList.remove('view')
+  codeViewingOption = 'single'
+  document.getElementById('view').innerHTML = ''
+
   // compare dialog
-  // emptyCompareList()
+  emptyCompareList()
 
   // pattern dialog
-  // document.querySelector('.chart-div').innerHTML = ''
-
+  document.querySelector('.chart-div').innerHTML = ''
 }
 
 const emptyCompareList = () => {

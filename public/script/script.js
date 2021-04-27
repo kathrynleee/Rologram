@@ -295,7 +295,7 @@ const initGraph = async (version, pkg, cls) => {
         createTimeline(selectedClass)
     }
     if(!document.querySelector('#sourceCode').classList.contains('hide')) {
-        showSourceCode()
+        showSourceCode('single')
     }
     createInfo()
     resetTools()

@@ -4,6 +4,7 @@ const showCompareDialog = () => {
   setVisible('#compare', true, false)
   setVisible('.close', true, false)
   moveGraph()
+  createSelect()
 }
 
 const switchChangeListView = (type) => {
@@ -139,16 +140,15 @@ const createRoleChangedListItem = (data, versionToCompare, isComparingToLaterVer
 const createChangeList = (data, versionToCompare, isComparingToLaterVersion) => {
   // update list count
   let status, addedCount = 0, removedCount = 0, changedCount = 0
+  changedCount = data.changedRoles.length
   if(data.nodes.inCurrent.length > 0) {
     status = data.nodes.inCurrent[0].data.status
     addedCount = (status === 'added') ? data.nodes.inCurrent.length : data.nodes.inCompared.length
     removedCount = (status === 'removed') ? data.nodes.inCurrent.length : data.nodes.inCompared.length
-    changedCount = data.changedRoles.length
   } else if(data.nodes.inCompared.length > 0) {
     status = data.nodes.inCompared[0].data.status
     addedCount = (status === 'added') ? data.nodes.inCompared.length : data.nodes.inCurrent.length
     removedCount = (status === 'removed') ? data.nodes.inCompared.length : data.nodes.inCurrent.length
-    changedCount = data.changedRoles.length
   }
   document.querySelector('.list-view.all .count').textContent = addedCount + removedCount + changedCount
   document.querySelector('.list-view.removed .count').textContent = removedCount
@@ -344,6 +344,8 @@ const showChanges = async (currentVersion, versionToCompare) => {
 
   if(level === 'class') {
     cy.$id(selectedClass).addClass('selected')
+    codeViewingOption = 'compare'
+    updateCodeView(currentVersion, versionToCompare, isComparingToLaterVersion)
   }
   cy.endBatch()
   document.querySelector('[data-option="hideLabels"]').classList.add('selected-option')

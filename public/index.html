@@ -48,6 +48,10 @@
         <!-- <script src="../lib/cytoscape/cytoscape-elk.js"></script> -->
         <!-- <script src="https://cdn.jsdelivr.net/npm/elkjs@0.7.0/lib/elk.bundled.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/cytoscape-elk@2.0.2/dist/cytoscape-elk.min.js"></script> -->
+        <!-- diff -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.61.0/addon/merge/merge.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.61.0/addon/merge/merge.min.css" />
 
     </head>
     <body>
@@ -173,6 +177,7 @@
             <div class="code">
                 <textarea id="editor"></textarea>
             </div>
+            <div id="view"></div>
             <div class="message not-found hide"></div>
         </div>
         <div id="history" class="hide dialog animate__animated animate__slideInRight">
