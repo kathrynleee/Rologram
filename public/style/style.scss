@@ -303,7 +303,7 @@ body {
 }
 
 #sourceCode {
-  width: 80vw;
+  width: 70vw;
   @extend %center;
   .code {
     height: 100%;
@@ -320,6 +320,7 @@ body {
     }
   }
   &.view {
+    border: 0;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
