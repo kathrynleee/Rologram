@@ -428,7 +428,9 @@ const resetTools = () => {
   emptyCompareList()
 
   // pattern dialog
-  document.querySelector('.chart-div').innerHTML = ''
+  // empty chart and update ranking lists
+  empty(['.chart-div'])
+  updateRankingList()
 }
 
 const emptyCompareList = () => {

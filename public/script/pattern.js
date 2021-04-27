@@ -171,19 +171,9 @@ const createChart = async (results) => {
 }
 
 const switchPatternTab = (option) => {
-  // empty chart, common patterns and ranking lists
+  // empty chart and common patterns
   empty(['.chart-div', '.common-pattern-div'])
-  let levelOneListElement = document.querySelector('.level-one .ranking-list')
-  if(levelOneListElement != null) {
-    levelOneListElement.parentNode.removeChild(levelOneListElement)
-  }
-  let levelTwoListElement = document.querySelector('.level-two .ranking-list')
-  if(levelTwoListElement != null) {
-    levelTwoListElement.parentNode.removeChild(levelTwoListElement)
-  }
-  // update arrow
-  document.querySelector('.level-one .ranking-level-icon').textContent = 'keyboard_arrow_down'
-  document.querySelector('.level-two .ranking-level-icon').textContent = 'keyboard_arrow_down'
+
   // add class to selected tab
   document.querySelector('.pattern-tabs .selected-pattern-tab').classList.remove('selected-pattern-tab')
   document.querySelector(`.pattern-tabs .${option}`).classList.add('selected-pattern-tab')
@@ -199,6 +189,19 @@ const switchPatternTab = (option) => {
 }
 
 const updateRankingList = () => {
+  // reset ranking lists
+  let levelOneListElement = document.querySelector('.level-one .ranking-list')
+  if(levelOneListElement != null) {
+    levelOneListElement.parentNode.removeChild(levelOneListElement)
+  }
+  let levelTwoListElement = document.querySelector('.level-two .ranking-list')
+  if(levelTwoListElement != null) {
+    levelTwoListElement.parentNode.removeChild(levelTwoListElement)
+  }
+  // update arrow
+  document.querySelector('.level-one .ranking-level-icon').textContent = 'keyboard_arrow_down'
+  document.querySelector('.level-two .ranking-level-icon').textContent = 'keyboard_arrow_down'
+  // create ranking lists
   axios.get(`/api/data/pattern/2/${selectedVersion}`)
     .then((res) => {
       createRankingList('.level-one', res.data)
