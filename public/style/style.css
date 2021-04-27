@@ -307,6 +307,7 @@ body ::-webkit-scrollbar-thumb {
 }
 #sourceCode.view {
   width: 100vw;
+  height: 100vh;
   overflow: hidden;
 }
 #sourceCode.view #view {
@@ -314,7 +315,7 @@ body ::-webkit-scrollbar-thumb {
   height: 100%;
 }
 #sourceCode.view #view .CodeMirror-merge {
-  height: 100vh;
+  height: 100%;
 }
 #sourceCode.view #view .CodeMirror-merge .CodeMirror {
   height: 100vh;

@@ -73,7 +73,8 @@ const updateCodeView = async (currentVersion, versionToCompare, isComparingToLat
     origLeft: left,
     lineNumbers: true,
     lineWrapping: true,
-    showDifferences: true
+    showDifferences: true,
+    autoRefresh: true
   })
 }
 

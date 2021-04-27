@@ -4,7 +4,6 @@ const showCompareDialog = () => {
   setVisible('#compare', true, false)
   setVisible('.close', true, false)
   moveGraph()
-  createSelect()
 }
 
 const switchChangeListView = (type) => {
