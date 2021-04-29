@@ -149,7 +149,7 @@ const createTimeline = async (selected) => {
             } else {
                 element.style['background-color'] = roleMap.get(node.role)
                 span.addEventListener('click', () => {
-                    initGraph(v, selectedPackage, selectedClass, 'hideLabels')
+                    initGraph(v, selectedPackage, selectedClass, currentLabelVisibility)
                 })
             }
         } else {
@@ -175,7 +175,7 @@ const createTimeline = async (selected) => {
             }
             if(list !== undefined) {
                 span.addEventListener('click', () => {
-                    initGraph(v, selectedPackage, selectedClass, 'hideLabels')
+                    initGraph(v, selectedPackage, selectedClass, currentLabelVisibility)
                 })
             }
             if(level === 'package') {
