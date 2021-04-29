@@ -11,7 +11,7 @@ const switchChangeListView = (type) => {
   setVisible('.change-lists .change-list-group', false, true)
   setVisible('.change-lists .change-list', false, true)
   cy.startBatch()
-  cy.elements().removeClass(['hide', 'showLabel'])
+  cy.elements().removeClass('hide')
   cy.endBatch()
   cy.startBatch()
   switch(type) {
@@ -59,11 +59,26 @@ const toggleChangeList = (name) => {
 }
 
 const clickChangeListItem = (id) => {
-  cy.fit()
-  cy.nodes('.showLabel').removeClass('showLabel')
-  cy.$id(id).addClass('showLabel')
-  cy.center(cy.$id(id))
-  // moveGraph()
+  if(level == 'system') {
+    cy.nodes('.showLabel').removeClass('showLabel')
+    cy.$id(id).addClass('showLabel')
+  }
+  if(level == 'class' && cy.$id(id).hasClass('hide')) {
+    cy.startBatch()
+    cy.elements().removeClass('hide')
+    cy.nodes('.changedRole').addClass('faded')
+    cy.endBatch()
+    let layout = cy.layout(currentLayoutOptions).run()
+    layout.promiseOn('layoutstop').then(e => {
+      cy.zoom(1.3)
+      cy.center(cy.$id(id))
+    })
+    layout.run()
+  } else {
+    cy.fit()
+    cy.zoom(1.3)
+    cy.center(cy.$id(id))
+  }
 }
 
 const createListItem = (data) => {
@@ -343,12 +358,11 @@ const showChanges = async (currentVersion, versionToCompare) => {
 
   if(level === 'class') {
     cy.$id(selectedClass).addClass('selected')
-    codeViewingOption = 'compare'
+    // codeViewingOption = 'compare'
     updateCodeView(currentVersion, versionToCompare, isComparingToLaterVersion)
+    setVisible('.code-compare', true, false)
   }
   cy.endBatch()
-  document.querySelector('[data-option="hideLabels"]').classList.add('selected-option')
-  document.querySelector('[data-option="showLabels"]').className = ''
   if(level == 'system') {
     updateGraph('hideLabels')
   } else if(level == 'package') {

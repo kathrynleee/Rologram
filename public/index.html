@@ -94,7 +94,7 @@
                         <div class="material-icons">pattern</div>
                         <div class="icon-text">Pattern</div>
                     </div>
-                    <div class="icon" data-text="Code" onclick="closeOpenedDialog(); showSourceCode();">
+                    <div class="icon" data-text="Code" onclick="closeOpenedDialog(); showSourceCode('single');">
                         <div class="material-icons">code</div>
                         <div class="icon-text">Code</div>
                     </div>
@@ -175,6 +175,7 @@
             </div>
         </div>
         <div id="sourceCode" class="hide dialog animate__animated animate__slideInRight">
+            <div class="close-code hide material-icons animate__animated animate__slideInRight" onclick="closeSourceCode()">close</div>
             <div class="code">
                 <textarea id="editor"></textarea>
             </div>
@@ -193,6 +194,9 @@
             </div>
         </div>
         <div id="compare" class="hide dialog animate__animated animate__slideInRight">
+            <div class="code-compare hide" onclick="showSourceCode('compare')">
+                <div>Code Diff</div>
+            </div>
             <div id="version-select">
                 <div class="version-select-div flex-row" onclick="createSelect()">
                     <div class="version-select-text">Select version to compare</div>

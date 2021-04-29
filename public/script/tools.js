@@ -7,10 +7,14 @@ const moveGraph = () => {
   cy.panBy({ x: -200, y: 0 })
 }
 
-let codeViewingOption = 'single'
-const showSourceCode = async () => {
+const closeSourceCode = () => {
+  setVisible('#sourceCode', false, false)
+}
+
+// let codeViewingOption = 'single'
+const showSourceCode = async (codeViewingOption) => {
   moveGraph()
-  setVisible('.close', true, false)
+  setVisible('.close-code', true, false)
   setVisible('#sourceCode', true, false)
   setVisible('#sourceCode .code', false, false)
   if(level !== 'class') {
@@ -74,7 +78,8 @@ const updateCodeView = async (currentVersion, versionToCompare, isComparingToLat
     lineNumbers: true,
     lineWrapping: true,
     showDifferences: true,
-    autoRefresh: true
+    autoRefresh: true,
+    readOnly: true
   })
 }
 
@@ -105,6 +110,7 @@ const showTools = () => {
 const closeOpenedDialog = () => {
   setVisible('.dialog', false, true)
   setVisible('.close', false, false)
+  setVisible('.close-code', false, false)
   cy.fit()
 }
 
@@ -421,11 +427,12 @@ const resetTools = () => {
 
   // code dialog
   document.querySelector('#sourceCode').classList.remove('view')
-  codeViewingOption = 'single'
+  // codeViewingOption = 'single'
   document.getElementById('view').innerHTML = ''
 
   // compare dialog
   emptyCompareList()
+  setVisible('.code-compare', false, false)
 
   // pattern dialog
   // empty chart and update ranking lists

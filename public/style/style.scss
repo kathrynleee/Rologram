@@ -268,7 +268,7 @@ body {
   }
 }
 
-.close {
+.close, .close-code {
   position: fixed;
   cursor: pointer;
   top: 20px;
@@ -303,6 +303,7 @@ body {
 }
 
 #sourceCode {
+  z-index: 9999;
   width: 70vw;
   @extend %center;
   .code {
@@ -563,6 +564,20 @@ body {
   min-width: 500px;
   @media screen and (max-width: 600px) {
     font-size: 12px;
+  }
+  .code-compare {
+    position: absolute;
+    top: 30px;
+    right: 70px;
+    padding: 10px;
+    width: fit-content;
+    cursor: pointer;
+    font-size: 12px;
+    border: 2px solid $black;
+    box-shadow: 2px 2px;
+    &:hover {
+      background-color: $bg-color;
+    }
   }
   #version-select {
     padding: 20px;
