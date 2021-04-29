@@ -149,7 +149,7 @@ const createTimeline = async (selected) => {
             } else {
                 element.style['background-color'] = roleMap.get(node.role)
                 span.addEventListener('click', () => {
-                    initGraph(v, selectedPackage, selectedClass)
+                    initGraph(v, selectedPackage, selectedClass, 'hideLabels')
                 })
             }
         } else {
@@ -175,7 +175,7 @@ const createTimeline = async (selected) => {
             }
             if(list !== undefined) {
                 span.addEventListener('click', () => {
-                    initGraph(v, selectedPackage, selectedClass)
+                    initGraph(v, selectedPackage, selectedClass, 'hideLabels')
                 })
             }
             if(level === 'package') {
@@ -219,7 +219,7 @@ const createGraph = async () => {
             this.on('tap', async (e)  => {
                 const target = e.target
                 if (target === cy) {
-                    initGraph(selectedVersion, '', '')
+                    initGraph(selectedVersion, '', '', 'hideLabels')
                 }
             })
             this.on('tap', 'node', async (e) => {
@@ -228,9 +228,9 @@ const createGraph = async () => {
                 const version = target._private.data.version
                 selectedVersion = version
                 if(target.isParent()) {
-                    initGraph(selectedVersion, id, '')
+                    initGraph(selectedVersion, id, '', 'showLabels')
                 } else {
-                    initGraph(selectedVersion, '', id)
+                    initGraph(selectedVersion, '', id, 'showLabels')
                 }
             })
             this.on('tapdragover', 'node', (e) => {
@@ -261,7 +261,7 @@ const createGraph = async () => {
     })
 }
 
-const initGraph = async (version, pkg, cls) => {
+const initGraph = async (version, pkg, cls, labelVisibility) => {
     const elements = await getElements(version)
     versionElements = elements.data
     cy.remove(cy.elements())
@@ -299,7 +299,7 @@ const initGraph = async (version, pkg, cls) => {
     }
     createInfo()
     resetTools()
-    updateGraph()
+    updateGraph(labelVisibility)
 }
 
 const runlayout = () => {
@@ -320,26 +320,39 @@ const runlayout = () => {
     // })
 }
 
-const updateGraph = () => {
+const updateGraph = (labelVisibility) => {
+    document.querySelector('[data-option="hideLabels"]').className = ''
+    document.querySelector('[data-option="showLabels"]').className = ''
+    document.querySelector(`[data-option="${labelVisibility}"]`).classList.add('selected-option')
     switch(level) {
         case 'system':
-            cy.layout(currentLayoutOptions).run()
+            updateSystemGraph(labelVisibility)
             break
         case 'package':
-            updatePackageGraph()
+            updatePackageGraph(labelVisibility)
             break
         case 'class':
-            updateClassGraph(1, 'all', false, 'showLabels')
+            updateClassGraph(1, 'all', false, labelVisibility)
             break
     }
+}
+
+const updateSystemGraph = (labelVisibility) => {
+    cy.startBatch()
+    // decide nodes label visibility
+    currentLabelVisibility = labelVisibility
+    if(labelVisibility === 'showLabels') {
+        cy.nodes().addClass('showLabel')
+    } else {
+        cy.nodes().removeClass('showLabel')
+    }
+    cy.endBatch()
+    cy.layout(currentLayoutOptions).run()
 }
 
 const updateClassGraph = (dependencyLevel, edgeType, created, labelVisibility) => {
     document.querySelector('.dep-level .selected-option').classList.remove('selected-option')
     document.querySelector(`[data-option="${dependencyLevel}"]`).classList.add('selected-option')
-    document.querySelector('[data-option="hideLabels"]').className = ''
-    document.querySelector('[data-option="showLabels"]').className = ''
-    document.querySelector(`[data-option="${labelVisibility}"]`).classList.add('selected-option')
     const target = cy.$id(selectedClass).addClass('selected')
     cy.startBatch()
     cy.elements().removeClass(['hide', 'showLabel'])
@@ -400,13 +413,23 @@ const updateClassGraph = (dependencyLevel, edgeType, created, labelVisibility) =
     cy.nodes().unlock()
 }
 
-const updatePackageGraph = () => {
+const updatePackageGraph = (labelVisibility) => {
+    document.querySelector('[data-option="hideLabels"]').className = ''
+    document.querySelector('[data-option="showLabels"]').className = ''
+    document.querySelector(`[data-option="${labelVisibility}"]`).classList.add('selected-option')
     cy.startBatch()
     let target = cy.$id(selectedPackage)
     let nodes = target.descendants().neighborhood().union(target.descendants())
     let parents = nodes.ancestors()
     let edges = nodes.connectedEdges()
     cy.remove(cy.elements().not(nodes).not(parents).not(edges))
+    // decide nodes label visibility
+    currentLabelVisibility = labelVisibility
+    if(labelVisibility === 'showLabels') {
+        cy.nodes().addClass('showLabel')
+    } else {
+        cy.nodes().removeClass('showLabel')
+    }
     cy.endBatch()
     cy.layout(currentLayoutOptions).run()
 }

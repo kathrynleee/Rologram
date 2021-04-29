@@ -98,7 +98,7 @@ const applyPattern = async(level, options) => {
   }
   cy.remove(cy.elements())
   setVisible('.loader', true, false)
-  await initGraph(selectedVersion, '', '')
+  await initGraph(selectedVersion, '', '', 'showLabels')
   axios.post('/api/data/pattern', { level: level, options: options })
     .then((res) => {
       createChart(res.data)
@@ -257,10 +257,11 @@ const createRankingList = (element, data) => {
 
 const createCommonPatterns = () => {
   let commonPatternList = 
-  [[['Interfacer'], ['Controller'], ['Information Holder']],
-  [['Interfacer'], ['Controller'], ['Service Provider']],
-  [['Controller'], ['Coordinator'], ['Service Provider']],
-  [['Controller'], ['Coordinator'], ['Information Holder']]]
+  [
+    [['Interfacer'], ['Controller'], ['Information Holder']],
+    [['Coordinator'], ['Interfacer'], ['Service Provider']],
+    [['Interfacer'], ['Service Provider'], ['Information Holder']]
+  ]
   let parentDiv = document.querySelector('.common-pattern-div')
   commonPatternList.forEach(ele => {
     let rowDiv = document.createElement('div')

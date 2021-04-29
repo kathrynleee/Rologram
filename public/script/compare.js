@@ -349,10 +349,12 @@ const showChanges = async (currentVersion, versionToCompare) => {
   cy.endBatch()
   document.querySelector('[data-option="hideLabels"]').classList.add('selected-option')
   document.querySelector('[data-option="showLabels"]').className = ''
-  if(level !== 'class') {
-    updateGraph()
+  if(level == 'system') {
+    updateGraph('hideLabels')
+  } else if(level == 'package') {
+    updateGraph('showLabels')
   } else {
-    updateClassGraph(3, 'all', false, 'hideLabels')
+    updateClassGraph(1, 'all', false, 'showLabels')
   }
   moveGraph()
   // if(!isStarted) { // not updating change list when calling this function for animation
