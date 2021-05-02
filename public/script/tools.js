@@ -94,10 +94,10 @@ const displaySourceCode = async (version) => {
   }
   const filePath = className.split('.').join('/') + '.java'
   const path = await getPath(version, selectedClass)
-  var packagePath = path.data.path
-  var username = path.data.username
-  var url = `https://raw.githubusercontent.com/${username}/${systemName}/${commitId}/${packagePath}/${filePath}`
-  var code = await getSourceCode(url)
+  let packagePath = path.data.path
+  let username = path.data.username
+  let url = `https://raw.githubusercontent.com/${username}/${systemName}/${commitId}/${packagePath}/${filePath}`
+  let code = await getSourceCode(url)
   return code
 }
 
@@ -387,11 +387,26 @@ const toggleChangedClassHightlight = (option) => {
       list.forEach(ele => {
         cy.$id(ele).addClass('highlight')
       })
+      // flash the border ten times and stop
+      _.times(10, () => {
+        cy.nodes('.highlight')
+          .animate({
+            style: { 'border-opacity': '0' }
+          })
+          .delay(500)
+          .animate({
+            style: { 'border-opacity': '1' }
+          })
+      })
+      setTimeout(function(){
+        toggleChangedClassHightlight('highlightOff')
+      }, 15000)
     })
   } else {
     cy.nodes().removeClass('highlight')
   }
 }
+
 const resetTools = () => {
   // closeOpenedDialog()
   // tool dialog

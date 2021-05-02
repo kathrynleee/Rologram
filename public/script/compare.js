@@ -228,6 +228,7 @@ const createSelect = async () => {
       let commitDateDiv = document.createElement('div')
       commitDateDiv.className = 'commit-date'
       commitDateDiv.textContent = 'on ' + version.slice(0, 10)
+      // append to DOM
       let optionDiv = document.createElement('div')
       optionDiv.appendChild(commitIconDiv)
       optionDiv.appendChild(commitIdDiv)

@@ -91,6 +91,12 @@ router.get('/elements/:version', (req, res) => {
   res.json(getDataByVersion(version))
 })
 
+// return commit message of specific version
+// router.get('/message/:version', (req, res) => {
+//   var version = req.params.version
+//   res.json(getCommitMessage(version))
+// })
+
 // return list of role changed classes for specific version
 router.get('/roleChanged/:version', (req, res) => {
   var version = req.params.version
@@ -760,5 +766,9 @@ const getRoleChangedClasses = (version) => {
   })
   return list
 }
+
+// const getCommitMessage = (version) => {
+  
+// }
 
 module.exports = router
