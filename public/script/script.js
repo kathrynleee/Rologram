@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const versions = await getVersions()
     const versionIndex = versions.data.length - 1
     selectedVersion = versions.data[versionIndex]
-    createTimeline(selectedVersion)
+    createTimeline()
     createGraph()
     createLegend()
     createInfo()
@@ -118,7 +118,7 @@ const createInfo = async () => {
     setVisible('#info', true, false)
 }
 
-const createTimeline = async (selected) => {
+const createTimeline = async () => {
     // remove existing timeline
     let timeline = document.querySelector('.roles')
     if(timeline != null) {
@@ -127,11 +127,11 @@ const createTimeline = async (selected) => {
     const versions = await getVersions()
     let roleList = []
     if(level === 'system') {
-        roleList = await getSystemRoleList(selected)
+        roleList = await getSystemRoleList(selectedVersion)
     } else if(level === 'package') {
-        roleList = await getPackageRoleList(selected)
+        roleList = await getPackageRoleList(selectedPackage)
     } else if(level === 'class') {
-        roleList = await getClassRoleList(selected)
+        roleList = await getClassRoleList(selectedClass)
     }
     let element, span, text
     let lastDiv = document.createElement('div')
@@ -149,7 +149,13 @@ const createTimeline = async (selected) => {
             } else {
                 element.style['background-color'] = roleMap.get(node.role)
                 span.addEventListener('click', () => {
-                    initGraph(v, selectedPackage, selectedClass, currentLabelVisibility)
+                    if(timelineOption == 'switchVersion') {
+                        initGraph(v, selectedPackage, selectedClass, currentLabelVisibility)
+                    } else {
+                        if(selectedVersion !== v) {
+                            showChanges(selectedVersion, v)
+                        }
+                    }
                 })
             }
         } else {
@@ -175,7 +181,13 @@ const createTimeline = async (selected) => {
             }
             if(list !== undefined) {
                 span.addEventListener('click', () => {
-                    initGraph(v, selectedPackage, selectedClass, currentLabelVisibility)
+                    if(timelineOption == 'switchVersion') {
+                        initGraph(v, selectedPackage, selectedClass, currentLabelVisibility)
+                    } else {
+                        if(selectedVersion !== v) {
+                            showChanges(selectedVersion, v)
+                        }
+                    }
                 })
             }
             if(level === 'package') {
@@ -275,14 +287,14 @@ const initGraph = async (version, pkg, cls, labelVisibility) => {
         document.querySelector('#info .package').textContent = ''
         document.querySelector('#info .class').textContent = ''
         addToHistory({ version: selectedVersion, package: '', class: '' })
-        createTimeline(selectedVersion)
+        // createTimeline(selectedVersion)
     } else if(cls === '') {
         level = 'package'
         document.querySelector('#info .package').textContent = selectedPackage
         document.querySelector('#info .class').textContent = ''
         document.querySelector('#info .class-id').classList.add('show')
         addToHistory({ version: selectedVersion, package: selectedPackage, class: '' })
-        createTimeline(selectedPackage)
+        // createTimeline(selectedPackage)
     } else {
         level = 'class'
         let target = cy.$id(selectedClass)
@@ -292,8 +304,9 @@ const initGraph = async (version, pkg, cls, labelVisibility) => {
         document.querySelector('#info .class').textContent = className
         document.querySelector('#info .class-id').classList.add('show')
         addToHistory({ version: selectedVersion, package: target._private.data.parent, class: className })
-        createTimeline(selectedClass)
+        // createTimeline(selectedClass)
     }
+    createTimeline()
     if(!document.querySelector('#sourceCode').classList.contains('hide')) {
         showSourceCode('single')
     }

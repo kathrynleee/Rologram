@@ -212,45 +212,51 @@ const createSelect = async () => {
       const roleList = await getClassRoleList(selectedClass)
       versionList = _.map(roleList.data, 'version')
     }
-    versionList = _.remove(versionList, v => v !== selectedVersion)
+    // versionList = _.remove(versionList, v => v !== selectedVersion)
     versionList.forEach(version => {
-      let option = document.createElement('div')
-      option.className = 'version-option'
-      // commit icon
-      let commitIconDiv = document.createElement('div')
-      commitIconDiv.innerHTML = '<img src="../image/git-commit.png">'
-      // commit id
-      let commitIdDiv = document.createElement('div')
-      commitIdDiv.className = 'commit-id'
-      let index = version.lastIndexOf('-')
-      commitIdDiv.textContent = version.slice(index + 1, index + 8)
-      // commit date
-      let commitDateDiv = document.createElement('div')
-      commitDateDiv.className = 'commit-date'
-      commitDateDiv.textContent = 'on ' + version.slice(0, 10)
-      // append to DOM
-      let optionDiv = document.createElement('div')
-      optionDiv.appendChild(commitIconDiv)
-      optionDiv.appendChild(commitIdDiv)
-      optionDiv.appendChild(commitDateDiv)
-      optionDiv.className = 'version-option-div'
-      option.appendChild(optionDiv)
-      option.addEventListener('click', () => {
-        document.querySelector('#compare .version-selected').innerHTML = ''
-        let div = optionDiv.cloneNode(true)
-        document.querySelector('#compare .version-selected').appendChild(div)
-        element.classList.add('closed')
-        document.querySelector('#compare .version-select-icon').textContent = 'keyboard_arrow_down'
-        document.querySelector('.list-view-options .selected-view').classList.remove('selected-view')
-        setVisible('#compare .version-select-text', false, false)
-        setVisible('#compare .version-options-list', false, false)
-        showChanges(selectedVersion, version)
-        document.querySelector('.list-view-options .all').classList.add('selected-view')
-        setVisible('#compare .list-view-options', true, false)
-        clearChangeLists()
-        resetListIcon()
-      })
-      element.appendChild(option)
+      if(version == selectedVersion) {
+        let option = document.createElement('div')
+        option.className = 'current-version-divider'
+        element.appendChild(option)
+      } else {
+        let option = document.createElement('div')
+        option.className = 'version-option'
+        // commit icon
+        let commitIconDiv = document.createElement('div')
+        commitIconDiv.innerHTML = '<img src="../image/git-commit.png">'
+        // commit id
+        let commitIdDiv = document.createElement('div')
+        commitIdDiv.className = 'commit-id'
+        let index = version.lastIndexOf('-')
+        commitIdDiv.textContent = version.slice(index + 1, index + 8)
+        // commit date
+        let commitDateDiv = document.createElement('div')
+        commitDateDiv.className = 'commit-date'
+        commitDateDiv.textContent = 'on ' + version.slice(0, 10)
+        // append to DOM
+        let optionDiv = document.createElement('div')
+        optionDiv.appendChild(commitIconDiv)
+        optionDiv.appendChild(commitIdDiv)
+        optionDiv.appendChild(commitDateDiv)
+        optionDiv.className = 'version-option-div'
+        option.appendChild(optionDiv)
+        option.addEventListener('click', () => {
+          document.querySelector('#compare .version-selected').innerHTML = ''
+          let div = optionDiv.cloneNode(true)
+          document.querySelector('#compare .version-selected').appendChild(div)
+          element.classList.add('closed')
+          document.querySelector('#compare .version-select-icon').textContent = 'keyboard_arrow_down'
+          document.querySelector('.list-view-options .selected-view').classList.remove('selected-view')
+          setVisible('#compare .version-select-text', false, false)
+          setVisible('#compare .version-options-list', false, false)
+          showChanges(selectedVersion, version)
+          document.querySelector('.list-view-options .all').classList.add('selected-view')
+          setVisible('#compare .list-view-options', true, false)
+          clearChangeLists()
+          resetListIcon()
+        })
+        element.appendChild(option)
+      }
     })
     document.querySelector('.version-select-icon').textContent = 'keyboard_arrow_up'
     setVisible('.version-options-list', true, false)
@@ -376,6 +382,7 @@ const showChanges = async (currentVersion, versionToCompare) => {
   clearChangeLists()
   createIndicators(versionToCompare, 'COMPARE')
   createChangeList(changes.data, versionToCompare, isComparingToLaterVersion)
+  resetListIcon()
   setVisible('.change-lists', true, false)
   setVisible('.change-lists .change-list-group', true, true)
   setVisible('.change-lists .change-list', false, true)

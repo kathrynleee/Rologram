@@ -73,8 +73,15 @@
                     <div class="class"></div>
                 </div>
             </div>
-            <div class="timeline">
-                <div class="roles"></div>
+            <div class="timeline-div">
+                <label class="toggle-timeline">
+                    <input type="checkbox"  onclick="toggleTimeline()">
+                    <span class="switch-left"><span class="material-icons">compare</span></span>
+                    <span class="switch-right"><span class="material-icons">east</span></span>
+                </label>
+                <div class="timeline">
+                    <div class="roles"></div>
+                </div>
             </div>
             <div class="menu">
                 <div class="icons animate__animated animate__slideInRight">
@@ -103,11 +110,11 @@
                         <div class="icon-text">History</div>
                     </div>
                     <div class="icon" data-text="Download" onclick="download()">
-                        <div class="material-icons">image</div>
+                        <div class="material-icons">crop_original</div>
                         <div class="icon-text">Download</div>
                     </div>
                     <div class="icon" data-text="Guide" onclick="closeOpenedDialog(); showGuide();">
-                        <div class="material-icons">info</div>
+                        <div class="material-icons">help_outline</div>
                         <div class="icon-text">Guide</div>
                     </div>
                 </div>

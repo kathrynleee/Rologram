@@ -1,8 +1,8 @@
-#pattern .ranking-pattern-div .ranking-pattern-row .ranking-pattern, #pattern .ranking-pattern-div .ranking-pattern-row, #pattern .ranking-pattern-div .ranking-level-toggle, #pattern .common-pattern-div .common-pattern-row, #pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons, #pattern .pattern-role, #pattern .pattern-group, #pattern .pattern-tabs, #compare .change-list-div .change-list .change-list-row, #compare .change-list-div .change-list-group, #compare .list-view-options .list-view, #compare .list-view-options, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #legend .legend-role, #legend, #tools .tool-row .tool-row-items, #history .history-row .history-commit, #history .history-header, #info .class-id, #info .commit, .flex-row {
+#pattern .ranking-pattern-div .ranking-pattern-row .ranking-pattern, #pattern .ranking-pattern-div .ranking-pattern-row, #pattern .ranking-pattern-div .ranking-level-toggle, #pattern .common-pattern-div .common-pattern-row, #pattern .pattern-buttons .apply-cancel, #pattern .pattern-buttons, #pattern .pattern-role, #pattern .pattern-group, #pattern .pattern-tabs, #compare .change-list-div .change-list .change-list-row, #compare .change-list-div .change-list-group, #compare .list-view-options .list-view, #compare .list-view-options, #compare #version-select .version-option-div, #compare #version-select .version-select-div, #legend .legend-role, #legend, #tools .tool-row .tool-row-items, #history .history-row .history-commit, #history .history-header, .timeline-div, #info .class-id, #info .commit, .flex-row {
   display: flex;
   flex-direction: row;
 }
-#pattern .ranking-pattern-div .ranking-pattern-row .hide.ranking-pattern, #pattern .ranking-pattern-div .hide.ranking-pattern-row, #pattern .ranking-pattern-div .hide.ranking-level-toggle, #pattern .common-pattern-div .hide.common-pattern-row, #pattern .pattern-buttons .hide.apply-cancel, #pattern .hide.pattern-buttons, #pattern .hide.pattern-role, #pattern .hide.pattern-group, #pattern .hide.pattern-tabs, #compare .change-list-div .change-list .hide.change-list-row, #compare .change-list-div .hide.change-list-group, #compare .list-view-options .hide.list-view, #compare .hide.list-view-options, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, #legend .hide.legend-role, .hide#legend, #tools .tool-row .hide.tool-row-items, #history .history-row .hide.history-commit, #history .hide.history-header, #info .hide.class-id, #info .hide.commit, .hide.flex-row {
+#pattern .ranking-pattern-div .ranking-pattern-row .hide.ranking-pattern, #pattern .ranking-pattern-div .hide.ranking-pattern-row, #pattern .ranking-pattern-div .hide.ranking-level-toggle, #pattern .common-pattern-div .hide.common-pattern-row, #pattern .pattern-buttons .hide.apply-cancel, #pattern .hide.pattern-buttons, #pattern .hide.pattern-role, #pattern .hide.pattern-group, #pattern .hide.pattern-tabs, #compare .change-list-div .change-list .hide.change-list-row, #compare .change-list-div .hide.change-list-group, #compare .list-view-options .hide.list-view, #compare .hide.list-view-options, #compare #version-select .hide.version-option-div, #compare #version-select .hide.version-select-div, #legend .hide.legend-role, .hide#legend, #tools .tool-row .hide.tool-row-items, #history .history-row .hide.history-commit, #history .hide.history-header, .hide.timeline-div, #info .hide.class-id, #info .hide.commit, .hide.flex-row {
   display: none;
 }
 
@@ -585,11 +585,15 @@ body ::-webkit-scrollbar-thumb {
     transform: none;
   }
 }
-#compare #version-select .version-options-list .version-option {
+#compare #version-select .version-options-list .current-version-divider {
+  height: 5px;
+  background-color: #465054;
+}
+#compare #version-select .version-options-list .version-option, #compare #version-select .version-options-list .current-version-divider {
   width: 250px;
 }
 @media screen and (max-width: 600px) {
-  #compare #version-select .version-options-list .version-option {
+  #compare #version-select .version-options-list .version-option, #compare #version-select .version-options-list .current-version-divider {
     width: 200px;
   }
 }
@@ -933,6 +937,103 @@ body ::-webkit-scrollbar-thumb {
 }
 #guide .swiper-container .swiper-pagination.swiper-pagination-progressbar .swiper-pagination-progressbar-fill {
   background-color: #465054;
+}
+
+.toggle-timeline {
+  display: inline-block;
+  position: relative;
+  font-size: 0.75em;
+  width: 7em;
+  height: 3.5em;
+  overflow: hidden;
+  border-bottom: 0.5em solid #eee;
+}
+.toggle-timeline .material-icons {
+  color: white;
+}
+.toggle-timeline::before {
+  content: "";
+  position: absolute;
+  top: 0.5em;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #999;
+  border: 0.5em solid #eee;
+  border-bottom: 0;
+}
+.toggle-timeline input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.toggle-timeline .switch-left::before, .toggle-timeline .switch-right::before {
+  content: "";
+  position: absolute;
+  width: 0.37em;
+  height: 2.43em;
+  bottom: -0.4em;
+  background-color: #ccc;
+  transform: skewY(-65deg);
+}
+.toggle-timeline .switch-left, .toggle-timeline .switch-right {
+  cursor: pointer;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5em;
+  width: 2.85em;
+  transition: 0.2s;
+}
+.toggle-timeline .switch-left {
+  height: 2.44em;
+  left: 0.85em;
+  bottom: 0.4em;
+  background-color: #ddd;
+  transform: rotate(15deg) skewX(15deg);
+}
+.toggle-timeline .switch-left::before {
+  left: -0.4em;
+  bottom: -0.43em;
+  height: 2.45em;
+  width: 0.4em;
+}
+.toggle-timeline .switch-right {
+  right: 0.5em;
+  bottom: 0;
+  background-color: #465054;
+  color: white;
+}
+.toggle-timeline .switch-right::before {
+  right: -0.37em;
+  background-color: transparent;
+  transform: skewY(65deg);
+}
+.toggle-timeline input:checked + .switch-left {
+  background-color: #465054;
+  color: white;
+  bottom: 0px;
+  left: 0.5em;
+  height: 2.5em;
+  width: 3em;
+  transform: rotate(0deg) skewX(0deg);
+}
+.toggle-timeline input:checked + .switch-left::before {
+  background-color: transparent;
+  width: 3em;
+}
+.toggle-timeline input:checked + .switch-left + .switch-right {
+  background-color: #ddd;
+  color: #465054;
+  bottom: 0.4em;
+  right: 0.8em;
+  height: 2.43em;
+  width: 2.75em;
+  transform: rotate(-15deg) skewX(-15deg);
+}
+.toggle-timeline input:checked + .switch-left + .switch-right::before {
+  background-color: #ccc;
 }
 
 /*# sourceMappingURL=style.css.map */

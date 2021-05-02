@@ -296,6 +296,15 @@ const clearHistory = () => {
   empty(['#history-list'])
 }
 
+let timelineOption = 'switchVersion'
+const toggleTimeline = () => {
+  if(document.querySelector('.toggle-timeline input').checked) {
+    timelineOption = 'compareVersion'
+  } else {
+    timelineOption = 'switchVersion'
+  }
+}
+
 const changeLayout = (option) => {
   setVisible('.loader', true, false)
   currentLayoutName = option
