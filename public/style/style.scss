@@ -33,6 +33,29 @@ $structurer-color: #E6A1B2;
   }
 }
 
+%button {
+  padding: 10px;
+  width: fit-content;
+  cursor: pointer;
+  font-size: 12px;
+  border: 2px solid $black;
+  box-shadow: 2px 2px;
+  &:hover {
+    background-color: $bg-color;
+  }
+}
+
+%clear {
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 10px;
+  margin-right: 10px;
+  &:hover {
+    text-decoration: none;
+  }
+}
+
 .flex-row {
   @extend %flex-row;
 }
@@ -341,15 +364,21 @@ body {
 #history {
   .history-header {
     padding: 10px;
+    @extend %flex-row;
     .history-export {
-      width: fit-content;
-      padding: 10px;
-      font-size: 12px;
-      text-decoration: underline;
-      cursor: pointer;
-      &:hover {
-        text-decoration: none;
-      }
+      // width: fit-content;
+      // padding: 10px;
+      // font-size: 12px;
+      // text-decoration: underline;
+      // cursor: pointer;
+      // &:hover {
+      //   text-decoration: none;
+      // }
+      @extend %button;
+    }
+    .history-clear {
+      padding-left: 20px;
+      @extend %clear;
     }
     // .undo-redo {
     //   padding: 10px;
@@ -569,15 +598,7 @@ body {
     position: absolute;
     top: 30px;
     right: 70px;
-    padding: 10px;
-    width: fit-content;
-    cursor: pointer;
-    font-size: 12px;
-    border: 2px solid $black;
-    box-shadow: 2px 2px;
-    &:hover {
-      background-color: $bg-color;
-    }
+    @extend %button;
   }
   #version-select {
     padding: 20px;
@@ -878,25 +899,10 @@ body {
       @extend %flex-row;
       @extend %center;
       .cancel {
-        font-size: 12px;
-        text-decoration: underline;
-        cursor: pointer;
-        padding: 10px;
-        margin-right: 10px;
-        &:hover {
-          text-decoration: none;
-        }
+        @extend %clear;
       }
       .button {
-        padding: 10px;
-        width: fit-content;
-        cursor: pointer;
-        font-size: 12px;
-        border: 2px solid $black;
-        box-shadow: 2px 2px;
-        &:hover {
-          background-color: $bg-color;
-        }
+        @extend %button;
       }
     }
   }

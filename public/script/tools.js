@@ -291,6 +291,11 @@ const showHistory = () => {
   setVisible('.close', true, false)
 }
 
+const clearHistory = () => {
+  historyList = []
+  empty(['#history-list'])
+}
+
 const changeLayout = (option) => {
   setVisible('.loader', true, false)
   currentLayoutName = option
