@@ -256,7 +256,7 @@ body ::-webkit-scrollbar-thumb {
 }
 .timeline .roles .role .date:before {
   font-size: 10px;
-  width: 60px;
+  width: 80px;
   height: 50px;
   color: #465054;
   content: attr(data-date);
@@ -943,10 +943,11 @@ body ::-webkit-scrollbar-thumb {
   display: inline-block;
   position: relative;
   font-size: 0.75em;
-  width: 7em;
+  width: 7.2em;
   height: 3.5em;
   overflow: hidden;
   border-bottom: 0.5em solid #eee;
+  transform: scale(0.7);
 }
 .toggle-timeline .material-icons {
   color: white;
