@@ -262,9 +262,14 @@ const createHistoryRowElement = (data) => {
   element.setAttribute('data-class', data.class)
   element.addEventListener('click', () => {
     if(data.class !== '') {
-      initGraph(data.version, data.package, `${data.package}.${data.class}`)
+      // class level
+      initGraph(data.version, data.package, `${data.package}.${data.class}`, 'showLabels')
+    } else if(data.package !== '') {
+      //package level
+      initGraph(data.version, data.package, '', 'showLabels')
     } else {
-      initGraph(data.version, data.package, '')
+      // system level
+      initGraph(data.version, '', '', 'hideLabels')
     }
   })
   return element
