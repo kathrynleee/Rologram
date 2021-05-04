@@ -161,6 +161,7 @@ class Compare {
       dom.setVisible('.role-changed-div', false, false)
     }
     dom.setVisible('.list-view-options', true, false)
+    dom.setVisible('#compare-legend', true, false)
   }
 }
 

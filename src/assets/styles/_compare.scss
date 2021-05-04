@@ -1,4 +1,5 @@
 #compare {
+  // @extend %flex-column;
   overflow-x: hidden;
   font-size: 16px;
   min-width: 500px;
@@ -35,6 +36,7 @@
       padding-left: 20px;
     }
     .version-options-list {
+      z-index: 999;
       position: fixed;
       top: 60px;
       background-color: white;
@@ -121,6 +123,7 @@
     }
   }
   .change-lists {
+    // flex-grow: 1;
     padding: 0 20px 20px 20px;
   }
   .change-list-div {
@@ -175,6 +178,108 @@
           }
         }
       }
+    }
+  }
+}
+
+#compare-legend {
+  padding: 20px;
+  // .close-legend {
+  //   float: right;
+  //   font-size: 14px;
+  // }
+  .title {
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 10px;
+    padding-bottom: 5px;
+  }
+  .edge-group {
+    padding-top: 10px;
+  }
+  .nodes {
+    @extend %flex-row;
+    .node-text {
+      font-size: 12px;
+      padding-top: 5px;
+    }
+    .node-div {
+      @extend %flex-column;
+      @extend %center;
+      padding-right: 10px;
+    }
+    .node-circle {
+      border-radius: 50%;
+      height: 15px;
+      width: 15px;
+    }
+    .added-node {
+      background-color: $service-provider-color;
+    }
+    .removed-node {
+      background-color: $removed;
+    }
+    .unchanged-node {
+      background-color: $service-provider-color;
+      opacity: 0.5;
+    }
+    .changed-node-div {
+      transform: translateY(9px);
+    }
+    .changed-node {
+      background-color: $service-provider-color;
+      height: 12px;
+      width: 12px;
+      border: 2px solid $information-holder-color;
+    }
+    .changed-details {
+      .current-role {
+        color: $service-provider-color;
+      }
+      .compared-role {
+        color: $information-holder-color;
+      }
+      .node-text {
+        font-size: 8px;
+        padding-top: 0px;
+      }
+    }
+  }
+  .edges {
+    @extend %flex-row;
+    .edge-text {
+      font-size: 12px;
+      padding-top: 5px;
+    }
+    .arrow-line {
+      @extend %flex-row;
+    }
+    .edge-div {
+      @extend %flex-column;
+      @extend %center;
+      padding-right: 10px;
+    }
+    .edge-line {
+      transform: translateY(6px);
+      width: 30px;
+      border-top: 4px solid $edge;
+    }
+    .faded-arrow {
+      opacity: 0.5;
+    }
+    .removed-edge {
+      border-top: 5px dashed $edge;
+      opacity: 0.4;
+    }
+    .unchanged-edge {
+      opacity: 0.4;
+    }
+    .arrow-right {
+      width: 0; 
+      height: 0; 
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-left: 15px solid $edge;
     }
   }
 }

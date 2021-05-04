@@ -578,7 +578,6 @@ let Dom = {
   switchPatternTab(data, option) {
     // empty chart and common patterns
     this.empty(['.chart-div', '.common-pattern-div'])
-  
     // add class to selected tab
     document.querySelector('.pattern-tabs .selected-pattern-tab').classList.remove('selected-pattern-tab')
     document.querySelector(`.pattern-tabs .${option}`).classList.add('selected-pattern-tab')
