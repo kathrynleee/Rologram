@@ -3,22 +3,34 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "build": "webpack --mode development"
   },
   "dependencies": {
+    "axios": "^0.21.1",
+    "chartist": "^0.11.4",
+    "chartist-plugin-pointlabels": "^0.0.6",
+    "codemirror": "^5.61.0",
     "core-js": "^3.6.5",
     "cors": "^2.8.5",
     "csvtojson": "^2.0.10",
-    "cytoscape": "^3.18.0",
+    "cytoscape": "^3.18.2",
     "cytoscape-klay": "^3.1.4",
+    "diff-match-patch": "^1.0.5",
     "express": "^4.17.1",
     "lodash": "^4.17.21",
     "neo4j-driver": "^4.2.3",
-    "parse-neo4j": "^0.6.11"
+    "parse-neo4j": "^0.6.11",
+    "swiper": "^6.5.8"
   },
-  "main": ".eslintrc.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kathrynleee/vis.git"
+  "devDependencies": {
+    "css-loader": "^5.2.4",
+    "eslint": "^7.25.0",
+    "node-sass": "^5.0.0",
+    "sass-loader": "^11.0.1",
+    "style-loader": "^2.0.0",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.35.1",
+    "webpack-cli": "^4.6.0"
   }
 }

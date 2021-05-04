@@ -1,0 +1,280 @@
+
+.header {
+  height: 90px;
+}
+
+#info {
+  padding: 10px 15px 0px 10px;
+  .system {
+    font-weight: bold;
+    font-size: 25px;
+    text-transform: uppercase;
+  }
+  .commit {
+    padding: 5px 0px 5px 10px;
+    @extend %flex-row;
+    a {
+      font-weight: bold;
+      text-decoration: none;
+      color: $black;
+      &:active {
+        color: $black;
+      }
+    }
+    div {
+      margin-right: 5px;
+      &.commit-id {
+        margin-right: 10px;
+        text-decoration: underline;
+        &:hover {
+          cursor: pointer;
+          text-decoration: none;
+        }
+      }
+    }
+    img {
+      width: 16px;
+      opacity: 0.7;
+    }
+  }
+  .class-id {
+    visibility: hidden;
+    @extend %flex-row;
+    .package {
+      padding: 2px;
+      width: fit-content;
+      background-color: $bg-color-dark;
+    }
+    .class {
+      padding: 2px;
+      padding-left: 10px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    &.show {
+      visibility: visible;
+    }
+  }
+}
+
+.timeline-div {
+  @extend %flex-row;
+  ::-webkit-scrollbar {
+    opacity: 0;
+  }
+}
+
+.timeline {
+  margin: 0 10px;
+  width: calc(100vw - 65px);
+  height: 59px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  // @extend %flex-row;
+  .roles {
+    display: flex;
+    flex-direction: row;
+    padding-left: 2px;
+    .role {
+      margin-top: 20px;
+      min-width: 16px;
+      min-height: 16px;
+      border-radius: 8px;
+      margin-right: 2px;
+      font-size: 12px;
+      font-weight: bold;
+      color: white;
+      text-align: center;
+      cursor: pointer;
+      &.role-package {
+        border-radius: 0;
+      }
+      &.role-version {
+        border-radius: 0;
+        border: 2px solid $bg-color-dark;
+        min-width: 14px;
+        min-height: 14px;
+      }
+      .selected:before {
+        font-size: 12px;
+        width: 100px;
+        font-weight: bold;
+        color: $black;
+        content: attr(data-text);
+        opacity: 1;
+        position: absolute;
+        left: -24px;
+        top: -13px;
+      }
+      &.hover-no-effect:hover {
+        cursor: default;
+        transform: none;
+        .date:hover:before {
+          transform: translateY(-3px);
+        }
+      }
+      &:hover {
+        transform: translateY(-3px);
+      }
+      &.selected-version, &.current-version {
+        min-width: 80px;
+      }
+      .date {
+        &:before {
+          font-size: 10px;
+          width: 80px;
+          height: 50px;
+          color: $black;
+          content: attr(data-date);
+          opacity: 0;
+          position: absolute;
+          bottom: -32px;
+          left: -10px;
+          text-align: left;
+        }
+        &:hover:before {
+          opacity: 1;
+        }
+      }
+      .tooltip {
+        position: relative;
+      }
+    }
+  }
+}
+
+.toggle-timeline {
+  display: inline-block;
+  position: relative;
+  font-size: 0.75em;
+  width: 7.2em;
+  height: 3.5em;
+  overflow: hidden;
+  border-bottom: 0.5em solid #eee;
+  transform: scale(0.7);
+  .material-icons {
+    color: white;
+  }
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0.5em;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #999;
+    border: 0.5em solid #eee;
+    border-bottom: 0;
+  }
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .switch-left::before, .switch-right::before {
+    content: "";
+    position: absolute;
+    width: 0.37em;
+    height: 2.43em;
+    bottom: -0.4em;
+    background-color: #ccc;
+    transform: skewY(-65deg);
+  }
+  .switch-left, .switch-right {
+    cursor: pointer;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.5em;
+    width: 2.85em;
+    transition: 0.2s;
+  }
+  .switch-left {
+    height: 2.44em;
+    left: 0.85em;
+    bottom: 0.4em;
+    background-color: #ddd;
+    transform: rotate(15deg) skewX(15deg);
+    &::before {
+      left: -0.4em;
+      bottom: -0.43em;
+      height: 2.45em;
+      width: 0.4em;
+    }
+  }
+  .switch-right {
+    right: 0.5em;
+    bottom: 0;
+    background-color: $black;
+    color: white;
+    &::before {
+      right: -0.37em;
+      background-color: transparent;
+      transform: skewY(65deg);
+    }
+  }
+  input:checked + .switch-left {
+    background-color: $black;
+    color: white;
+    bottom: 0px;
+    left: 0.5em;
+    height: 2.5em;
+    width: 3em;
+    transform: rotate(0deg) skewX(0deg);
+  }
+  input:checked + .switch-left::before {
+    background-color: transparent;
+    width: 3em;
+  }
+  input:checked + .switch-left + .switch-right {
+    background-color: #ddd;
+    color: $black;
+    bottom: 0.4em;
+    right: 0.8em;
+    height: 2.43em;
+    width: 2.75em;
+    transform: rotate(-15deg) skewX(-15deg);
+  }
+  input:checked + .switch-left + .switch-right::before {
+    background-color: #ccc;
+  }
+  // for the checkbox toggle switch only
+  // Copyright (c) 2021 by Marcus Connor (https://codepen.io/marcusconnor/pen/QJNvMa)
+}
+
+#legend {
+  width: calc(100vw - 75px);
+  overflow-x: auto;
+  @extend %flex-row;
+  font-size: 12px;
+  margin: 5px 10px;
+  margin-left: 15px;
+  .legend-circle {
+    min-width: 16px;
+    width: 16px;
+    min-height: 16px;
+    height: 16px;
+    border-radius: 8px;
+    margin-right: 5px;
+  }
+  .legend-role {
+    @extend %flex-row;
+    margin-right: 20px;
+  }
+  @media screen and (max-width: 798px) {
+    font-size: 10px;
+    .legend-circle {
+      min-width: 12px;
+      width: 12px;
+      min-height: 12px;
+      height: 12px;
+      border-radius: 24px;
+      margin-right: 5px;
+    }
+    .legend-role {
+      margin-right: 10px;
+    }
+  }
+}

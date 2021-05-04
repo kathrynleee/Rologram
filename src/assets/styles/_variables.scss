@@ -1,0 +1,79 @@
+$black: #465054;
+$bg-color: hsla(208, 13%, 97%, 1);
+$bg-color-dark: #ECECEA;
+$controller-color: #755194;
+$coordinator-color: #539967;
+$information-holder-color: #BF3F6A;
+$interfacer-color: #E9AB45;
+$service-provider-color: #4D82B0;
+$structurer-color: #E6A1B2;
+
+@import url(https://fonts.googleapis.com/css2?family=Inconsolata&display=swap);
+@import url(https://fonts.googleapis.com/icon?family=Material+Icons);
+
+$Inconsolata: 'Inconsolata', monospace;
+
+%flex-row {
+  display: flex;
+  flex-direction: row;
+  &.hide {
+    display: none;
+  }
+}
+
+%flex-column {
+  display: flex;
+  flex-direction: column;
+  &.hide {
+    display: none;
+  }
+}
+
+%center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &.hide {
+    display: none;
+  }
+}
+
+%button {
+  padding: 10px;
+  width: fit-content;
+  cursor: pointer;
+  font-size: 12px;
+  border: 2px solid $black;
+  box-shadow: 2px 2px;
+  &:hover {
+    background-color: $bg-color;
+  }
+}
+
+%clear {
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 10px;
+  margin-right: 10px;
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.flex-row {
+  @extend %flex-row;
+}
+
+.hide {
+  display: none;
+}
+
+.material-icons {
+  cursor: pointer;
+  color: $black;
+}
+
+.animate__animated.animate__slideInRight {
+  --animate-duration: 0.5s;
+}

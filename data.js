@@ -13,11 +13,11 @@ let classCsvFile = __dirname + '/data/classes.csv'
 let dependencyCsvFile = __dirname + '/data/dependencies.csv'
 let pathCsvFile = __dirname + '/data/path.csv'
 
-const versionFile = __dirname + '/data/version.txt'
-const styleFile = __dirname + '/data/style.cycss'
+let versionFile = __dirname + '/data/version.txt'
+let styleFile = __dirname + '/data/style.cycss'
 
 // read version text file
-const versions = readTextFile(versionFile)
+let versions = readTextFile(versionFile)
 
 // input data from csv
 let paths = []

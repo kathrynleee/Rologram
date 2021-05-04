@@ -1,0 +1,64 @@
+#history {
+  .history-header {
+    padding: 10px;
+    @extend %flex-row;
+    .history-export {
+      // width: fit-content;
+      // padding: 10px;
+      // font-size: 12px;
+      // text-decoration: underline;
+      // cursor: pointer;
+      // &:hover {
+      //   text-decoration: none;
+      // }
+      @extend %button;
+    }
+    .history-clear {
+      padding-left: 20px;
+      @extend %clear;
+    }
+    // .undo-redo {
+    //   padding: 10px;
+    // }
+  }
+  .history-row {
+    padding: 20px;
+    overflow-x: hidden;
+    // border: solid $bg-color;
+    // border-width: 5px 0;
+    // border-bottom-width: 0;
+    border-top: 3px solid $bg-color;
+    font-size: 16px;
+    &:last-child {
+      border-bottom: 3px solid $bg-color;
+    }
+    .history-commit {
+      @extend %flex-row;
+    }
+    .package {
+      padding: 2px;
+      font-size: 14px;
+      width: fit-content;
+      background-color: $bg-color-dark;
+    }
+    .class {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .commit-date {
+      padding-left: 8px;
+      padding-top: 3px;
+      font-size: 14px;
+    }
+    &:hover {
+      background-color: $bg-color;
+      cursor: pointer;
+    }
+  }
+  img {
+    width: 20px;
+    opacity: 0.7;
+    padding-right: 5px;
+  }
+}

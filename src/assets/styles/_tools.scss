@@ -1,0 +1,95 @@
+#tools {
+  min-width: 320px;
+  min-height: 640px;
+  width: 320px;
+  .tool-row {
+    padding: 20px;
+    .tool-title {
+      text-transform: uppercase;
+      font-size: 12px;
+      margin-bottom: 2px;
+    }
+    &.class-level.disabled {
+      opacity: 0.3;
+      .tool-row-items {
+        div {
+          &:hover {
+            cursor: default;
+            opacity: 1;
+            background-color: $bg-color;
+            color: $black;
+          }
+        }
+      }
+    }
+    .tool-row-items {
+      font-size: 16px;
+      @extend %flex-row;
+      &.dep-level {
+        div {
+          padding: 10px 20px;
+        }
+      }
+      div {
+        padding: 10px;
+        margin-right: 10px;
+        &.selected-option {
+          background-color: $bg-color;
+        }
+        &:hover {
+          cursor: pointer;
+          background-color: $black;
+          color: white;
+        }
+      }
+      &.roles-filter {
+        .tool-role {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          &[data-role='Controller'] {
+            background-color: $controller-color;
+          }
+          &[data-role='Coordinator'] {
+            background-color: $coordinator-color;
+          }
+          &[data-role='Information Holder'] {
+            background-color: $information-holder-color;
+          }
+          &[data-role='Interfacer'] {
+            background-color: $interfacer-color;
+          }
+          &[data-role='Service Provider'] {
+            background-color: $service-provider-color;
+          }
+          &[data-role='Structurer'] {
+            background-color: $structurer-color;
+          }
+          &.filtered {
+            // background-color: $bg-color-dark;
+            opacity: 0.2;
+            &:hover {
+              opacity: 0.8;
+            }
+          }
+          &:before {
+            font-size: 10px;
+            color: $black;
+            content: attr(data-role);
+            white-space: nowrap;
+            position: relative;
+            opacity: 0;
+            top: 30px;
+            left: -15px;
+          }
+          &:hover:before {
+            opacity: 1;
+          }
+          &:hover {
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+}
