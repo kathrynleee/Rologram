@@ -11,9 +11,13 @@ app.use('/api/data', dataController)
 // app.use('/api/data', databaseController)
 app.use(express.static('dist'))
 
-app.get('/api', (req, res) => {
-  res.send('test')
+app.get('/', (req, res) => {
+  res.sendFile('/index.html')
 })
+
+// app.get('/api', (req, res) => {
+//   res.send('test')
+// })
 
 app.listen(port, () => {
   console.log(`Express server listening at http://localhost:${port}`)
