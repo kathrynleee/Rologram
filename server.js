@@ -9,10 +9,10 @@ app.options('*', cors())
 app.use(cors())
 app.use('/api/data', dataController)
 // app.use('/api/data', databaseController)
-app.use(express.static('dist'))
+app.use(express.static(__dirname + '/public'))
 
 app.get('/', (req, res) => {
-  res.sendFile('/index.html')
+  res.sendFile(__dirname + '/public/index.html')
 })
 
 // app.get('/api', (req, res) => {
