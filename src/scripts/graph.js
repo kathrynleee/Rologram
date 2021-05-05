@@ -373,6 +373,7 @@ let Graph = {
       })
       setTimeout(function(){
         dom.updateClassHighlight('highlightOff')
+        cy.nodes().removeClass('highlight')
       }, 15000)
     } else {
       cy.nodes().removeClass('highlight')

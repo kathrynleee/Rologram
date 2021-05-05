@@ -74367,6 +74367,7 @@ let Graph = {
       })
       setTimeout(function(){
         _update_js__WEBPACK_IMPORTED_MODULE_5__.default.updateClassHighlight('highlightOff')
+        cy.nodes().removeClass('highlight')
       }, 15000)
     } else {
       cy.nodes().removeClass('highlight')
