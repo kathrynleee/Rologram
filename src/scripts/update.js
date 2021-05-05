@@ -180,6 +180,14 @@ let Dom = {
     element.setAttribute('data-package', record.package)
     element.setAttribute('data-class', record.class)
     element.addEventListener('click', () => {
+      data.selectedVersion = record.version
+      data.selectedPackage = record.package
+      if(record.class !== '') {
+        data.selectedClass = `${record.package}.${record.class}`
+      } else {
+        data.selectedClass = ''
+      }
+      data = this.reset(data)
       graph.init(data)
     })
     return element
