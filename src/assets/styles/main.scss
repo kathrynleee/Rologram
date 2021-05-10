@@ -1,4 +1,4 @@
-@import '_variables', '_header', '_pattern', '_tools', '_code', '_compare', '_guide', '_history';
+@import '_variables', '_header', '_pattern', '_tools', '_code', '_compare', '_guide', '_history', '_animation';
 @import 'animate.min.css';
 
 body {
@@ -20,12 +20,13 @@ body {
 }
 
 #cy {
-  margin: 10px;
   z-index: 99;
-  height: calc(100vh - 150px);
-  width: calc(100vw - 75px);
-  border: 5px solid $black;
   background-color: $bg-color;
+  height: calc(100vh - 145px);
+  width: calc(100vw - 70px);
+  margin: 10px;
+  border: 2px solid $black;
+  margin: 15px 0px 10px 10px;
 }
 
 .loader {

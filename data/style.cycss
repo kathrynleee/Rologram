@@ -64,6 +64,13 @@
             }
         },
         {
+            "selector": "node:parent.selected",
+            "style": {
+                "border-color": "#465054",
+                "border-width": "5"
+            }
+        },
+        {
             "selector": "node[role='Controller']",
             "style": {
                 "background-color": "#755194",

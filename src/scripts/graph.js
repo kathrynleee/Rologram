@@ -211,7 +211,7 @@ let Graph = {
   updatePackageGraph(data) {
     let cy = data.cy
     cy.startBatch()
-    let target = cy.$id(data.selectedPackage)
+    let target = cy.$id(data.selectedPackage).addClass('selected')
     let nodes = target.descendants().neighborhood().union(target.descendants())
     let parents = nodes.ancestors()
     let edges = nodes.connectedEdges()

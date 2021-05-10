@@ -89,12 +89,12 @@
       cursor: pointer;
       &.role-package {
         border-radius: 0;
-      }
-      &.role-version {
-        border-radius: 0;
         border: 2px solid $bg-color-dark;
         min-width: 14px;
         min-height: 14px;
+      }
+      &.role-version {
+        border-radius: 0;
       }
       .selected:before {
         font-size: 12px;
