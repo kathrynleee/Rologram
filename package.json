@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "build": "webpack --mode development"
+    "build": "webpack --mode production"
   },
   "dependencies": {
     "axios": "^0.21.1",
