@@ -1,0 +1,29 @@
+// .animation-div {
+//   padding-left: 10px;
+//   @extend %flex-row;
+//   @extend %center;
+//   .material-icons {
+//     font-size: 20px;
+//   }
+//   #animation {
+//     padding: 2px 10px;
+//     z-index: 999;
+//     position: absolute;
+//     left: 0;
+//     width: 100px;
+//     background-color: white;
+//     .material-icons {
+//       font-size: 20px;
+//       &.play-button {
+//         font-size: 30px;
+//       }
+//     }
+//     .animation-panel, .main-panel {
+//       @extend %flex-row;
+//       @extend %center;
+//     }
+//     .main-panel {
+//       padding-left: 10px;
+//     }
+//   }
+// }

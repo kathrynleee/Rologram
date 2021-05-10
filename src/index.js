@@ -73,7 +73,6 @@ function addEventListeners () {
   })
   document.querySelector('.menu [data-text="Code"]').addEventListener('click', () => {
     dom.openSourceCodeDialog()
-    dom.showCodeView(data.level, 'single')
   })
   document.querySelector('.menu [data-text="Tools"]').addEventListener('click', () => {
     dom.showTools()
@@ -302,6 +301,26 @@ function addEventListeners () {
   document.querySelector('.toggle-timeline input').addEventListener('click', () => {
     data.options.timeline = tools.toggleTimeline()
   })
+  /*****  animation *****/
+  // document.querySelector('.animation-div').addEventListener('mouseover', () => {
+  //   dom.setVisible('#animation', true, false)
+  // })
+  // document.querySelector('.animation-div').addEventListener('mouseout', () => {
+  //   dom.setVisible('#animation', false, false)
+  // })
+  // document.querySelector('.play-button').addEventListener('click', () => {
+  //   startAnimation()
+  // })
+  // document.querySelector('.stop-button').addEventListener('click', () => {
+  //   // graph.init(data)
+  //   // dom.createCurrentIndicator(data.selectedVersion)
+  // })
+  // document.querySelector('.previous').addEventListener('click', () => {
+
+  // })
+  // document.querySelector('.next').addEventListener('click', () => {
+
+  // })
 }
 
 function filterRole(role) {

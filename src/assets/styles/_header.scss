@@ -60,6 +60,7 @@
 
 .timeline-div {
   @extend %flex-row;
+  @extend %center;
   ::-webkit-scrollbar {
     opacity: 0;
   }

@@ -25,7 +25,7 @@ class Tools {
       autoRefresh: true
     })
     codeEditor.setValue(code)
-    dom.showCodeView('single')
+    dom.showCodeView('class', 'single')
   }
 
   async updateCodeView(classId, currentVersion, versionToCompare, isComparingToLaterVersion) {
@@ -52,7 +52,7 @@ class Tools {
       autoRefresh: true,
       readOnly: true
     })
-    dom.showCodeView('compare')
+    dom.showCodeView('class', 'compare')
   }
 
   async updateCode(version, classId, codeViewing) {

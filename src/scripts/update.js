@@ -783,6 +783,7 @@ let Dom = {
       element.className = 'change-list-row'
       element.addEventListener('click', () => {
         graph.clickChangeListItem(data.cy, data.level, node.id, data.options.layout)
+        this.updateDependencyLevel(3)
       })
       div = document.createElement('div')
       div.className = 'list-item-text'
@@ -814,6 +815,7 @@ let Dom = {
       element.className = 'change-list-row'
       element.addEventListener('click', () => {
         graph.clickChangeListItem(data.cy, data.level, node.id, data.options.layout)
+        this.updateDependencyLevel(3)
       })
       div = document.createElement('div')
       div.className = 'list-item-text'
