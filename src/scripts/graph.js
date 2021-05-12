@@ -7,6 +7,7 @@ cytoscape.use(klay)
 import api from './api.js'
 import dom from './update.js'
 import tools from './tools.js'
+import slider from './slider.js'
 
 let Graph = {
   klay: {
@@ -170,6 +171,7 @@ let Graph = {
       roleList = await api.getClassRoleList(data.selectedClass)
     }
     dom.createTimeline(data, roleList.data)
+    slider(data, roleList.data)
     // update source code
     data.options.codeViewing = 'single'
     tools.updateCode(data.selectedVersion, data.selectedClass, data.options.codeViewing)

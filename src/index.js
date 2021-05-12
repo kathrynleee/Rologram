@@ -80,6 +80,9 @@ function addEventListeners () {
   document.querySelector('.menu [data-text="Compare"]').addEventListener('click', () => {
     dom.showCompareDialog()
   })
+  document.querySelector('.menu [data-text="Slider"]').addEventListener('click', () => {
+    dom.showSlider()
+  })
   document.querySelector('.menu [data-text="Download"]').addEventListener('click', () => {
     tools.download(data.cy, data.level, data.selectedVersion, data.selectedPackage, data.selectedClass)
   })
@@ -206,6 +209,11 @@ function addEventListeners () {
   document.querySelector('.close-code').addEventListener('click', () => {
     dom.closeSourceCodeDialog()
   })
+  document.querySelector('.close-slider').addEventListener('click', () => {
+    dom.closeSlider()
+    // reset graph
+    graph.init(data)
+  })
   /*****  compare dialog *****/
   document.querySelector('.code-compare').addEventListener('click', () => {
     dom.openSourceCodeDialog()
@@ -301,26 +309,19 @@ function addEventListeners () {
   document.querySelector('.toggle-timeline input').addEventListener('click', () => {
     data.options.timeline = tools.toggleTimeline()
   })
-  /*****  animation *****/
-  // document.querySelector('.animation-div').addEventListener('mouseover', () => {
-  //   dom.setVisible('#animation', true, false)
-  // })
-  // document.querySelector('.animation-div').addEventListener('mouseout', () => {
-  //   dom.setVisible('#animation', false, false)
-  // })
-  // document.querySelector('.play-button').addEventListener('click', () => {
-  //   startAnimation()
-  // })
-  // document.querySelector('.stop-button').addEventListener('click', () => {
-  //   // graph.init(data)
-  //   // dom.createCurrentIndicator(data.selectedVersion)
-  // })
-  // document.querySelector('.previous').addEventListener('click', () => {
-
-  // })
-  // document.querySelector('.next').addEventListener('click', () => {
-
-  // })
+  /*****  slider *****/
+  document.querySelector('.previous').addEventListener('click', () => {
+    let element = document.getElementById('slider')
+    if(element.value != 1) {
+      element.value --
+      element.dispatchEvent(new Event('input', { 'bubbles': true }))
+    }
+  })
+  document.querySelector('.next').addEventListener('click', () => {
+    let element = document.getElementById('slider')
+    element.value ++
+    element.dispatchEvent(new Event('input', { 'bubbles': true }))
+  })
 }
 
 function filterRole(role) {

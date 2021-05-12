@@ -57,6 +57,7 @@ class Tools {
 
   async updateCode(version, classId, codeViewing) {
     if(classId != '') {
+      dom.showCodeMessage('Not found.')
       // get code at class level
       let code = await this.getSourceCode(version, classId)
       if(code !== undefined) {
@@ -64,9 +65,6 @@ class Tools {
           document.querySelector('#sourceCode').classList.remove('view')
           this.showSingleCode(code.data)
         }
-      } else {
-        // display code not found message
-        dom.showCodeMessage('Not found.')
       }
     } else {
       // display not class level message 

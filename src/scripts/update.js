@@ -279,7 +279,6 @@ let Dom = {
             } else {
               if(data.selectedVersion !== v) {
                 compare.showChanges(data, data.selectedVersion, v)
-                this.updateSelectedCompareVersion(v)
               }
             }
           })
@@ -313,7 +312,6 @@ let Dom = {
             } else {
               if(data.selectedVersion !== v) {
                 compare.showChanges(data, data.selectedVersion, v)
-                this.updateSelectedCompareVersion(v)
               }
             }
           })
@@ -474,6 +472,18 @@ let Dom = {
   showCompareDialog() {
     this.setVisible('#compare', true, false)
     this.setVisible('.close', true, false)
+  },
+
+  showSlider() {
+    this.setVisible('.timeline-div', false, false)
+    this.setVisible('.slider', true, false)
+    this.setVisible('.close-slider', true, false)
+  },
+
+  closeSlider() {
+    this.setVisible('.timeline-div', true, false)
+    this.setVisible('.slider', false, false)
+    this.setVisible('.close-slider', false, false)
   },
 
   emptyCompareList() {
@@ -809,7 +819,7 @@ let Dom = {
       return element
   },
 
-  createRoleChangedListItem(data, node, versionToCompare, isComparingToLaterVersion) {
+  createRoleChangedListItem(data, node, currentVersion, versionToCompare, isComparingToLaterVersion) {
     let element, div, fromRole, toRole, packageText, classText, arrow
       element = document.createElement('div')
       element.className = 'change-list-row'
@@ -831,11 +841,11 @@ let Dom = {
       toRole = document.createElement('div')
       toRole.className = 'list-item-circle'
       if(isComparingToLaterVersion) {
-        fromRole.style['background-color'] = data.roleMap.get(node[`${data.selectedVersion}`])
+        fromRole.style['background-color'] = data.roleMap.get(node[`${currentVersion}`])
         toRole.style['background-color'] = data.roleMap.get(node[`${versionToCompare}`])
       } else {
         fromRole.style['background-color'] = data.roleMap.get(node[`${versionToCompare}`])
-        toRole.style['background-color'] = data.roleMap.get(node[`${data.selectedVersion}`])
+        toRole.style['background-color'] = data.roleMap.get(node[`${currentVersion}`])
       }
       let index = node.id.lastIndexOf('.')
       packageText.innerHTML = node.id.slice(0, index)

@@ -94,9 +94,10 @@ class Compare {
     // if(!isStarted) { // not updating change list when calling this function for animation
     dom.clearChangeLists()
     dom.createIndicator(versionToCompare, 'COMPARE')
-    this.createChangeList(data, changes.data, versionToCompare, isComparingToLaterVersion)
+    this.createChangeList(data, changes.data, currentVersion, versionToCompare, isComparingToLaterVersion)
     dom.resetListIcon()
     dom.resetChangeLists()
+    dom.updateSelectedCompareVersion(versionToCompare)
     // } else {
     //   createIndicators(versionToCompare, 'SHOWING')
     // }
@@ -117,7 +118,7 @@ class Compare {
     dom.createCompareSelectList(data, versionList, selectedVersion)
   }
 
-  createChangeList(data, changeData, versionToCompare, isComparingToLaterVersion) {
+  createChangeList(data, changeData, currentVersion, versionToCompare, isComparingToLaterVersion) {
     // update list count
     let status, addedCount = 0, removedCount = 0, changedCount = 0
     changedCount = changeData.changedRoles.length
@@ -154,7 +155,7 @@ class Compare {
     }
     if(changeData.changedRoles.length > 0) {
       changeData.changedRoles.forEach(n => {
-        document.querySelector(`#compare .role-changed-list`).appendChild(dom.createRoleChangedListItem(data, n, versionToCompare, isComparingToLaterVersion))
+        document.querySelector(`#compare .role-changed-list`).appendChild(dom.createRoleChangedListItem(data, n, currentVersion, versionToCompare, isComparingToLaterVersion))
       })
       dom.setVisible('.role-changed-div', true, false)
     } else {

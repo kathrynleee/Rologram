@@ -25,22 +25,42 @@
                     <div class="class"></div>
                 </div>
             </div>
-            <div class="timeline-div">
-                <!-- <div class="animation-div" data-text="Animation">
-                    <div class="animation-icon">
-                        <div class="material-icons">animation</div>
-                    </div>
-                    <div id="animation" class="hide animate__animated animate__slideInLeft">
-                        <div class="animation-panel">
-                            <div class="stop-button material-icons">stop</div>
-                            <div class="main-panel">
-                                <div class="previous material-icons">fast_rewind</div>
-                                <div class="play-button material-icons">play_arrow</div>
-                                <div class="next material-icons">fast_forward</div>
-                            </div>
+            <div class="slider hide">
+                <div class="close-slider hide material-icons animate__animated animate__slideInRight">close</div>
+                <div class="slider-panel">
+                    <div class="previous material-icons">arrow_back_ios</div>
+                    <div class="next material-icons">arrow_forward_ios</div>
+                 </div>
+                <div id="sliderContainer">
+                    <div class="tick-slider">
+                        <div class="tick-slider-value-container">
+                            <div id="labelMin" class="tick-slider-label"></div>
+                            <div id="labelMax" class="tick-slider-label"></div>
+                            <div id="value" class="tick-slider-value">0</div>
                         </div>
+                        <div class="tick-slider-background"></div>
+                        <div id="progress" class="tick-slider-progress"></div>
+                        <div id="ticks" class="tick-slider-tick-container"></div>
+                        <input
+                            id="slider"
+                            class="tick-slider-input"
+                            type="range"
+                            min="0"
+                            max="20"
+                            step="1"
+                            value="0"
+                            data-tick-step="1"
+                            data-tick-id="ticks"
+                            data-value-id="value"
+                            data-progress-id="progress"
+                            data-handle-size="18"
+                            data-min-label-id="labelMin"
+                            data-max-label-id="labelMax"
+                        />
                     </div>
-                </div> -->
+                </div>
+            </div>
+            <div class="timeline-div">
                 <label class="toggle-timeline">
                     <input type="checkbox">
                     <span class="switch-left"><span class="material-icons">compare</span></span>
@@ -71,6 +91,10 @@
                     <div class="icon" data-text="History">
                         <div class="material-icons">restore</div>
                         <div class="icon-text">History</div>
+                    </div>
+                    <div class="icon" data-text="Slider">
+                        <div class="material-icons">linear_scale</div>
+                        <div class="icon-text">Slider</div>
                     </div>
                     <div class="icon" data-text="Download">
                         <div class="material-icons">download</div>
@@ -349,11 +373,12 @@
                   <div class="swiper-slide"><div class="guide-img"><img src="images/guide/15.png"></div></div>
                   <div class="swiper-slide"><div class="guide-img"><img src="images/guide/16.png"></div></div>
                   <div class="swiper-slide"><div class="guide-img"><img src="images/guide/17.png"></div></div>
-                  <div class="swiper-slide"><div class="guide-img"><img src="images/guide/22.png"></div></div>
                   <div class="swiper-slide"><div class="guide-img"><img src="images/guide/18.png"></div></div>
                   <div class="swiper-slide"><div class="guide-img"><img src="images/guide/19.png"></div></div>
                   <div class="swiper-slide"><div class="guide-img"><img src="images/guide/20.png"></div></div>
                   <div class="swiper-slide"><div class="guide-img"><img src="images/guide/21.png"></div></div>
+                  <div class="swiper-slide"><div class="guide-img"><img src="images/guide/22.png"></div></div>
+                  <div class="swiper-slide"><div class="guide-img"><img src="images/guide/23.png"></div></div>
                 </div>
                 <div class="swiper-pagination"></div>
                 <div class="swiper-button-prev"></div>

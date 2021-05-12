@@ -1,4 +1,4 @@
-@import '_variables', '_header', '_pattern', '_tools', '_code', '_compare', '_guide', '_history', '_animation';
+@import '_variables', '_header', '_pattern', '_tools', '_code', '_compare', '_guide', '_history', '_slider';
 @import 'animate.min.css';
 
 body {
@@ -76,6 +76,7 @@ body {
     border-right: 5px solid transparent;
     &:hover {
       border-right: 5px solid $bg-color-dark;
+      transition: all 0.2s;
     }
     .icon-text {
       font-size: 8px;
@@ -83,7 +84,7 @@ body {
   }
 }
 
-.close, .close-code {
+.close, .close-code, .close-slider {
   position: fixed;
   cursor: pointer;
   top: 20px;
