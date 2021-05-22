@@ -202,6 +202,7 @@ let Graph = {
         this.updateClassGraph(data, false)
         break
     }
+    this.resizeNodes(data.cy, data.options.metric, data.options.layout)
     // return data
   },
 

@@ -210,7 +210,7 @@ let Dom = {
       selectedOptions[0].classList.remove('filtered')
     }
     data.options.labelVisibility = 'hideLabels'
-    data.options.metric = 'rolesOnly'
+    // data.options.metric = 'rolesOnly'
     document.querySelector(`[data-option="${data.options.layout}"]`).classList.add('selected-option')
     document.querySelector(`[data-option="${data.options.labelVisibility}"]`).classList.add('selected-option')
     document.querySelector(`[data-option="${data.options.metric}"]`).classList.add('selected-option')
