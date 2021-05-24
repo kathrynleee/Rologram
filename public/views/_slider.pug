@@ -1,0 +1,31 @@
+
+div(class="slider hide")
+    div(class="close-slider hide material-icons animate__animated animate__slideInRight") close
+    .slider-panel
+        div(class="previous material-icons") arrow_back_ios
+        div(class="next material-icons") arrow_forward_ios
+    #sliderContainer
+        .tick-slider
+            .tick-slider-value-container
+                #labelMin.tick-slider-label
+                #labelMax.tick-slider-label
+                #value.tick-slider-value 0
+            .tick-slider-background
+            #progress.tick-slider-progress
+            #ticks.tick-slider-tick-container
+            input(
+                id="slider"
+                class="tick-slider-input"
+                type="range"
+                min="0"
+                max="0"
+                step="1"
+                value="0"
+                data-tick-step="1"
+                data-tick-id="ticks"
+                data-value-id="value"
+                data-progress-id="progress"
+                data-handle-size="18"
+                data-min-label-id="labelMin"
+                data-max-label-id="labelMax"
+            )

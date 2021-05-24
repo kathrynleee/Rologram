@@ -1,0 +1,40 @@
+#pattern(class="hide dialog animate__animated animate__slideInRight")
+    .pattern-tabs
+        div(class="pattern-tab define selected-pattern-tab")
+            .pattern-tab-text Define Patterns
+        div(class="pattern-tab ranking")
+            .pattern-tab-text Ranking
+        div(class="pattern-tab common")
+            .pattern-tab-text Common Patterns
+    .chart-container
+        .chart-div
+    div(class="define-pattern-div pattern-content-div")
+        .pattern-group
+            .pattern-count
+                .pointer 1
+            .pattern-select
+                .pattern-role(data-pattern-level="1")
+                    .pattern-role-option(data-role="Controller")
+                    .pattern-role-option(data-role="Coordinator")
+                    .pattern-role-option(data-role="Information Holder")
+                    .pattern-role-option(data-role="Interfacer")
+                    .pattern-role-option(data-role="Service Provider")
+                    .pattern-role-option(data-role="Structurer")
+        .pattern-buttons
+            .add-remove
+                div(class="add icon material-icons") add
+                div(class="remove icon material-icons") remove
+            .apply-cancel
+                .cancel Cancel
+                div(class="button apply") Apply Pattern
+    div(class="ranking-pattern-div hide pattern-content-div")
+        div(class="ranking-level level-one")
+            .ranking-level-toggle
+                div One Level
+                div(class="ranking-level-icon material-icons") keyboard_arrow_down
+        div(class="ranking-level level-two")
+            .ranking-level-toggle
+                div Two Levels
+                div(class="ranking-level-icon material-icons") keyboard_arrow_down
+    div(class="common-pattern-div hide pattern-content-div")
+        .common-pattern-row

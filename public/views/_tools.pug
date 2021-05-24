@@ -1,0 +1,42 @@
+#tools(class="hide dialog animate__animated animate__slideInRight")
+    .tool-row
+        .tool-title Layout
+        .tool-row-items
+            .selected-option(data-option="klay") Compact
+            div(data-option="hierarchy") Hierarchy
+    .tool-row
+        .tool-title Labels
+        div(class="tool-row-items label-visibility")
+            div(data-option="showLabels") Shown
+            .selected-option(data-option="hideLabels") Hidden
+    .tool-row
+        .tool-title Metrics
+        .tool-row-items
+            .selected-options(data-option="rolesOnly") Roles Only
+            div(data-option="linesOfCode") Lines of Code
+    .tool-row
+        .tool-title Filter Roles
+        div(class="tool-row-items roles-filter")
+            .tool-role(data-role="Controller")
+            .tool-role(data-role="Coordinator")
+            .tool-role(data-role="Information Holder")
+            .tool-role(data-role="Interfacer")
+            .tool-role(data-role="Service Provider")
+            .tool-role(data-role="Structurer")
+    .tool-row
+        .tool-title Highlight Role Changed Classes
+        div(class="tool-row-items highlight-classes")
+            div(data-option="highlightOn") On
+            .selected-option(data-option="highlightOff") Off
+    div(class="tool-row class-level disabled")
+        .tool-title Dependency Type
+        div(class="tool-row-items dep-type")
+            .selected-option(data-option="all") All
+            div(data-option="in") In
+            div(data-option="out") Out
+    div(class="tool-row class-level disabled")
+        .tool-title Dependency Level
+        div(class="tool-row-items dep-level")
+            .selected-option(data-option="1") 1
+            div(data-option="2") 2
+            div(data-option="3") 3

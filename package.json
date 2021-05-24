@@ -21,6 +21,7 @@
     "lodash": "^4.17.21",
     "neo4j-driver": "^4.2.3",
     "parse-neo4j": "^0.6.11",
+    "pug": "^3.0.2",
     "swiper": "^6.5.8"
   },
   "devDependencies": {

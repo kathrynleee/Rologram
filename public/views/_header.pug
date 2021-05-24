@@ -1,0 +1,23 @@
+.header
+  #info.hide
+    .flex-row
+      .system
+      .commit
+        div
+          img(src="images/git-commit.png")
+        .commit-id
+        .commit-date
+    .class-id
+      .package
+      .class
+  include _slider.pug
+  .timeline-div
+    label.toggle-timeline
+      input(type="checkbox")
+      span.switch-left
+        span.material-icons compare
+      span.switch-right
+        span.material-icons east
+    .timeline
+      .roles
+  include _menu.pug

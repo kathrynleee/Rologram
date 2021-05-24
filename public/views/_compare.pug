@@ -1,0 +1,74 @@
+#compare(class="hide dialog animate__animated animate__slideInRight")
+    div(class="code-compare hide") Code Diff
+    #version-select
+        div(class="version-select-div flex-row")
+            .version-select-text Select version to compare
+            .version-selected
+            div(class="version-select-icon material-icons") keyboard_arrow_down
+        div(class="hide version-options-list closed")
+    div(class="hide list-view-options")
+        div(class="list-view selected-view all")
+            div All
+            .count 0
+        div(class="list-view removed")
+            div Removed
+            .count 0
+        div(class="list-view added")
+            div Added
+            .count 0
+        div(class="list-view role-changed")
+            div Role Changed
+            .count 0
+    div(class="hide change-lists")
+        div(class="change-list-div removed-div")
+            div(class="hide change-list-group")
+                .removed-message Removed
+                div(class="change-list-icon material-icons") keyboard_arrow_down
+            div(class="hide change-list removed-list")
+        div(class="change-list-div added-div")
+            div(class="hide change-list-group")
+                .added-message Added
+                div(class="change-list-icon material-icons") keyboard_arrow_down
+            div(class="hide change-list added-list")
+        div(class="change-list-div role-changed-div")
+            div(class="hide change-list-group")
+                div Role Changed
+                div(class="change-list-icon material-icons") keyboard_arrow_down
+            div(class="hide change-list role-changed-list")
+    #compare-legend.hide
+        .node-group
+            .title Class
+            .nodes
+                .node-div
+                    div(class="node-circle added-node")
+                    .node-text Added
+                .node-div
+                    div(class="node-circle unchanged-node")
+                    .node-text Unchanged
+                .node-div
+                    div(class="node-circle removed-node")
+                    .node-text Removed
+                div(class="node-div changed-node-div")
+                    div(class="node-circle changed-node")
+                    .node-text Role-changed
+                    .changed-details
+                        div(class="current-role node-text") current role
+                        div(class="compared-role node-text") compared role
+        .edge-group
+            .title Dependency
+            .edges
+                .edge-div
+                    .arrow-line
+                        div(class="edge-line added-edge")
+                        .arrow-right
+                    .edge-text Added
+                .edge-div
+                    .arrow-line
+                        div(class="edge-line unchanged-edge")
+                        div(class="arrow-right faded-arrow")
+                    .edge-text Unchanged
+                .edge-div
+                    .arrow-line
+                        div(class="edge-line removed-edge")
+                        div(class="arrow-right faded-arrow")
+                    .edge-text Removed
