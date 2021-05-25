@@ -17,7 +17,7 @@ app.use(express.static('public'))
 //   res.sendFile(__dirname + '/public/index.html')
 // })
 
-app.set('views', './public/views')
+app.set('views', './src/views')
 app.set('view engine', 'pug')
 
 app.get('/', (req, res) => {
