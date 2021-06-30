@@ -3,14 +3,12 @@ const cors = require('cors')
 const pug = require('pug')
 let app = express()
 let port = process.env.PORT || 3000
-let dataController = require('./data')
-// let databaseController = require('./database')
+let dataController = require('./api')
 
 app.options('*', cors())
 app.use(cors())
 app.use('/api/data', dataController)
 app.use(express.static('public'))
-// app.use('/api/data', databaseController)
 
 // app.use(express.static(__dirname + '/public'))
 // app.get('/', (req, res) => {
