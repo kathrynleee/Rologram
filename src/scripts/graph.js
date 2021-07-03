@@ -203,7 +203,6 @@ let Graph = {
         break
     }
     this.resizeNodes(data.cy, data.options.metric, data.options.layout)
-    // return data
   },
 
   updateSystemGraph(data) {
@@ -293,7 +292,6 @@ let Graph = {
   },
 
   moveGraph() {
-    // cy.pan({ x: 20, y: 40 })
     cy.fit()
     // shift graph to left
     cy.panBy({ x: -200, y: 0 })
@@ -363,8 +361,8 @@ let Graph = {
       roleChangedClassList.data.forEach(ele => {
         cy.$id(ele).addClass('highlight')
       })
-      // flash the border ten times and stop
-      _.times(10, () => {
+      // flash the border three times and stop
+      _.times(3, () => {
         cy.nodes('.highlight')
           .animate({
             style: { 'border-opacity': '0' }
@@ -377,7 +375,7 @@ let Graph = {
       setTimeout(function(){
         dom.updateClassHighlight('highlightOff')
         cy.nodes().removeClass('highlight')
-      }, 15000)
+      }, 5000)
     } else {
       cy.nodes().removeClass('highlight')
     }

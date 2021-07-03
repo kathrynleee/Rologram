@@ -91,16 +91,12 @@ class Compare {
     }
     cy.endBatch()
     graph.updateGraph(data)
-    // if(!isStarted) { // not updating change list when calling this function for animation
     dom.clearChangeLists()
     dom.createIndicator(versionToCompare, 'COMPARE')
     this.createChangeList(data, changes.data, currentVersion, versionToCompare, isComparingToLaterVersion)
     dom.resetListIcon()
     dom.resetChangeLists()
     dom.updateSelectedCompareVersion(versionToCompare)
-    // } else {
-    //   createIndicators(versionToCompare, 'SHOWING')
-    // }
   }
 
   async createSelect(data, level, selectedVersion) {

@@ -34,7 +34,6 @@ let data = {
     layout: 'klay', // klay, hierarchy
     labelVisibility: 'hideLabels', // showLabels, hideLabels
     metric: 'rolesOnly', // rolesOnly, linesOfCode
-    highlight: 'highlightOff',
     dependencyLevel: 1, // 1, 2, 3
     edgeType: 'all', // all, in, out
     timeline: 'switchVersion', // switchVersion, compareVersion
@@ -152,12 +151,10 @@ function addEventListeners () {
   })
   // highlight role changed classes
   document.querySelector('[data-option="highlightOn"]').addEventListener('click', () => {
-    data.options.highlight = 'highlightOn'
     dom.updateClassHighlight('highlightOn')
     graph.showChangedClass(data.cy, data.selectedVersion, 'highlightOn')
   })
   document.querySelector('[data-option="highlightOff"]').addEventListener('click', () => {
-    data.options.highlight = 'highlightOff'
     dom.updateClassHighlight('highlightOff')
     graph.showChangedClass(data.cy, data.selectedVersion, 'highlightOff')
   })
