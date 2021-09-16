@@ -91,6 +91,11 @@ class Compare {
     }
     cy.endBatch()
     graph.updateGraph(data)
+    // always show edges for comparison
+    data.options.edgeVisibility = 'showEdges'
+    graph.updateEdgeVisibility(data.cy, 'showEdges', data.options.layout)
+    dom.updateEdgeVisibility('showEdges')
+    // update lists and header
     dom.clearChangeLists()
     dom.createIndicator(versionToCompare, 'COMPARE')
     this.createChangeList(data, changes.data, currentVersion, versionToCompare, isComparingToLaterVersion)

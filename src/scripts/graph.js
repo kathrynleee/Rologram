@@ -183,9 +183,6 @@ let Graph = {
     tools.updateCode(data.selectedVersion, data.selectedClass, data.options.codeViewing)
     // update graph
     this.updateGraph(data)
-    // data.options.edgeVisibility = 'showEdges'
-    // dom.updateEdgeVisibility('showEdges')
-    // this.updatePackageGraph(data)
   },
 
   updateGraph(data) {
