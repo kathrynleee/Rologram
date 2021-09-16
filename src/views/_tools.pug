@@ -18,6 +18,11 @@ mixin addTitle(title)
             +addOption("showLabels", "Shown")
             +selectOption("hideLabels", "Hidden")
     .tool-row
+        +addTitle("Edges")
+        div(class="tool-row-items edge-visibility")
+            +addOption("showEdges", "Shown")
+            +selectOption("hideEdges", "Hidden")
+    .tool-row
         +addTitle("Metrics")
         .tool-row-items
             +selectOption("rolesOnly", "Roles Only")

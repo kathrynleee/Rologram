@@ -33,6 +33,7 @@ let data = {
   options: {
     layout: 'klay', // klay, hierarchy
     labelVisibility: 'hideLabels', // showLabels, hideLabels
+    edgeVisibility: 'hideEdges', //showEdges, hideEdges
     metric: 'rolesOnly', // rolesOnly, linesOfCode
     dependencyLevel: 1, // 1, 2, 3
     edgeType: 'all', // all, in, out
@@ -118,6 +119,17 @@ function addEventListeners () {
     data.options.labelVisibility = 'hideLabels'
     graph.updateNodeLabelVisibility(data.cy, 'hideLabels', data.options.layout)
     dom.updateLabelVisibility('hideLabels')
+  })
+  // edge visibility
+  document.querySelector('[data-option="showEdges"]').addEventListener('click', () => {
+    data.options.edgeVisibility = 'showEdges'
+    graph.updateEdgeVisibility(data.cy, 'showEdges', data.options.layout)
+    dom.updateEdgeVisibility('showEdges')
+  })
+  document.querySelector('[data-option="hideEdges"]').addEventListener('click', () => {
+    data.options.edgeVisibility = 'hideEdges'
+    graph.updateEdgeVisibility(data.cy, 'hideEdges', data.options.layout)
+    dom.updateEdgeVisibility('hideEdges')
   })
   // metrics
   document.querySelector('[data-option="rolesOnly"]').addEventListener('click', () => {

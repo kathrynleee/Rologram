@@ -13,6 +13,12 @@ let Dom = {
     document.querySelector(`[data-option="${labelVisibility}"]`).classList.add('selected-option')
   },
 
+  updateEdgeVisibility(edgeVisibility) {
+    document.querySelector('[data-option="hideEdges"]').className = ''
+    document.querySelector('[data-option="showEdges"]').className = ''
+    document.querySelector(`[data-option="${edgeVisibility}"]`).classList.add('selected-option')
+  },
+
   updateLayout(layout) {
     if(layout === 'klay') {
       document.querySelector('[data-option="hierarchy"]').className = ''
@@ -210,9 +216,10 @@ let Dom = {
       selectedOptions[0].classList.remove('filtered')
     }
     data.options.labelVisibility = 'hideLabels'
-    // data.options.metric = 'rolesOnly'
+    data.options.edgeVisibility = 'hideEdges'
     document.querySelector(`[data-option="${data.options.layout}"]`).classList.add('selected-option')
     document.querySelector(`[data-option="${data.options.labelVisibility}"]`).classList.add('selected-option')
+    document.querySelector(`[data-option="${data.options.edgeVisibility}"]`).classList.add('selected-option')
     document.querySelector(`[data-option="${data.options.metric}"]`).classList.add('selected-option')
     document.querySelector('[data-option="highlightOff"]').classList.add('selected-option')
     document.querySelector('[data-option="1"]').classList.add('selected-option')

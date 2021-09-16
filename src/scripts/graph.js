@@ -99,7 +99,7 @@ let Graph = {
       data = dom.reset(data)
       this.init(data)
     })
-    cy.on('tapdragover', 'node', (e) => {
+    cy.on('mouseover', 'node', (e) => {
       let target = e.target
       if(data.options.labelVisibility == 'hideLabels') {
         target.addClass('showLabel')
@@ -109,6 +109,9 @@ let Graph = {
         let nodes = target.union(target.successors()).union(target.predecessors())
         let parents = nodes.ancestors()
         cy.elements().not(nodes).not(parents).addClass('hover')
+        if(data.options.edgeVisibility == 'hideEdges') {
+          cy.edges().removeClass('hideEdge')
+        }
       } else {
         // hover on package
         let nodes = target.descendants().neighborhood().union(target.descendants())
@@ -116,10 +119,13 @@ let Graph = {
         cy.elements().not(nodes).not(parents).addClass('hover')
       }
     })
-    cy.on('tapdragout', 'node', (e) => {
+    cy.on('mouseout', 'node', (e) => {
       let target = e.target
       if(data.options.labelVisibility == 'hideLabels') {
         target.removeClass('showLabel')
+      }
+      if(data.options.edgeVisibility == 'hideEdges') {
+        cy.edges().addClass('hideEdge')
       }
       cy.elements().removeClass('hover')
     })
@@ -137,18 +143,18 @@ let Graph = {
     dom.clearInfo()
     // update level, history list and package/class info
     if(data.selectedPackage === '' && data.selectedClass === '') {
-        data.level = 'system'
-        let record = { version: data.selectedVersion, package: '', class: '' }
-        data.historyList.push(record)
-        dom.updateHistoryList(data, record)
-        dom.showDependencyOptions(false)
+      data.level = 'system'
+      let record = { version: data.selectedVersion, package: '', class: '' }
+      data.historyList.push(record)
+      dom.updateHistoryList(data, record)
+      dom.showDependencyOptions(false)
     } else if(data.selectedClass === '') {
-        data.level = 'package'
-        dom.updateInfo(data.selectedPackage, '')
-        let record = { version: data.selectedVersion, package: data.selectedPackage, class: '' }
-        data.historyList.push(record)
-        dom.updateHistoryList(data, record)
-        dom.showDependencyOptions(false)
+      data.level = 'package'
+      dom.updateInfo(data.selectedPackage, '')
+      let record = { version: data.selectedVersion, package: data.selectedPackage, class: '' }
+      data.historyList.push(record)
+      dom.updateHistoryList(data, record)
+      dom.showDependencyOptions(false)
     } else {
       data.level = 'class'
       let target = cy.$id(data.selectedClass)
@@ -177,6 +183,9 @@ let Graph = {
     tools.updateCode(data.selectedVersion, data.selectedClass, data.options.codeViewing)
     // update graph
     this.updateGraph(data)
+    // data.options.edgeVisibility = 'showEdges'
+    // dom.updateEdgeVisibility('showEdges')
+    // this.updatePackageGraph(data)
   },
 
   updateGraph(data) {
@@ -185,18 +194,26 @@ let Graph = {
         // default hide node labels for system level
         data.options.labelVisibility = 'hideLabels'
         dom.updateLabelVisibility('hideLabels') // update label visibility options in settings
+        // default hide edges for system level
+        data.options.edgeVisibility = 'hideEdges'
+        dom.updateEdgeVisibility('hideEdges')
         this.updateSystemGraph(data)
         break
       case 'package':
         // default show node labels for package level
         data.options.labelVisibility = 'showLabels'
         dom.updateLabelVisibility('showLabels') // update label visibility options in settings
+        // default show edges for package level
+        data.options.edgeVisibility = 'showEdges'
+        dom.updateEdgeVisibility('showEdges')
         this.updatePackageGraph(data)
         break
       case 'class':
-        // default show node labels and all edges and dependency level is set to 1 for class level
+        // default show node labels and all edges, and dependency level is set to 1 for class level
         data.options.labelVisibility = 'showLabels'
         dom.updateLabelVisibility('showLabels') // update label visibility options in settings
+        data.options.edgeVisibility = 'showEdges'
+        dom.updateEdgeVisibility('showEdges')
         data.options.dependencyLevel = 1
         data.options.edgeType = 'all'
         this.updateClassGraph(data, false)
@@ -208,6 +225,7 @@ let Graph = {
   updateSystemGraph(data) {
     let cy = data.cy
     this.updateNodeLabelVisibility(cy, data.options.labelVisibility, data.options.layout)
+    this.updateEdgeVisibility(cy, data.options.edgeVisibility, data.options.layout)
   },
 
   updatePackageGraph(data) {
@@ -220,6 +238,7 @@ let Graph = {
     cy.remove(cy.elements().not(nodes).not(parents).not(edges))
     cy.endBatch()
     this.updateNodeLabelVisibility(cy, data.options.labelVisibility, data.options.layout)
+    this.updateEdgeVisibility(cy, data.options.edgeVisibility, data.options.layout)
   },
 
   updateClassGraph(data, created) {
@@ -277,6 +296,7 @@ let Graph = {
     }
     cy.endBatch()
     this.updateNodeLabelVisibility(cy, data.options.labelVisibility, data.options.layout)
+    this.updateEdgeVisibility(cy, data.options.edgeVisibility, data.options.layout)
     cy.nodes().unlock()
   },
 
@@ -286,6 +306,17 @@ let Graph = {
       cy.nodes().addClass('showLabel')
     } else {
       cy.nodes().removeClass('showLabel')
+    }
+    cy.endBatch()
+    this.runLayout(cy, layout)
+  },
+
+  updateEdgeVisibility(cy, edgeVisibility, layout) {
+    cy.startBatch()
+    if(edgeVisibility === 'hideEdges') {
+      cy.edges().addClass('hideEdge')
+    } else {
+      cy.edges().removeClass('hideEdge')
     }
     cy.endBatch()
     this.runLayout(cy, layout)

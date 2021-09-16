@@ -106,6 +106,10 @@ class Pattern {
     data.selectedClass = ''
     await graph.init(data)
     graph.applyPatternToGraph(data.cy, level, options, data.options.layout)
+    // always show edges for pattern
+    data.options.edgeVisibility = 'showEdges'
+    graph.updateEdgeVisibility(data.cy, 'showEdges', data.options.layout)
+    dom.updateEdgeVisibility('showEdges')
   }
 
   createChart(results) {
