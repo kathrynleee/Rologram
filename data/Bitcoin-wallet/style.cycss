@@ -186,7 +186,7 @@
                 "target-arrow-color": "#a9b6c2",
                 "opacity": "0.5",
                 "line-style": "dashed",
-                "line-dash-pattern" : "10,3"
+                "line-dash-pattern": "10,3"
             }
         },
         {
@@ -250,6 +250,12 @@
             "selector": "edge.hover, edge.filter",
             "style": {
                 "opacity": "0"
+            }
+        },
+         {
+            "selector": "edge.hideEdge",
+            "style": {
+                "width": "0"
             }
         },
         {
