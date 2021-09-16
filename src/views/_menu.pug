@@ -1,27 +1,14 @@
-
+mixin addMenuIcon(text, name)
+    .icon(data-text=text)
+            .material-icons=name
+            .icon-text=text
 .menu
     div(class="icons animate__animated animate__slideInRight")
-        .icon(data-text="Tools")
-            .material-icons tune
-            .icon-text Tools
-        .icon(data-text="Compare")
-            .material-icons compare
-            .icon-text Compare
-        .icon(data-text="Pattern")
-            .material-icons pattern
-            .icon-text Pattern
-        .icon(data-text="Code")
-            .material-icons code
-            .icon-text Code
-        .icon(data-text="History")
-            .material-icons restore
-            .icon-text History
-        .icon(data-text="Slider")
-            .material-icons linear_scale
-            .icon-text Slider
-        .icon(data-text="Download")
-            .material-icons download
-            .icon-text Download
-        .icon(data-text="Guide")
-            .material-icons help_outline
-            .icon-text Guide
+        +addMenuIcon("Tools", "tune")
+        +addMenuIcon("Compare", "compare")
+        +addMenuIcon("Pattern", "pattern")
+        +addMenuIcon("Code", "code")
+        +addMenuIcon("History", "restore")
+        +addMenuIcon("Slider", "linear_scale")
+        +addMenuIcon("Download", "download")
+        +addMenuIcon("Guide", "help_outline")

@@ -1,3 +1,5 @@
+mixin addPatternRole(role)
+    .pattern-role-option(data-role=role)
 #pattern(class="hide dialog animate__animated animate__slideInRight")
     .pattern-tabs
         div(class="pattern-tab define selected-pattern-tab")
@@ -14,12 +16,12 @@
                 .pointer 1
             .pattern-select
                 .pattern-role(data-pattern-level="1")
-                    .pattern-role-option(data-role="Controller")
-                    .pattern-role-option(data-role="Coordinator")
-                    .pattern-role-option(data-role="Information Holder")
-                    .pattern-role-option(data-role="Interfacer")
-                    .pattern-role-option(data-role="Service Provider")
-                    .pattern-role-option(data-role="Structurer")
+                    +addPatternRole("Controller")
+                    +addPatternRole("Coordinator")
+                    +addPatternRole("Information Holder")
+                    +addPatternRole("Interfacer")
+                    +addPatternRole("Service Provider")
+                    +addPatternRole("Structurer")
         .pattern-buttons
             .add-remove
                 div(class="add icon material-icons") add
