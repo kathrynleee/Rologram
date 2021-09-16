@@ -39,7 +39,7 @@ let Data = {
         })
       })
       // .then(() => {
-      //   savePatternCount()
+      //   this.savePatternCount()
       // })
     csv()
       .fromFile(this.pathCsvFile)
@@ -92,9 +92,15 @@ let Data = {
   findPath(id, version) {
     var index = id.lastIndexOf('.')
     var package = id.slice(0, index)
+    // if both version and package exist
     var found = this.paths.find(p => p.version == version && p.package == package)
     if(found == undefined) {
-      found = this.paths.find(p => p.version == '' && p.package == package)
+      // if version exists
+      found = this.paths.find(p => p.version == version && p.package == '')
+      if(found == undefined) {
+        // if version not exists
+        found = this.paths.find(p => p.version == '' && p.package == package)
+      }
     }
     return found
   },
@@ -249,6 +255,7 @@ let Data = {
     return changeObj
   },
 
+  // show classes in specific package and connected classes in other packages
   getPackageLevelChanges(currentVersion, versionToBeCompared, package) {
     let packages = this.elements.nodes.filter(n => n.data.parent == package && n.data.role == undefined && (n.data.version == currentVersion || n.data.version == versionToBeCompared))
     packages = _.map(packages, 'data.id')
@@ -618,6 +625,7 @@ let Data = {
 
   // find all combinations of 1, 2 and 3 levels and get each count for all versions
   savePatternCount() {
+    this.versions = this.getVersionList()
     let roleArray = ['Controller', 'Coordinator', 'Information Holder', 'Interfacer', 'Service Provider', 'Structurer']
     let oneLevelArray = _.chunk(roleArray, 1)
     let twoLevels = [roleArray, roleArray]
