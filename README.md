@@ -6,7 +6,7 @@ Software evolution visualisation with data of class role stereotypes
 
 ## Role Stereotypes
 
-* See [Responsibility-driven design] (https://en.wikipedia.org/wiki/Responsibility-driven_design#Roles)
+* See [Responsibility-driven design](https://en.wikipedia.org/wiki/Responsibility-driven_design#Roles)
 
 ## Getting started
 
