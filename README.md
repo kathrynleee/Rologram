@@ -7,8 +7,8 @@ Software evolution visualisation with data of class role stereotypes
 ## Getting started
 
 ```bash
-# Build
-npm run develop
+# Install
+npm install
 
 # Run
 npm start
