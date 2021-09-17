@@ -298,6 +298,7 @@ let Graph = {
   },
 
   updateNodeLabelVisibility(cy, labelVisibility, layout) {
+    dom.showLoader()
     cy.startBatch()
     if(labelVisibility === 'showLabels') {
       cy.nodes().addClass('showLabel')
@@ -309,6 +310,7 @@ let Graph = {
   },
 
   updateEdgeVisibility(cy, edgeVisibility, layout) {
+    dom.showLoader()
     cy.startBatch()
     if(edgeVisibility === 'hideEdges') {
       cy.edges().addClass('hideEdge')
